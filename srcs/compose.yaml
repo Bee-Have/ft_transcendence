@@ -1,0 +1,59 @@
+version : '3'
+
+services:
+
+  database:
+    container_name: ServiceNameHere
+    image: ImageName
+    # build: pull from original image here
+    #   args: public end file here
+    ports:
+    volumes:
+      # - db_volume:${MYSQL_PATH}
+    # restart: always
+
+  backend:
+    container_name: NestJS
+    image: ImageName
+    build:
+      context: ./the/path/here
+      dockerfile: Dockerfile
+      # args: public env file here
+    ports:
+      # - '9000:9000'
+    volumes:
+      # - backend_volume:${PATH}
+    # environment:
+    depends_on:
+      - database
+    # command: bash -c "/run/wp_start.sh"
+    # restart: always
+
+  frontend:
+    container_name: TheChosenTechno
+    image: ImageName
+    build:
+      context: ./the/path/here
+      dockerfile: Dockerfile
+      # args: public env file here
+    ports:
+      # - '443:443'
+    volumes:
+      # - frontend_volume:${PATH}
+    depends_on:
+      - backend
+    # restart: unless-stopped
+
+volumes:
+  wordpress_volume:
+    driver: 'local'
+    driver_opts:
+      type: 'none'
+      device: '${WP_VOLUME}'
+      o: 'bind'
+  mariadb_volume:
+    driver: 'local'
+    driver_opts:
+      type: 'none'
+      device: '${MYSQL_VOLUME}'
+      o: 'bind'

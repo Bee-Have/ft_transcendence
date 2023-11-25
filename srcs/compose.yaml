@@ -2,58 +2,52 @@ version : '3'
 
 services:
 
-  database:
-    container_name: ServiceNameHere
-    image: ImageName
-    # build: pull from original image here
-    #   args: public end file here
-    ports:
-    volumes:
-      # - db_volume:${MYSQL_PATH}
-    # restart: always
+  # database:
+  #   container_name: ServiceNameHere
+  #   image: ImageName
+  #   env_file:
+  #     - .env
+  #   build: pull from original image here
+  #     args: public end file here
+  #  ports:
+  #    -'${DB_PORT}:${DB_PORT}'
+  #   volumes:
+  #     - ./db_volume:${MYSQL_PATH}
+  #   restart: always
 
-  backend:
-    container_name: NestJS
-    image: ImageName
-    build:
-      context: ./the/path/here
-      dockerfile: Dockerfile
+  # backend:
+  #   container_name: NestJS
+  #   image: ImageName
+  #   env_file:
+  #      - .env
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
       # args: public env file here
-    ports:
-      # - '9000:9000'
-    volumes:
-      # - backend_volume:${PATH}
+    # ports:
+      # - '${BACK_PORT}:${BACK_PORT}'
+    # volumes:
+    #  - ./srcs/backend:${VIRTUAL_BACK_VOLUME}
     # environment:
-    depends_on:
-      - database
+    # depends_on:
+    #   - database
     # command: bash -c "/run/wp_start.sh"
     # restart: always
 
   frontend:
-    container_name: TheChosenTechno
-    image: ImageName
+    container_name: front_react
+    # image: frontend
+    env_file:
+      - .env
     build:
-      context: ./the/path/here
+      context: ./frontend
       dockerfile: Dockerfile
       # args: public env file here
     ports:
-      # - '443:443'
+      - '${FRONT_PORT}:${FRONT_PORT}'
     volumes:
-      # - frontend_volume:${PATH}
-    depends_on:
-      - backend
+      - ./srcs/frontend:${VIRTUAL_FRONT_VOLUME}
+    # depends_on:
+      # - backend
+    # command: npm start
     # restart: unless-stopped
-
-volumes:
-  wordpress_volume:
-    driver: 'local'
-    driver_opts:
-      type: 'none'
-      device: '${WP_VOLUME}'
-      o: 'bind'
-  mariadb_volume:
-    driver: 'local'
-    driver_opts:
-      type: 'none'
-      device: '${MYSQL_VOLUME}'
-      o: 'bind'

@@ -8,7 +8,7 @@ clean:
 	cd srcs && docker-compose down --remove-orphans
 
 fclean: clean
-	docker system prune -ay
+	docker system prune -a
 
 re:
 

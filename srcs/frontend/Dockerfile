@@ -1,12 +1,12 @@
-FROM node:20.9.0
+FROM node:20.10.0
 
 RUN mkdir -p /usr/src/app/frontend
 
 # change directory in container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/frontend
 
 # copy dependencies
-COPY ./tmp_app/package*.json ./
+COPY ./package*.json ./
 
 # install missing npm dependencies
 RUN npm install

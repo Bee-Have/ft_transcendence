@@ -46,7 +46,7 @@ services:
     ports:
       - '${FRONT_PORT}:${FRONT_PORT}'
     volumes:
-      - ./srcs/frontend:${VIRTUAL_FRONT_VOLUME}
+      - ./frontend:${VIRTUAL_FRONT_VOLUME}
     # depends_on:
       # - backend
     # command: npm start

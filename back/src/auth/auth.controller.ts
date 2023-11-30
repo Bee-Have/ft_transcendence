@@ -7,7 +7,7 @@ import { RtGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { TfaGuard } from 'src/common/guards/tfa.guard';
 import { TfaDto } from './dto/tfa.dto';
-import { ApiBody, ApiCreatedResponse, ApiExcludeEndpoint, ApiOkResponse, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiExcludeEndpoint, ApiOkResponse, ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { FtApiUserDto } from './dto/ftapi.dto';
 
 @Controller('auth')
@@ -15,9 +15,7 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
-	@ApiResponse({
-		status: 200, 
-		description: 'Return url that client needs to be redirected to, to get 42 loging page'})
+	@ApiOkResponse({ description: 'Return url that client needs to be redirected to, to get 42 loging page'})
 	@Public()
 	@Get()
 	redirect(): string {
@@ -46,6 +44,8 @@ export class AuthController {
 		return this.authService.verifyTfa(query.code, userId) 
 	}
 
+	@ApiOperation({ description: 'Call this route if for some reason you no longer want your refresh token to be usable' })
+	@ApiOkResponse({ description: 'The refresh token is no longer usable' })
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	logout(@GetCurrentUser('sub') userId: number) {

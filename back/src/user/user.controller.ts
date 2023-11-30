@@ -6,8 +6,9 @@ import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { TfaDto } from "src/auth/dto/tfa.dto";
 import { Response } from "express";
 import { Public } from "src/common/decorators";
+import { ApiBearerAuth, ApiProperty } from "@nestjs/swagger";
 
-
+@ApiBearerAuth()
 @Controller('user')
 export class UserController {
 	

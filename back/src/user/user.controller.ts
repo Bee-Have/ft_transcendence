@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Query, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from "@nestjs/common";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { UserService } from './user.service';
 import { PrismaService } from "src/prisma/prisma.service";
 import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { TfaDto } from "src/auth/dto/tfa.dto";
+
 
 @Controller('user')
 export class UserController {
@@ -11,10 +12,10 @@ export class UserController {
 	constructor(private userService: UserService,
 				private prisma: PrismaService) {}
 
-	@Get('info')
-	SayHello(@GetCurrentUser('sub') userId: number) : Promise<any>
+	@Get('profile/:username')
+	getProfile(@Param('username') username: string) : Promise<any>
 	{
-		return this.userService.getUserInfo(userId)
+		return this.userService.getUserProfil(username)
 	}
 
 	@Post('update/username')

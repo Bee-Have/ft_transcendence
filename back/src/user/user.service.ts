@@ -1,6 +1,9 @@
 import { Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { authenticator } from 'otplib'
+import { NotFoundException } from "@nestjs/common/exceptions/not-found.exception";
+import { plainToInstance } from "class-transformer";
+import { userProfileDto } from "./dto/userProfile.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
@@ -8,13 +11,30 @@ export class UserService {
 
 	constructor(private prisma: PrismaService) {}
 
-	async getUserInfo(userId: number) {
+	/*async getUserInfo(userId: number) {
 		const user = await this.prisma.user.findUnique({
 			where: {
 				id: userId
 			}
 		})
 		return user
+	}*/
+	async getUserInfo(Name: string) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				username: Name
+			}
+		})
+		return user
+	}
+
+	async getUserProfil(username: string) {
+		const user = await this.getUserInfo(username)
+		
+		if (!user)
+			throw new NotFoundException("User profile not found")
+		const trimuser = plainToInstance(userProfileDto, user,{excludeExtraneousValues:true})
+		return trimuser
 	}
 
 	async updateUsername(userId: number, newUsername: string)

@@ -3,9 +3,7 @@ import { GetCurrentUser } from '../common/decorators/get-current-user.decorator'
 import { UserService } from './user.service';
 import { PrismaService } from "src/prisma/prisma.service";
 import { ImageInterceptor } from "./interceptor/image.interceptor";
-import { tfaCallbackDto } from "./dto/tfacallback.dto";
-import { authenticator } from "otplib";
-const multer  = require('multer')
+import { TfaDto } from "src/auth/dto/tfa.dto";
 
 @Controller('user')
 export class UserController {
@@ -35,7 +33,7 @@ export class UserController {
 
 	@Get('tfa/enable/callback')
 	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
-						@Query() query: tfaCallbackDto) {
+						@Query() query: TfaDto) {
 		console.log(typeof(query.code))
 		return this.userService.enableTFACallback(userId, query.code)
 	}

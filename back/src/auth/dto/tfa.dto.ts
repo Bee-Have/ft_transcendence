@@ -5,7 +5,7 @@ export class TfaDto {
 	@IsDefined()
 	@IsNotEmpty()
 	@ApiProperty({
-		description: 'The code '
+		description: 'The Google Authenticator 6 digits code that the user need to provide'
 	})
 	code: string 
 }

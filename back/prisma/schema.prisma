@@ -14,7 +14,7 @@ datasource db {
 model User{
 	id			Int @id
 	email		String @unique
-	username	String
+	username	String @unique
 
 	hashedRt	String?
 

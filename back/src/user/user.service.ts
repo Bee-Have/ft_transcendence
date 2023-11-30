@@ -4,6 +4,7 @@ import { authenticator } from 'otplib'
 import { NotFoundException } from "@nestjs/common/exceptions/not-found.exception";
 import { plainToInstance } from "class-transformer";
 import { userProfileDto } from "./dto/userProfile.dto";
+import { chatProfilDto } from "./dto/chatProfile.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
@@ -30,10 +31,19 @@ export class UserService {
 
 	async getUserProfil(username: string) {
 		const user = await this.getUserInfo(username)
-		
+		//besoin de : achievement
 		if (!user)
 			throw new NotFoundException("User profile not found")
 		const trimuser = plainToInstance(userProfileDto, user,{excludeExtraneousValues:true})
+		return trimuser
+	}
+
+	async getChatProfil(username: string){
+		const user = await this.getUserInfo(username)
+		//besoin de : achievement
+		if (!user)
+			throw new NotFoundException("User profile not found")
+		const trimuser = plainToInstance(chatProfilDto, user,{excludeExtraneousValues:true})
 		return trimuser
 	}
 

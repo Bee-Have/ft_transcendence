@@ -12,4 +12,6 @@ export class userProfileDto {
 
     @Expose()
     loose: number
+
+    //add avatar + achievement
 }

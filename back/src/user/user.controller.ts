@@ -18,6 +18,12 @@ export class UserController {
 		return this.userService.getUserProfil(username)
 	}
 
+	@Get('chat/:username')
+	getProfileFromChat(@Param('username') username: string) : Promise<any>
+	{
+		return this.userService.getChatProfil(username)
+	}
+
 	@Post('update/username')
 	updateUsername(@GetCurrentUser('sub') userId: number, @Body() body: any) {
 		return this.userService.updateUsername(userId, body.username)

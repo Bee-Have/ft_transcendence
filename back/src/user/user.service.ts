@@ -4,16 +4,10 @@ import { authenticator } from 'otplib'
 import { NotFoundException } from "@nestjs/common/exceptions/not-found.exception";
 import { plainToInstance } from "class-transformer";
 import { userProfileDto } from "./dto/userProfile.dto";
-<<<<<<< HEAD
-import { ImageInterceptor } from './interceptor/image.interceptor';
-=======
 import { chatProfilDto } from "./dto/chatProfile.dto";
->>>>>>> refs/remotes/origin/authentication
 const qrcode =  require('qrcode')
 import * as fs from 'fs'
 import { Response } from "express";
-import * as path from 'path';
-import { stringify } from "querystring";
 
 @Injectable()
 export class UserService {

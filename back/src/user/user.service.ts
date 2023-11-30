@@ -4,7 +4,12 @@ import { authenticator } from 'otplib'
 import { NotFoundException } from "@nestjs/common/exceptions/not-found.exception";
 import { plainToInstance } from "class-transformer";
 import { userProfileDto } from "./dto/userProfile.dto";
+import { ImageInterceptor } from './interceptor/image.interceptor';
 const qrcode =  require('qrcode')
+import * as fs from 'fs'
+import { Response } from "express";
+import * as path from 'path';
+import { stringify } from "querystring";
 
 @Injectable()
 export class UserService {
@@ -19,6 +24,24 @@ export class UserService {
 		})
 		return user
 	}*/
+
+	async getUserImage(res: Response, username: string)
+	{
+		const user = await this.getUserInfo(username)
+
+		if (!user)
+			throw new NotFoundException("User not found")
+
+		const userId = String(user.id)
+
+		const imagePath = process.env.AVATAR_DIRECTORY + '/' + userId + '.jpeg'
+
+		if (!fs.existsSync(imagePath))
+			throw new NotFoundException("Image not found")
+
+		fs.createReadStream(imagePath).pipe(res)
+	}
+
 	async getUserInfo(Name: string) {
 		const user = await this.prisma.user.findUnique({
 			where: {
@@ -33,7 +56,9 @@ export class UserService {
 		
 		if (!user)
 			throw new NotFoundException("User profile not found")
+		
 		const trimuser = plainToInstance(userProfileDto, user,{excludeExtraneousValues:true})
+
 		return trimuser
 	}
 

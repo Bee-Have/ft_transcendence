@@ -43,6 +43,7 @@ export class AuthController {
 	@Public()
 	@UseGuards(RtGuard)
 	@Post('refresh')
+	// @Api
 	@HttpCode(HttpStatus.OK)
   	refreshTokens(	@GetCurrentUser('sub') userId: number, 
   					@GetCurrentUser('refreshToken') rt: string) {

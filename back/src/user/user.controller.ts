@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Res, UseInterceptors } from "@nestjs/common";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { UserService } from './user.service';
 import { PrismaService } from "src/prisma/prisma.service";
 import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { TfaDto } from "src/auth/dto/tfa.dto";
+import { Response } from "express";
+import { Public } from "src/common/decorators";
 
 
 @Controller('user')
@@ -13,9 +15,15 @@ export class UserController {
 				private prisma: PrismaService) {}
 
 	@Get('profile/:username')
-	getProfile(@Param('username') username: string) : Promise<any>
-	{
+	getProfile(@Param('username') username: string) : Promise<any> {
 		return this.userService.getUserProfil(username)
+	}
+
+	@Public()
+	@Get('image/:username')
+	async getImage(@Res() res: Response, @Param('username') username: string)
+	{
+		return await this.userService.getUserImage(res, username)
 	}
 
 	@Post('update/username')
@@ -35,7 +43,6 @@ export class UserController {
 	@Get('tfa/enable/callback')
 	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
 						@Query() query: TfaDto) {
-		console.log(typeof(query.code))
 		return this.userService.enableTFACallback(userId, query.code)
 	}
 

@@ -20,7 +20,7 @@ export const ImageInterceptor = FileFieldsInterceptor(
 	fileFilter: function (req, file, cb)
 	{
 		if (file.mimetype !== 'image/jpeg')
-			cb(new HttpException('wrong type must be .jpg', 400), false)
+			cb(new HttpException('wrong type must be .jpeg', 400), false)
 		else
 			cb(null, true)
 	}

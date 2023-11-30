@@ -21,9 +21,14 @@ export class UserController {
 
 	@Public()
 	@Get('image/:username')
-	async getImage(@Res() res: Response, @Param('username') username: string)
-	{
+	async getImage(@Res() res: Response, @Param('username') username: string) {
 		return await this.userService.getUserImage(res, username)
+	}
+	
+	@Get('chat/:username')
+	getProfileFromChat(@Param('username') username: string) : Promise<any>
+	{
+		return this.userService.getChatProfil(username)
 	}
 
 	@Post('update/username')

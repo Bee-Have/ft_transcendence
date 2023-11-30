@@ -11,5 +11,6 @@ export class FtApiUserDto {
 	email: string
 	
 	@Expose()
-	image: string
+	image: object
+
 }

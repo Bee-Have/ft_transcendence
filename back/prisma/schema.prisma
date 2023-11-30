@@ -18,5 +18,58 @@ model User{
 
 	hashedRt	String?
 
+	isTwoFAEnable Boolean @default(false)
+	twoFASecret String @default("")
+
+	score Int @default(2000)
+	win Int	@default(0)
+	loose Int	@default(0)
+
+	// achiv Achievments[]
+
+	// channel Channel[]
+
+	// message Direct[]
+
+
 	@@map("users")
 } 
+
+
+model Direct {
+	id Int @id @default(autoincrement())
+
+	// userOne User @relation(fields: [userOneId], references: [id])
+	// userOneId Int
+
+	// userTwo User @relation(fields: [userTwoId], references: [id])
+	// userTwoId Int
+}
+
+model Channel {
+	id Int @id @default(autoincrement())
+
+	password String?
+
+	mode ChatMode @default(PUBLIC)
+
+	// owner User @relation(name: 'user',fields: [ownerId], references: [id])
+	ownerId Int
+
+	//list admin
+	// admin User @relation(fields: [adminId], references: [id])
+	adminId Int
+}
+
+enum ChatMode{
+	PUBLIC
+	PRIVATE
+	PROTECTED
+}
+
+model Achievments {
+
+	title String @unique
+	body String
+
+}

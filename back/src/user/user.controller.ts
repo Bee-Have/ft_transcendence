@@ -1,11 +1,17 @@
-import { Body, Controller, Get, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseInterceptors } from "@nestjs/common";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { UserService } from './user.service';
+import { PrismaService } from "src/prisma/prisma.service";
+import { ImageInterceptor } from "./interceptor/image.interceptor";
+import { tfaCallbackDto } from "./dto/tfacallback.dto";
+import { authenticator } from "otplib";
+const multer  = require('multer')
 
 @Controller('user')
 export class UserController {
 	
-	constructor(private userService: UserService) {}
+	constructor(private userService: UserService,
+				private prisma: PrismaService) {}
 
 	@Get('info')
 	SayHello(@GetCurrentUser('sub') userId: number) : Promise<any>
@@ -15,6 +21,28 @@ export class UserController {
 
 	@Post('update/username')
 	updateUsername(@GetCurrentUser('sub') userId: number, @Body() body: any) {
-		this.userService.updateUsername(userId, body.username)
+		return this.userService.updateUsername(userId, body.username)
 	}
+
+	@Post('upload/avatar')
+	@UseInterceptors(ImageInterceptor)
+	uploadAvatar() {}
+
+	@Get('tfa/enable')
+	async enableTFA(@GetCurrentUser('sub') userId: number) {
+		return await this.userService.enableTFA(userId)
+	}
+
+	@Get('tfa/enable/callback')
+	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
+						@Query() query: tfaCallbackDto) {
+		console.log(typeof(query.code))
+		return this.userService.enableTFACallback(userId, query.code)
+	}
+
+	@Get('tfa/disable')
+	disableTFA(@GetCurrentUser('sub') userId: number) {
+		return this.userService.disableTFA(userId)
+	}
+
 }

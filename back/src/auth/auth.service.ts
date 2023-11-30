@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, HttpException, ForbiddenException, ConsoleLogger, HttpStatus } from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException, ForbiddenException, ConsoleLogger, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import axios from 'axios';
 import { AuthDto } from 'src/auth/dto/auth.dto';
@@ -8,6 +8,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Tokens } from 'src/auth/types';
 import { JwtService } from '@nestjs/jwt';
 import { hash, verify } from 'argon2'
+import { Response } from 'express';
+import * as fs from 'fs'
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService {
@@ -18,15 +21,18 @@ export class AuthService {
 	getFtAuthenticationUri(): string {
 		const uri = this.buildFtAuthUri()
 
+		console.log(uri)
+
 		return uri
 	}
 
-	async authenticateUser(query: AuthDto): Promise<Tokens> {
+	// async authenticateUser(query: AuthDto, response: Response): Promise<Tokens> {
+	async authenticateUser(query: AuthDto, response: Response): Promise<void> {
 		const userFtToken: string = await this.getFtApiToken(query.code, query.state)
 
 		const userData: FtApiUserDto = await this.getUserDataFromFtApi(userFtToken)
 
-		const user = await this.prisma.user.findUnique({
+		let user = await this.prisma.user.findUnique({
 			where: {
 				id: userData.id
 			}
@@ -34,20 +40,27 @@ export class AuthService {
 
 		if (!user)
 		{
-			await this.prisma.user.create({
-				data: {
-					id: userData.id,
-					email: userData.email,
-					username: userData.login
-				},
-			})
+			user = await this.createNewUserInDB(userData)
+			await this.getAvatar(userData.id, userData.image["versions"]["small"])
 		}
 
-		const tokens = await this.getTokens(userData.id, userData.email)
-
-		await this.updateRtHash(userData.id, tokens.refresh_token)
-
-		return tokens
+		if (user.isTwoFAEnable)
+		{
+			console.log('TFA')
+			const tfaToken = await this.getTfaToken(user.id, user.email)
+			response.cookie('TfaEnable', 'true')
+			response.cookie('TfaToken', tfaToken)
+			response.redirect(process.env.FRONT_END_URL) //need to put frontendURL
+		}
+		else
+		{
+			const tokens = await this.getTokens(userData.id, userData.email)
+		
+			response.cookie('TfaEnable', 'false')
+			response.cookie('access_token', tokens.access_token)
+			response.cookie('refresh_token', tokens.refresh_token)
+			response.redirect(process.env.FRONT_END_URL) //need to put frontendURL
+		}
 	}
 
 	async logout(userId: number) {
@@ -159,6 +172,8 @@ export class AuthService {
 		})
 		])
 
+		await this.updateRtHash(userId, rt)
+
 		return {
 			access_token: at,
 			refresh_token: rt
@@ -178,8 +193,31 @@ export class AuthService {
 		})
 	}
 
-	async hashData(data: string) {
-		return await hash(data)
+	async getTfaToken(userId: number, email: string)
+	{
+		return await this.jwtService.signAsync({sub: userId, email}, {
+			secret: process.env.JWT_TFA_SECRET,
+			expiresIn: 15 * 60
+		})
+		.catch((error) => {
+			console.log(error)
+			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
+		})
+	}
+
+	async verifyTfa(code: string, userId) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			}
+		})
+		
+		const bool = authenticator.verify({ token: code, secret: user.twoFASecret})
+
+		if (!bool)
+			throw new UnauthorizedException('Wrong code')
+
+		return await this.getTokens(userId, user.email)
 	}
 
 	buildFtAuthUri():string {
@@ -196,4 +234,44 @@ export class AuthService {
 		
 		return url
 	}
+
+	async getAvatar(userId: number, imageUrl: string)
+	{
+		const file = process.env.AVATAR_DIRECTORY + '/' + userId.toString() + '.jpeg'
+
+		axios({
+		  method: 'get',
+		  url: imageUrl,
+		  responseType: 'stream',
+		})
+		.then(response => {
+		const imageStream = response.data.pipe(fs.createWriteStream(file));
+	
+		return new Promise((resolve, reject) => {
+			imageStream.on('finish', resolve);
+			imageStream.on('error', reject);
+		});
+		})
+		.catch(error => {
+			console.error('Error Downloading 42 image:', error.message);
+			throw new HttpException('Error Downloading 42 image', HttpStatus.INTERNAL_SERVER_ERROR)
+		});
+			
+	}
+
+	async createNewUserInDB(userData: FtApiUserDto){
+		return await this.prisma.user.create({
+			data: {
+				id: userData.id,
+				email: userData.email,
+				username: userData.login
+			},
+		})
+	}
+
+	
+	async hashData(data: string) {
+		return await hash(data)
+	}
+
 }

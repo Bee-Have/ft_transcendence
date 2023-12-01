@@ -99,6 +99,7 @@ export class UserController {
 		return this.userService.enableTFACallback(userId, query.code)
 	}
 
+	@ApiOperation({ description: 'Disable the TFA'})
 	@Get('tfa/disable')
 	disableTFA(@GetCurrentUser('sub') userId: number) {
 		return this.userService.disableTFA(userId)

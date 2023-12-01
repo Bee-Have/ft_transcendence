@@ -33,6 +33,7 @@ export class AuthController {
 	}
 
 
+	@ApiOperation({ description: 'When the TfaEnable cookie is set to true this route needs to be called with the http Authorization header set to {Bearer {the value of the TfaToken}} in order to get access and refresh tokens'})
 	@ApiUnauthorizedResponse({
 		description: 'Wrong code, try again'
 	})

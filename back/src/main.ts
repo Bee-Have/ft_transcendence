@@ -1,25 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { AtGuard } from './common/guards';
-import { authenticator } from 'otplib';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-// import { HttpExceptionFilter } from './filter/http-exception.filter';
-const qrcode =  require('qrcode')
+import { SecuritySchemeObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-	transform: true,
-	transformOptions: { enableImplicitConversion: true}
-  }));
+	const app = await NestFactory.create(AppModule);
+	app.useGlobalPipes(new ValidationPipe({
+		transform: true,
+		transformOptions: { enableImplicitConversion: true}
+	}));
 
-  const config = new DocumentBuilder()
-  	.setTitle('trascendence')
-  	.build()
+	const sec: SecuritySchemeObject = {
+		description: 'Give the access or refresh token to test the routes that are protected',
+		type: 'http'
+	}
 
-  	const document = SwaggerModule.createDocument(app, config)
+	const config = new DocumentBuilder()
+  		.addBearerAuth(sec)
+  		.setTitle('transcendence')
+  		.build()
+
+	const document = SwaggerModule.createDocument(app, config)
 	SwaggerModule.setup('api', app, document)
 
 

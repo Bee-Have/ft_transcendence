@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, HttpException, ForbiddenException, ConsoleLogger, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException, ForbiddenException, ConsoleLogger, HttpStatus, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { URLSearchParams } from 'url';
 import axios from 'axios';
 import { AuthDto } from 'src/auth/dto/auth.dto';
@@ -20,8 +20,6 @@ export class AuthService {
 
 	getFtAuthenticationUri(): string {
 		const uri = this.buildFtAuthUri()
-
-		console.log(uri)
 
 		return uri
 	}
@@ -46,11 +44,10 @@ export class AuthService {
 
 		if (user.isTwoFAEnable)
 		{
-			console.log('TFA')
 			const tfaToken = await this.getTfaToken(user.id, user.email)
+
 			response.cookie('TfaEnable', 'true')
 			response.cookie('TfaToken', tfaToken)
-			response.redirect(process.env.FRONT_END_URL) //need to put frontendURL
 		}
 		else
 		{
@@ -59,8 +56,23 @@ export class AuthService {
 			response.cookie('TfaEnable', 'false')
 			response.cookie('access_token', tokens.access_token)
 			response.cookie('refresh_token', tokens.refresh_token)
-			response.redirect(process.env.FRONT_END_URL) //need to put frontendURL
 		}
+		response.redirect(process.env.FRONT_END_URL)
+	}
+
+	async verifyTfa(code: string, userId: number) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			}
+		})
+		
+		const bool = authenticator.verify({ token: code, secret: user.twoFASecret })
+
+		if (!bool)
+			throw new UnauthorizedException('Wrong code, try again')
+
+		return await this.getTokens(userId, user.email)
 	}
 
 	async logout(userId: number) {
@@ -77,7 +89,7 @@ export class AuthService {
 		})
 	}
 
-	async refreshTokens(userId: number, rt: string) {
+	async refreshTokens(userId: number, rt: string) : Promise<Tokens> {
 		const user = await this.prisma.user.findUnique({
 			where: {
 				id: userId
@@ -85,7 +97,7 @@ export class AuthService {
 		})
 
 		if (!user)
-			throw new ForbiddenException('No user match')
+			throw new NotFoundException('No user found')
 	
 		if (!user.hashedRt || !(await verify(user.hashedRt, rt)))
 			throw new ForbiddenException('Invalid refresh token')
@@ -156,7 +168,7 @@ export class AuthService {
 		const [at, rt] = await Promise.all([
 		this.jwtService.signAsync(userData, {
 			secret: process.env.JWT_AT_SECRET,
-			expiresIn: 60 * 60
+			expiresIn: '1h'
 		})
 		.catch((error) => {
 			console.log(error)
@@ -164,7 +176,7 @@ export class AuthService {
 		}),
 		this.jwtService.signAsync(userData, {
 		 	secret: process.env.JWT_RT_SECRET,
-			expiresIn: 60 * 60 * 7 * 24
+			expiresIn: '7d'
 		})
 		.catch((error) => {
 			console.log(error)
@@ -203,21 +215,6 @@ export class AuthService {
 			console.log(error)
 			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
 		})
-	}
-
-	async verifyTfa(code: string, userId) {
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: userId
-			}
-		})
-		
-		const bool = authenticator.verify({ token: code, secret: user.twoFASecret})
-
-		if (!bool)
-			throw new UnauthorizedException('Wrong code')
-
-		return await this.getTokens(userId, user.email)
 	}
 
 	buildFtAuthUri():string {

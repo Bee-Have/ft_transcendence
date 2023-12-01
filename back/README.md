@@ -6,13 +6,13 @@
 
 
 ```
-npm install <br>
+npm install
 ```
 ```
-docker compose up -d <br>
+docker compose up -d
 ```
 ```
-npm run start:dev <br>
+npm run start:dev
 ```
 
 

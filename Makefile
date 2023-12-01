@@ -1,15 +1,33 @@
-all:
-	cd srcs && docker-compose up -d
 
-logs:
-	cd srcs && docker-compose logs
+NAME=Transcendence
 
-clean:
-	cd srcs && docker-compose down --remove-orphans
+$(NAME): build
+	docker-compose up
 
-fclean: clean
-	docker system prune -a
+build:
+	docker-compose build
+#	TODO : remove next line once finished working on project
+#	Also, just required to run once to have it on local machine due to docker's volume synchronization
+	docker-compose run -it -v ./front_end/app/:/usr/src/app/frontend front_end npm install
 
-re:
+stop:
+	docker-compose stop
 
-.PHONY: all logs fclean clean re
+fclean: stop
+	docker-compose down
+
+re: fclean
+	make $(NAME)
+
+violence:
+	docker system prune -af --all
+
+enter_postgres:
+	docker exec -it postgres bash
+
+enter_front_end:
+	docker exec -it front_end bash
+
+enter_nginx:
+	docker exec -it nginx bash
+

@@ -19,10 +19,10 @@ model User{
 	hashedRt	String?
 
 	isTwoFAEnable Boolean @default(false)
-	twoFASecret String @default("")
+	twoFASecret String?
 
-	score Int @default(2000)
-	win Int	@default(0)
+	score Int	@default(2000)
+	win Int		@default(0)
 	loose Int	@default(0)
 
 	// achiv Achievments[]

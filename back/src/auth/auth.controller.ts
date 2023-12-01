@@ -1,16 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
+import { Controller, Get, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { Tokens, TokensDto } from 'src/auth/types/tokens.type';
-import { RtGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
+import { RtGuard } from 'src/common/guards';
 import { TfaGuard } from 'src/common/guards/tfa.guard';
+import { AuthService } from './auth.service';
 import { TfaDto } from './dto/tfa.dto';
-import { ApiBody, ApiCreatedResponse, ApiExcludeEndpoint, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { FtApiUserDto } from './dto/ftapi.dto';
-import { authenticate } from 'passport';
-import { authenticator } from 'otplib';
 
 @Controller('auth')
 export class AuthController {

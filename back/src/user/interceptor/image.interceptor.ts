@@ -8,7 +8,6 @@ export const ImageInterceptor = FileFieldsInterceptor(
 	storage: multer.diskStorage({
 		destination: process.env.AVATAR_DIRECTORY,
 		filename: async function (req, file, cb){
-			console.log(file)
 			cb(null, (req.user.sub).toString() + '.jpeg')
 		}
 	}),

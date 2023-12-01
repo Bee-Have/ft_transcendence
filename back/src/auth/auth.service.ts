@@ -1,16 +1,16 @@
-import { Injectable, BadRequestException, HttpException, ForbiddenException, ConsoleLogger, HttpStatus, UnauthorizedException, NotFoundException } from '@nestjs/common';
-import { URLSearchParams } from 'url';
-import axios from 'axios';
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { hash, verify } from 'argon2';
+import	 axios from 'axios';
+import { plainToInstance } from 'class-transformer';
+import { Response } from 'express';
+import * as fs from 'fs';
+import { authenticator } from 'otplib';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { FtApiUserDto } from 'src/auth/dto/ftapi.dto';
-import { plainToInstance } from 'class-transformer';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Tokens } from 'src/auth/types';
-import { JwtService } from '@nestjs/jwt';
-import { hash, verify } from 'argon2'
-import { Response } from 'express';
-import * as fs from 'fs'
-import { authenticator } from 'otplib';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { URLSearchParams } from 'url';
 
 @Injectable()
 export class AuthService {

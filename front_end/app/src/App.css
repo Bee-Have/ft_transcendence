@@ -1,38 +1,103 @@
 .App {
+  height: 100vh;
+}
+
+.welcome {
+  height: 5%;
+}
+
+.login-choice {
+  margin: 40% 0% 0% 5%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  background-color: darkgray;
+}
+
+.log_window {
+  text-align: center;
+
+  margin: 25vh 0vh 0vh 30%;
+  width: 40%;
+  height: 30%;
+}
+
+.header {
+  position: fixed;
+  right: 1%;
+  top: 1%;
+}
+
+.header button {
+  margin-right: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  background-color: silver;
+}
+
+.content {
+  margin-top: 3%;
+  margin-left: 30%;
+  width: 70%;
+}
+
+.text-subline {
+  text-align: left;
+  margin-left: 10
+}
+
+.profile-picture {
+  width: 10%;
+  height: 10%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.center {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.information {
+  margin-left: 3%;
+  margin-right: 3%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.card {
+  width: 200px;
+  height: 200px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.printCard {
+  margin-left: 3%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  flex-wrap: wrap;
 }

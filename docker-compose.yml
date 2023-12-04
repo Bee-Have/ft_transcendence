@@ -1,0 +1,59 @@
+version: '3.8'
+
+volumes:
+  database_vol:
+  html_vol:
+
+networks:
+  transc_netw:
+    driver: bridge
+
+#    user: "${UID}:${GID}"
+services:
+  postgres:
+    container_name: postgres
+    volumes:
+      - database_vol:/var/lib/postgresql
+    networks:
+      - transc_netw
+    ports:
+      - 5432:5432
+    build: ./postgres
+    env_file:
+      - .env
+    environment:
+      - TZ="Europe/Paris"
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: "no"
+
+
+  front_end:
+    depends_on:
+      - postgres
+    container_name: front_end
+    volumes:
+      - ./front_end/app:/usr/src/app/frontend
+#     TODO : Remove previous line and keep next one when project is finished
+#     - html_vol:/usr/src/app/frontend
+    networks:
+      - transc_netw
+    build: ./front_end
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - 3000:3000
+    restart: "no"
+
+
+  back_end:
+    depends_on:
+      - postgres
+    container_name: back_end
+    volumes:
+      - html_vol:/usr/src/app/frontend
+    networks:
+      - transc_netw
+    build: ./back_end
+    restart: "no"
+

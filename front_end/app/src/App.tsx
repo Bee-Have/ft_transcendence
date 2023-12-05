@@ -3,6 +3,8 @@ import './App.css';
 import './bootstrap/css/bootstrap.css';
 import Welcome from './files/Welcome';
 import Card from './files/Card';
+import sendBack from './files/sendBack';
+
 
 const App: React.FC = () => {
   const [isLogged, setLogStatus] = useState(true);

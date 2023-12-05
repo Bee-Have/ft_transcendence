@@ -12,6 +12,8 @@ async function bootstrap() {
 		transformOptions: { enableImplicitConversion: true}
 	}));
 
+	app.enableCors({ credentials:true, methods: ['GET', 'POST'], origin: process.env.FRONT_END_URL });
+
 	const sec: SecuritySchemeObject = {
 		description: 'Give the access or refresh token to test the routes that are protected',
 		type: 'http'

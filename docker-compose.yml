@@ -54,9 +54,11 @@ services:
       - postgres
     container_name: back_end
     volumes:
-      - html_vol:/usr/src/app/frontend
+      - html_vol:/usr/src/app/backend
     networks:
       - transc_netw
+    ports:
+      -3001:3000
     build: ./back_end
     restart: "no"
 

@@ -4,27 +4,6 @@ import './bootstrap/css/bootstrap.css';
 import Welcome from './files/Welcome';
 import Card from './files/Card';
 
-const loginWindowContent = `
-  <html>
-    <head>
-      <title>Login</title>
-    </head>
-    <body>
-      <h2>Login</h2>
-      <button onclick="sendMessage('OK')">OK</button>
-      <button onclick="sendMessage('KO')">KO</button>
-
-      <script>
-        function sendMessage(message) {
-          window.opener.postMessage(message, '*');
-          window.close();
-          window.opener.setLogStatus(message === 'Button 1 clicked');
-        }
-      </script>
-    </body>
-  </html>
-`;
-
 const App: React.FC = () => {
   const [isLogged, setLogStatus] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
@@ -40,18 +19,15 @@ const App: React.FC = () => {
     setLogStatus(true);
   };
 
-    const openLoginWindow = (): void => {
+  const openLoginWindow = (): void => {
     setShowOverlay(true);
-    const loginWindow = window.open('', '_blank', 'width=400,height=200');
-    if (loginWindow) {
-      loginWindow.document.write(`
-        ${loginWindowContent}
-      `);
-      loginWindow.addEventListener('beforeunload', () => {
+    const newWindow = window.open('', '_blank', 'width=400,height=200');
+
+    if (newWindow) {
+      newWindow.addEventListener('beforeunload', () => {
+        alert('Fenêtre fermée');
         setShowOverlay(false);
       });
-    } else {
-      console.error('Failed to open login window');
     }
   };
 
@@ -204,10 +180,10 @@ const App: React.FC = () => {
       {showFriendList && (
         <div className="content">
           <div className="printCard">
-            <Card photo={'./asset/default.jpg'} text={'test'}/>
-            <Card photo={'./asset/default.jpg'} text={'test'}/>
-            <Card photo={'./asset/default.jpg'} text={'test'}/>
-            <Card photo={'./asset/default.jpg'} text={'test'}/>
+            <Card photo={'./as.jsset/default.jpg'} text={'test1'}/>
+            <Card photo={'./asset/default.jpg'} text={'test2'}/>
+            <Card photo={'./asset/default.jpg'} text={'test3'}/>
+            <Card photo={'./asset/default.jpg'} text={'test4'}/>
           </div>
         </div>
       )}

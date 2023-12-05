@@ -23,6 +23,9 @@ services:
       - .env
     environment:
       - TZ="Europe/Paris"
+      - POSTGRES_DB: ${DB_NAME}
+      - POSTGRES_USER: ${DB_USER}
+      - POSTGRES_PASSWORD: ${DB_PASSWORD}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: "no"
 

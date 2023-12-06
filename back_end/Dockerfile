@@ -1,14 +1,17 @@
-FROM node:latest
+FROM node:latest as build
 
-RUN apt update -y && apt upgrade -y
-RUN apt-get install -y software-properties-common npm
-RUN npm install npm@latest -g && npm install n -g && n latest
+WORKDIR /usr/src/app
 
-RUN mkdir -p /etc/ft_tr/srcs
-WORKDIR /etc/ft_tr/srcs
-
-COPY ./srcs .
+COPY ./srcs/package.json .
+COPY ./srcs/package-lock.json .
 
 RUN npm install
 
-ENTRYPOINT [ "npm run start:dev" ]
+COPY ./srcs .
+
+RUN npx prisma generate
+RUN npm run build
+
+EXPOSE 3001
+
+ENTRYPOINT [ "npm", "run", "start:dev" ]

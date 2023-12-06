@@ -1,10 +1,20 @@
 -- CreateEnum
 CREATE TYPE "ChatMode" AS ENUM ('PUBLIC', 'PRIVATE', 'PROTECTED');
 
--- AlterTable
-ALTER TABLE "users" ADD COLUMN     "loose" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "score" INTEGER NOT NULL DEFAULT 2000,
-ADD COLUMN     "win" INTEGER NOT NULL DEFAULT 0;
+-- CreateTable
+CREATE TABLE "users" (
+    "id" INTEGER NOT NULL,
+    "email" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "hashedRt" TEXT,
+    "isTwoFAEnable" BOOLEAN NOT NULL DEFAULT false,
+    "twoFASecret" TEXT,
+    "score" INTEGER NOT NULL DEFAULT 2000,
+    "win" INTEGER NOT NULL DEFAULT 0,
+    "loose" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Direct" (
@@ -29,6 +39,12 @@ CREATE TABLE "Achievments" (
     "title" TEXT NOT NULL,
     "body" TEXT NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Achievments_title_key" ON "Achievments"("title");

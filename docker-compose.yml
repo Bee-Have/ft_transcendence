@@ -1,13 +1,5 @@
 version: '3.8'
 
-volumes:
-  database_vol:
-  html_vol:
-
-networks:
-  transc_netw:
-    driver: bridge
-
 #    user: "${UID}:${GID}"
 services:
   postgres:
@@ -22,17 +14,15 @@ services:
     env_file:
       - .env
     environment:
-      - TZ="Europe/Paris"
-      - POSTGRES_DB: ${DB_NAME}
-      - POSTGRES_USER: ${DB_USER}
-      - POSTGRES_PASSWORD: ${DB_PASSWORD}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     restart: "no"
 
 
   front_end:
     depends_on:
-      - postgres
+      - back_end
     container_name: front_end
     volumes:
       - ./front_end/app:/usr/src/app/frontend
@@ -46,6 +36,8 @@ services:
       - WATCHPACK_POLLING=true
     ports:
       - 3000:3000
+    env_file:
+      - .env      
     restart: "no"
 
 
@@ -58,7 +50,17 @@ services:
     networks:
       - transc_netw
     ports:
-      -3001:3000
+      - 3001:3001
     build: ./back_end
+    env_file:
+      - .env
     restart: "no"
 
+
+volumes:
+  database_vol:
+  html_vol:
+
+networks:
+  transc_netw:
+    driver: bridge

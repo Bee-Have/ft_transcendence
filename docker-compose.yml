@@ -9,7 +9,7 @@ services:
     networks:
       - transc_netw
     ports:
-      - 5432:5432
+      - ${PORT_POSTGRES}:${PORT_POSTGRES}
     build: ./postgres
     env_file:
       - .env
@@ -32,12 +32,10 @@ services:
       - transc_netw
     build: ./front_end
     environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     ports:
-      - 3000:3000
-    env_file:
-      - .env      
+      - ${PORT_FRONT}:${PORT_FRONT}
     restart: "no"
 
 

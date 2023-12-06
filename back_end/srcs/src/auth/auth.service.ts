@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Interval } from '@nestjs/schedule';
 import { hash, verify } from 'argon2';
 import	 axios from 'axios';
 import { plainToInstance } from 'class-transformer';
@@ -14,6 +15,8 @@ import { URLSearchParams } from 'url';
 
 @Injectable()
 export class AuthService {
+
+	state_arr = new Map<string, Date>()
 
 	constructor(private prisma: PrismaService, 
 		private jwtService: JwtService) {}
@@ -111,7 +114,7 @@ export class AuthService {
 
 	async getFtApiToken(code: string, state: string): Promise<any> {
 
-		if (state != process.env.FT_API_AUTH_STATE)
+		if (!this.state_arr.delete(state))
 			throw new BadRequestException('Are you trying to hack something ? I see you 👀');
 
 		const authCallbackUri = process.env.BACKEND_URL + process.env.AUTH_CALLBACK_URI;
@@ -122,7 +125,7 @@ export class AuthService {
 			client_secret: process.env.FT_API_SECRET,
 			code: code,
 			redirect_uri: authCallbackUri,
-			state: process.env.FT_API_AUTH_STATE,
+			state: state,
 		})
 		.catch((err) => {
 			const res = {
@@ -218,6 +221,11 @@ export class AuthService {
 	}
 
 	buildFtAuthUri():string {
+		
+		const state: string = authenticator.generateSecret(20)
+
+		this.state_arr.set(state, new Date())
+
 		const authCallbackUri = process.env.BACKEND_URL + process.env.AUTH_CALLBACK_URI
 		const paramString = new URLSearchParams('')
 	
@@ -225,7 +233,7 @@ export class AuthService {
 		paramString.append('redirect_uri', authCallbackUri)
 		paramString.append('response_type', 'code');
 		paramString.append('scope', 'public');
-		paramString.append('state', process.env.FT_API_AUTH_STATE);
+		paramString.append('state', state);
 	
 		const url = process.env.FT_OAUTH_AUTHO_URL + '?' + paramString.toString();
 		
@@ -271,4 +279,12 @@ export class AuthService {
 		return await hash(data)
 	}
 
+	@Interval(10000)
+	handleInterval() {
+		const time = new Date()
+		this.state_arr.forEach( (v, k, map) => {
+			if(time.valueOf() - v.valueOf() > 10000)
+				map.delete(k)
+		})
+	}
 }

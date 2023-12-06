@@ -16,10 +16,9 @@ stop:
 fclean: stop
 	docker-compose down
 
-re: fclean
-	make $(NAME)
+re: fclean $(NAME)
 
-violence:
+prune:
 	docker system prune -af --all
 
 enter_postgres:
@@ -28,6 +27,7 @@ enter_postgres:
 enter_front_end:
 	docker exec -it front_end bash
 
-enter_nginx:
-	docker exec -it nginx bash
+enter_back_end:
+	docker exec -it back_end bash
 
+.PHONY: all $(NAME) build stop fclean re prune enter_postgres enter_front_end enter_back_end

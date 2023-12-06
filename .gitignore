@@ -1,2 +1,4 @@
-**/.env.private
-.notes
+**/.env
+
+.idea
+node_modules

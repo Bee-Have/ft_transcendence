@@ -11,13 +11,11 @@ services:
     ports:
       - ${PORT_POSTGRES}:${PORT_POSTGRES}
     build: ./postgres
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    restart: "no"
+    restart: always
 
 
   front_end:
@@ -36,7 +34,7 @@ services:
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     ports:
       - ${PORT_FRONT}:${PORT_FRONT}
-    restart: "no"
+    restart: always
 
 
   back_end:
@@ -44,16 +42,18 @@ services:
       - postgres
     container_name: back_end
     volumes:
-      - html_vol:/usr/src/app/backend
+      - ./back_end/srcs:/usr/src/app/backend
+#     TODO : Remove previous line and keep next one when project is finished
+      # - html_vol:/usr/src/app/backend
     networks:
       - transc_netw
     ports:
-      - 3001:3001
+      - ${PORT_BACK}:${PORT_BACK}
+      - "5555:5555"
     build: ./back_end
     env_file:
       - .env
-    restart: "no"
-
+    restart: always
 
 volumes:
   database_vol:

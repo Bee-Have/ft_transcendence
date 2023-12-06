@@ -19,8 +19,7 @@ export class AuthController {
 	@Public()
 	@Get()
 	redirect(): string {
-		return 'hello'
-		// return this.authService.getFtAuthenticationUri();
+		return this.authService.getFtAuthenticationUri();
 	}
 
 

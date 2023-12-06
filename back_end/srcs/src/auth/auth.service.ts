@@ -45,14 +45,13 @@ export class AuthService {
 		if (user.isTwoFAEnable)
 		{
 			const tfaToken = await this.getTfaToken(user.id, user.email)
-			console.log('wefiuwefiu')
+	
 			response.cookie('TfaEnable', 'true', { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('TfaToken', tfaToken, { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 		}
 		else
 		{
 			const tokens = await this.getTokens(userData.id, userData.email)
-			console.log('wefiuwefiu')
 		
 			response.cookie('TfaEnable', 'false', { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('access_token', tokens.access_token, { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})

@@ -38,3 +38,5 @@ lerna-debug.log*
 
 .idea
 node_modules
+migration_lock.toml
+back_end/srcs/uploads/avatar/*.jpeg

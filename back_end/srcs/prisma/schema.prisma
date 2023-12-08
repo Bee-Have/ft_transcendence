@@ -28,6 +28,8 @@ model User{
 	// achiv Achievments[]
 
 	// channel Channel[]
+	User_Channel_channelOwner Channel[] @relation("Channel_OwnerUser")
+	User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
 
 	// message Direct[]
 
@@ -53,11 +55,11 @@ model Channel {
 
 	mode ChatMode @default(PUBLIC)
 
-	// owner User @relation(name: 'user',fields: [ownerId], references: [id])
+	owner User @relation("Channel_OwnerUser", fields: [ownerId], references: [id])
 	ownerId Int
 
 	//list admin
-	// admin User @relation(fields: [adminId], references: [id])
+	admin User @relation("Channel_OPUser", fields: [adminId], references: [id])
 	adminId Int
 }
 

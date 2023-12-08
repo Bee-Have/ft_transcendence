@@ -13,14 +13,15 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { StatusGateway } from './status/status.gateway';
 
 @Module({
   imports: [ConfigModule.forRoot(), HttpModule, AuthModule, PrismaModule, UserModule],
   controllers: [AppController, AuthController, UserController],
-  providers:	[AppService, AuthService, UserService, PrismaService,
+  providers:	[AppService, AuthService, UserService, PrismaService, StatusGateway,
 				{
 					provide: APP_GUARD, 
-					useClass:AtGuard 
+					useClass:AtGuard
 				}]
 })
 export class AppModule {}

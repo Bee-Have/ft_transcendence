@@ -37,7 +37,7 @@ enter_back_end:
 	docker exec -it back_end bash
 
 prisma_db_push:
-	docker exec back_end bash -c "npx prisma db push"
+	docker exec back_end bash -c "npx prisma db push --accept-data-loss"
 
 prisma_studio:
 	docker exec back_end bash -c "npx prisma studio"

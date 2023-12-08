@@ -31,9 +31,11 @@ model User{
 
 	// message Direct[]
 
+  	friends         User[] @relation("friends")
+  	friendsRelation User[] @relation("friends")
 
 	@@map("users")
-} 
+}
 
 
 model Direct {

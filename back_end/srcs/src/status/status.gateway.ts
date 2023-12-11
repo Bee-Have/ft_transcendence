@@ -1,104 +1,131 @@
-import { OnModuleDestroy, OnModuleInit } from '@nestjs/common'
-import { ConnectedSocket, WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Server, Socket } from 'socket.io'
-import { SocketAuthMiddleware } from 'src/auth/ws.md';
+import { OnModuleDestroy, OnModuleInit, UseFilters } from '@nestjs/common';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
+import { Namespace, Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { WebsocketExceptionsFilter } from './status.filter';
 
-class UserStatus {
-	status = Status.online
-
+enum UserStatus {
+	online = "online",
+	offline = "offline",
+	ingame = "ingame",
+	inchat = "inchat"
 }
 
-enum Status {
-	online,
-	offline,
-	ingame
+class UserInfo {
+	id: number
+	socket: Socket
+	status: UserStatus
+
+	constructor(userId: number, socket: Socket, status: UserStatus) {
+		this.id = userId
+		this.socket = socket
+		this.status = status
+	}
+
+	updateStatus(status: UserStatus) {
+		this.status = status
+		return this
+	}
 }
 
-class StatusRoom{
-	
-	user_map: Map<number, UserStatus>
-	room_map: Map<number, Array<number>>
-
-	add_user(id: number, friends_arr: Array<number>){
-		this.user_map.set(id, new UserStatus())
-
-
-		// if ()
-	}
-
-	update_user_status(id: number, status: Status) {
-		const stat = this.user_map.get(id)
-		stat.status = status
-	}
-
-	remove_user(id: number) {
-		this.user_map.delete(id)
-	}
-
-
+function UserStatusEventDto(user: UserInfo) {
+	this.userId = user.id
+	this.status = user.status
 }
-
 
 @WebSocketGateway({ namespace: 'user/status' })
+@UseFilters(new WebsocketExceptionsFilter())
 export class StatusGateway implements OnModuleInit, OnModuleDestroy{
-	
+
+	private connected_user_map = new Map<number, UserInfo>()
+
 	constructor(private prisma: PrismaService) {}
 
 	@WebSocketServer()
-	server: Server
+	server: Namespace
 
 	// afterInit(client: Socket) {
 	// 	client.use(SocketAuthMiddleware() as any)
 	// }
 
-	handleConnection(@ConnectedSocket() clientt: Socket) {
-
-		clientt.on('disconnect', () => {
-			console.log('disconnect')
-
+	async handleConnection(@ConnectedSocket() client: Socket) {					
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: Number(client.handshake.headers.id)
+			},
+			select: {
+				id: true,
+				friends: {
+					select: {
+						id: true
+					}
+				}
+			}
 		})
+
+		if(!user)
+		{
+			client.emit('error', {msg: 'User Not Found'})
+			client.disconnect()
+		}
+
+		this.connected_user_map.set(user.id, new UserInfo(user.id, client, UserStatus.online))
+
+		const user_in_map = this.connected_user_map.get(user.id)
+
+		for (const friend of user.friends) {
+			const friend_in_map = this.connected_user_map.get(friend.id)
+
+			if (friend_in_map)
+			{
+				friend_in_map.socket.join(user.id.toString())
+				client.join(friend.id.toString())
+
+				client.emit('user-status', new UserStatusEventDto(friend_in_map))
+				friend_in_map.socket.emit('user-status', new UserStatusEventDto(user_in_map))
+			}
+		}
+	}
+
+	@SubscribeMessage('update-user-status')
+	updateUserStatus(@ConnectedSocket() client: Socket, @MessageBody() data: string){
+
+		const userId: number = Number(client.handshake.headers.id)
+
+		const user = this.connected_user_map.get(userId)
+
+		const enum_keys = Object.keys(UserStatus)
+
+		if (!enum_keys.includes(data))
+			throw new WsException('Wrong user status')
+
+		for (const key of enum_keys)
+		{
+			if (data === key)
+				user.updateStatus(UserStatus[key])
+		}
+
+		this.server.in(user.id.toString()).emit('user-status', new UserStatusEventDto(user))
 
 	}
 
+	handleDisconnect(@ConnectedSocket() client: Socket) {
+
+		const userId: number = Number(client.handshake.headers.id)	
+		
+		const user = this.connected_user_map.get(userId)
+
+		user.updateStatus(UserStatus.offline)
+
+		this.server.in(user.id.toString()).emit('user-status', new UserStatusEventDto(user))
+
+		this.connected_user_map.delete(user.id)
+	}
 
 	onModuleInit() {
-		this.server.on('connection', async (client) => {
-			
-			const user = await this.prisma.user.findUnique({
-				where: {
-					id: Number(client.handshake.headers.id)
-				},
-				select: {
-					id: true,
-					friends: {
-						select: {
-							id: true
-						}
-					}
-				}
-			})
-
-			console.log(user)
-
-
-			// this.server.socketsJoin(client.handshake.headers.id)
-			client.join("4")
-			client.join("2")
-
-
-			const sockets = await this.server.in("4").fetchSockets()
-			
-			sockets.forEach((v) => {
-				console.log(v.id)
-			})
-
-		})
 	}
 
 	onModuleDestroy() {
-		console.log('destroy')
 	}
-
-
 }
+

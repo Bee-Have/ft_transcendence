@@ -8,7 +8,7 @@ build:
 	docker-compose build
 #	TODO : remove next line once finished working on project
 #	Also, just required to run once to have it on local machine due to docker's volume synchronization
-	docker-compose run -it -v ./front_end/app/:/usr/src/app/frontend front_end npm install
+	docker run -it -v /home/kali/Documents/transcendence/front_end/app/:/usr/src/app/frontend transcendence_front_end npm install
 
 stop:
 	docker-compose stop

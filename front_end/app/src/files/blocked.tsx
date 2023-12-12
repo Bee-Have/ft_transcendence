@@ -6,7 +6,7 @@ interface CardProps {
   text: string;
 }
 
-const Card: React.FC<CardProps> = ({text}) => {  return (
+const Card: React.FC<CardProps> = ({text}) => { return (
     <div className="card">
       <div className="PP">
         <img src="../asset/default.jpg" alt="test" className="person-image"/>

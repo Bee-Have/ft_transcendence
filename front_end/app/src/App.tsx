@@ -27,21 +27,21 @@ const App: React.FC = () => {
 	const [showHistoryMatch, setHistoryMatch] = useState(false);
 
 	const updateBooleanStates = (statesToUpdate: {
+		showMenu?: boolean;
 		showProfil?: boolean;
+		showWelcome?: boolean;
 		showFriendList?: boolean;
 		showPendingList?: boolean;
 		showBloquedList?: boolean;
 		showHistoryMatch?: boolean;
-		showMenu?: boolean;
-		showWelcome?: boolean;
 	}): void => {
+		setMenu(statesToUpdate.showMenu || false);
+		setWelcome(statesToUpdate.showWelcome || false);
 		setViewProfil(statesToUpdate.showProfil || false);
 		setFriendList(statesToUpdate.showFriendList || false);
 		setPendingList(statesToUpdate.showPendingList || false);
 		setBloquedList(statesToUpdate.showBloquedList || false);
 		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
-		setMenu(statesToUpdate.showMenu || false);
-		setWelcome(statesToUpdate.showWelcome || false);
 	};
 
 	const acceptConnection = (): void => {

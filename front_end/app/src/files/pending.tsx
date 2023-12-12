@@ -1,6 +1,6 @@
 import React from 'react';
-import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import LockIcon from '@mui/icons-material/Lock';
 
 interface CardProps {
@@ -18,13 +18,13 @@ const Card: React.FC<CardProps> = ({ photo, text }) => {
         <h1>{text}</h1>
       </div>
       <a href="#" className="round-button">
-        <CheckCircleOutlineIcon className='acceptBtn'/>
+        <CheckCircleOutlineIcon className='acceptBtn' style={{fontSize:'2em'}} />
       </a>
       <a href="#" className="round-button">
-        <BlockIcon className="refuseBtn"/>
+        <BlockIcon className="refuseBtn" style={{fontSize:'2em'}}/>
       </a>
       <a href="#" className="round-button">
-        <LockIcon className="blockBtn"/>
+        <LockIcon className="blockBtn" style={{fontSize:'2em'}}/>
       </a>
     </div>
   );

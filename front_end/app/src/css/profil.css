@@ -30,6 +30,7 @@
 .content {
   margin-top: 3%;
   margin-left: 20%;
+  min-height: 93vh;
 }
 
 .person-image {
@@ -40,6 +41,10 @@
   border-radius: 50%;
   margin-left: 6%;
 }
+
+
+
+
 
 /* pending */
 .pending .PP{
@@ -55,11 +60,9 @@
 }
 
 .round-button {
-  margin-top: -4.5%;
   width: 10%;
   margin-right: 5%;
   color: blue;
-  transform: scale(4.5);
 }
 
 .acceptBtn{
@@ -192,4 +195,22 @@
   margin-top: 15px;
   margin-bottom: 15px;
   background-color: white;
+}
+
+
+
+/* Pop up */
+
+.popUp{
+  height: 230px;
+  width: 140px;
+  background-color: rgba(0, 0, 0, 0.80);
+  border-radius: 10px;
+  position: 'absolute';
+}
+
+.popUp .btn{
+  text-align: start;
+  color: white;
+  font-size: large;
 }

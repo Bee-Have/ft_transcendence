@@ -1,0 +1,18 @@
+.log_window {
+    text-align: center;
+    margin: 25vh 0vh 0vh 30%;
+    width: 40%;
+    height: 30%;
+}
+
+.welcome {
+    height: 5%;
+}
+
+.login-choice {
+    margin: 40% 0% 0% 5%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    background-color: darkgray;
+}

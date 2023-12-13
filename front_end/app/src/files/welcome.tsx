@@ -1,13 +1,15 @@
 import React from 'react';
 import '../css/welcome.css'
 
-interface WelcomeProps {
+interface WelcomeProps
+{
   isLogged: boolean;
   openLoginWindow: () => void;
   acceptConnection: () => void;
+  updateBooleanStates: (statesToUpdate: Record<string, boolean>) => void;
 }
 
-const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConnection }) => {
+const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConnection, updateBooleanStates}) => {
   return (
     <div className="log_window">
       <div className="welcome">
@@ -17,7 +19,7 @@ const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConn
         <div className="container row justify-content-center">
           <div className="col-md-4">
             {!isLogged && <button className="btn btn-light" onClick={openLoginWindow}>Login</button>}
-            {isLogged && <button className="btn btn-light">Chat</button>}
+            {isLogged && <button className="btn btn-light" onClick={() => updateBooleanStates({showChat:true})}>Chat</button>}
           </div>
           <div className="col-md-4">
             {!isLogged && <button className="btn btn-light" onClick={acceptConnection}>Guest</button>}

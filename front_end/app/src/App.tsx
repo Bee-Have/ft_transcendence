@@ -11,15 +11,17 @@ import  Header      	from './files/header';
 import  FriendList  	from './files/friendList';
 import	Bloqued				from './files/blocked';
 import	MatchHistory	from './files/matchHistory';
+import	Chat 					from	'./files/chat';
 //import sendBack from './files/sendBack';
 
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]									= useState(true);
+	const [showMenu, setMenu]									= useState(false);
+	const	[showChat, setChat]									= useState(true);
 	const [isLogged, setLogStatus]						= useState(true);
 	const [showWelcome, setWelcome] 					= useState(false);
-	const [showProfil, setViewProfil] 				= useState(true);
+	const [showProfil, setViewProfil] 				= useState(false);
 	const [showOverlay, setShowOverlay] 			= useState(false);
 	const [showFriendList, setFriendList] 		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
@@ -27,6 +29,7 @@ const App: React.FC = () => {
 	const [showHistoryMatch, setHistoryMatch] = useState(false);
 
 	const updateBooleanStates = (statesToUpdate: {
+		showChat?: boolean;
 		showMenu?: boolean;
 		showProfil?: boolean;
 		showWelcome?: boolean;
@@ -35,6 +38,7 @@ const App: React.FC = () => {
 		showBloquedList?: boolean;
 		showHistoryMatch?: boolean;
 	}): void => {
+		setChat(statesToUpdate.showChat || false);
 		setMenu(statesToUpdate.showMenu || false);
 		setWelcome(statesToUpdate.showWelcome || false);
 		setViewProfil(statesToUpdate.showProfil || false);
@@ -80,15 +84,17 @@ const App: React.FC = () => {
 
 	return (
 		<div className="App">
-			<Header isLogged={isLogged} showProfil={showProfil} updateBooleanStates={updateBooleanStates} logout={logout} />
+			<Header isLogged={isLogged} showProfil={showProfil} showChat={showChat} updateBooleanStates={updateBooleanStates} logout={logout} />
 			{showOverlay && <div className="overlay"></div>}
-			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} acceptConnection={acceptConnection} />)}
+			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} 
+													acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
 			{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
-			{showProfil && <Profil /> }
+			{showProfil && <Profil/> }
 			{showFriendList && <FriendList/>}
 			{showPendingList && <Pending/>}
 			{showBloquedList && <Bloqued/>}
 			{showHistoryMatch && <MatchHistory/>}
+			{showChat && <Chat/>}
 		</div>
 	);
 };

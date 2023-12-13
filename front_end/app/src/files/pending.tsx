@@ -29,6 +29,8 @@ const Card: React.FC<CardProps> = ({ photo, text }) => {
     </div>
   );
 };
+
+
 const Pending: React.FC = () => {
   return (
     <div className="pending">

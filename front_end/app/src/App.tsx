@@ -18,7 +18,7 @@ import	Chat 					from	'./files/chat';
 const App: React.FC = () => {
 
 	const [showMenu, setMenu]									= useState(false);
-	const	[showChat, setChat]									= useState(true);
+	const [showChat, setChat]									= useState(true);
 	const [isLogged, setLogStatus]						= useState(true);
 	const [showWelcome, setWelcome] 					= useState(false);
 	const [showProfil, setViewProfil] 				= useState(false);
@@ -89,7 +89,7 @@ const App: React.FC = () => {
 			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} 
 													acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
 			{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
-			{showProfil && <Profil/> }
+			{showProfil && <Profil/>}
 			{showFriendList && <FriendList/>}
 			{showPendingList && <Pending/>}
 			{showBloquedList && <Bloqued/>}

@@ -3,24 +3,27 @@ import  React, { useState, useEffect} from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending				from './files/pending';
+import  Pending			from './files/pending';
 import  Welcome     	from './files/welcome';
 import  Menu        	from './files/menu';
 import  Profil      	from './files/profil';
 import  Header      	from './files/header';
 import  FriendList  	from './files/friendList';
-import	Bloqued				from './files/blocked';
+import	Bloqued			from './files/blocked';
 import	MatchHistory	from './files/matchHistory';
-import sendBack from './files/sendBack';
+import	sendBack 		from './files/sendBack';
+import	Chat			from	'./files/chat';
+
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]					= useState(false);
-	const [isLogged, setLogStatus]				= useState(false);
-	const [showWelcome, setWelcome] 			= useState(true);
-	const [showProfil, setViewProfil] 			= useState(false);
-	const [showOverlay, setShowOverlay] 		= useState(false);
-	const [showFriendList, setFriendList]		= useState(false);
+	const [showMenu, setMenu]									= useState(false);
+	const [showChat, setChat]									= useState(true);
+	const [isLogged, setLogStatus]						= useState(true);
+	const [showWelcome, setWelcome] 					= useState(false);
+	const [showProfil, setViewProfil] 				= useState(false);
+	const [showOverlay, setShowOverlay] 			= useState(false);
+	const [showFriendList, setFriendList] 		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
 	const [showBloquedList, setBloquedList]		= useState(false);
 	const [showHistoryMatch, setHistoryMatch]	= useState(false);
@@ -28,21 +31,23 @@ const App: React.FC = () => {
 	let pairs = {};
 
 	const updateBooleanStates = (statesToUpdate: {
+		showChat?: boolean;
+		showMenu?: boolean;
 		showProfil?: boolean;
+		showWelcome?: boolean;
 		showFriendList?: boolean;
 		showPendingList?: boolean;
 		showBloquedList?: boolean;
 		showHistoryMatch?: boolean;
-		showMenu?: boolean;
-		showWelcome?: boolean;
 	}): void => {
+		setChat(statesToUpdate.showChat || false);
+		setMenu(statesToUpdate.showMenu || false);
+		setWelcome(statesToUpdate.showWelcome || false);
 		setViewProfil(statesToUpdate.showProfil || false);
 		setFriendList(statesToUpdate.showFriendList || false);
 		setPendingList(statesToUpdate.showPendingList || false);
 		setBloquedList(statesToUpdate.showBloquedList || false);
 		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
-		setMenu(statesToUpdate.showMenu || false);
-		setWelcome(statesToUpdate.showWelcome || false);
 	};
 
 	function update_cookie()
@@ -121,15 +126,17 @@ const App: React.FC = () => {
 
 	return (
 		<div className="App">
-			<Header isLogged={isLogged} showProfil={showProfil} updateBooleanStates={updateBooleanStates} logout={logout} />
+			<Header isLogged={isLogged} showProfil={showProfil} showChat={showChat} updateBooleanStates={updateBooleanStates} logout={logout} />
 			{showOverlay && <div className="overlay"></div>}
-			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} acceptConnection={acceptConnection} />)}
+			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} 
+													acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
 			{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
-			{showProfil && <Profil /> }
+			{showProfil && <Profil/>}
 			{showFriendList && <FriendList/>}
 			{showPendingList && <Pending/>}
 			{showBloquedList && <Bloqued/>}
 			{showHistoryMatch && <MatchHistory/>}
+			{showChat && <Chat/>}
 		</div>
 	);
 };

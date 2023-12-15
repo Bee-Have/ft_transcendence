@@ -9,7 +9,7 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({text}) => { return (
     <div className="card">
       <div className="PP">
-        <img src="../asset/default.jpg" alt="test" className="person-image"/>
+        <img src={require("../asset/default.jpg")} alt="test" className="person-image"/>
       </div>
       <div className="name">
         <h1>Test</h1>

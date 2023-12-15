@@ -51,6 +51,7 @@ export class AuthService {
 	
 			response.cookie('TfaEnable', 'true', { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('TfaToken', tfaToken, { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
+			response.cookie('PayLoad', 'true', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
 		}
 		else
 		{
@@ -59,6 +60,7 @@ export class AuthService {
 			response.cookie('TfaEnable', 'false', { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('access_token', tokens.access_token, { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: true, sameSite: 'strict', maxAge: 7*24*60*60*100})
+			response.cookie('payload_cookie', tokens.payload_cookie, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
 		}
 		response.redirect(process.env.FRONT_END_URL)
 	}
@@ -79,6 +81,7 @@ export class AuthService {
 	}
 
 	async logout(userId: number) {
+//		console.log(userId);
 		await this.prisma.user.updateMany({
 			where: {
 			  id: userId,
@@ -169,29 +172,36 @@ export class AuthService {
 		}
 
 		const [at, rt] = await Promise.all([
-		this.jwtService.signAsync(userData, {
-			secret: process.env.JWT_AT_SECRET,
-			expiresIn: '1h'
-		})
-		.catch((error) => {
-			console.log(error)
-			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
-		}),
-		this.jwtService.signAsync(userData, {
-		 	secret: process.env.JWT_RT_SECRET,
-			expiresIn: '7d'
-		})
-		.catch((error) => {
-			console.log(error)
-			throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
-		})
+			this.jwtService.signAsync(userData, {
+				secret: process.env.JWT_AT_SECRET,
+				expiresIn: '1h'
+			})
+			.catch((error) => {
+				console.log(error)
+				throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
+			}),
+			this.jwtService.signAsync(userData, {
+			 	secret: process.env.JWT_RT_SECRET,
+				expiresIn: '7d'
+			})
+			.catch((error) => {
+				console.log(error)
+				throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
+			})
 		])
+
+		let payload: string;
+		if (at && rt)
+		{
+			payload = "logged=true; sameSite=Strict"
+		}
 
 		await this.updateRtHash(userId, rt)
 
 		return {
 			access_token: at,
-			refresh_token: rt
+			refresh_token: rt,
+			payload_cookie: payload
 		}
 	}
 

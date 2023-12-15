@@ -11,20 +11,21 @@ import  Header      	from './files/header';
 import  FriendList  	from './files/friendList';
 import	Bloqued				from './files/blocked';
 import	MatchHistory	from './files/matchHistory';
-//import sendBack from './files/sendBack';
-
+import sendBack from './files/sendBack';
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]									= useState(true);
-	const [isLogged, setLogStatus]						= useState(true);
-	const [showWelcome, setWelcome] 					= useState(false);
-	const [showProfil, setViewProfil] 				= useState(true);
-	const [showOverlay, setShowOverlay] 			= useState(false);
-	const [showFriendList, setFriendList] 		= useState(false);
+	const [showMenu, setMenu]					= useState(false);
+	const [isLogged, setLogStatus]				= useState(false);
+	const [showWelcome, setWelcome] 			= useState(true);
+	const [showProfil, setViewProfil] 			= useState(false);
+	const [showOverlay, setShowOverlay] 		= useState(false);
+	const [showFriendList, setFriendList]		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
-	const [showBloquedList, setBloquedList] 	= useState(false);
-	const [showHistoryMatch, setHistoryMatch] = useState(false);
+	const [showBloquedList, setBloquedList]		= useState(false);
+	const [showHistoryMatch, setHistoryMatch]	= useState(false);
+
+	let pairs = {};
 
 	const updateBooleanStates = (statesToUpdate: {
 		showProfil?: boolean;
@@ -44,27 +45,60 @@ const App: React.FC = () => {
 		setWelcome(statesToUpdate.showWelcome || false);
 	};
 
+	function update_cookie()
+	{
+		if (document.cookie)
+		{
+			let temp = document.cookie;			
+			let test = temp.split("=");
+			let keys = test[1].split("%3B");
+			
+			for (let item in keys)
+			{
+				if (keys[item] === "")
+					break;
+				pairs[keys[item].split("%3D")[0].slice()] = keys[item].split("%3D")[1].slice();
+			}
+		}
+	}
+
 	const acceptConnection = (): void => {
 		setLogStatus(true);
 	};
 
 	const openLoginWindow = (): void => {
 		setShowOverlay(true);
-		const newWindow = window.open('', '_blank', 'width=400,height=200');
 
-		if (newWindow) {
-			newWindow.addEventListener('beforeunload', () => {
-				alert('Fenêtre fermée');
-				setShowOverlay(false);
-			});
-		}
+		sendBack('http://localhost:3001/auth').then(function (data)
+		{
+			let url = data ? data.data : ""
+			
+			const newWindow = window.open(url, '_blank', 'width=400,height=200');
+
+			if (newWindow) {
+				newWindow.addEventListener('beforeunload', () => {
+					setShowOverlay(false);
+				});
+			}
+			
+			update_cookie();
+			
+			if (pairs["logged"] === "true")
+				acceptConnection();
+		})
 	};
 	
 	const logout = (): void => {
 		alert("add here question <did you want to disconnected ?>");
-		updateBooleanStates({showWelcome: true});
-		setLogStatus(false);
-		alert("You are now disconnected !");
+		sendBack('http://localhost:3001/auth/logout').then(function () {
+			updateBooleanStates({showWelcome: true});
+			
+//			setLogStatus(false);
+//			document.cookie = "payload_cookie=logged%3Dfalse%3BsameSite%3DStrict%3B";
+			
+			alert("You are now disconnected !");
+		})
+
 	};
 
 	useEffect(() => {
@@ -73,10 +107,17 @@ const App: React.FC = () => {
 				setLogStatus(true);
 		};
 		window.addEventListener('message', handleMessage);
+		
+		update_cookie();
+		if (pairs["logged"] === "true")
+			acceptConnection();
+		
+
 		return () => {
 			window.removeEventListener('message', handleMessage);
 		};
 	}, []);
+	
 
 	return (
 		<div className="App">

@@ -6,7 +6,7 @@ $(NAME): build up_detach prisma_db_push logs
 all: ${NAME}
 
 up_detach: build
-	docker-compose up -d 
+	docker-compose up -d
 
 build:
 	docker-compose build

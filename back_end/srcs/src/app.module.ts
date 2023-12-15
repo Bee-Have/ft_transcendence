@@ -13,12 +13,13 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
-import { StatusGateway } from './status/status.gateway';
+import { UserGateway } from './user/gateway/user.gateway';
+import { FriendshipService } from './friendship/friendship.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, AuthModule, PrismaModule, UserModule],
+  imports: [ConfigModule.forRoot({expandVariables: true}), HttpModule, AuthModule, PrismaModule, UserModule],
   controllers: [AppController, AuthController, UserController],
-  providers:	[AppService, AuthService, UserService, PrismaService, StatusGateway,
+  providers:	[AppService, AuthService,
 				{
 					provide: APP_GUARD, 
 					useClass:AtGuard

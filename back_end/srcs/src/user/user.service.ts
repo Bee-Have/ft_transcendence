@@ -6,12 +6,15 @@ import * as fs from 'fs';
 import { authenticator } from 'otplib';
 import { PrismaService } from "src/prisma/prisma.service";
 import { userProfileDto } from "./dto/userProfile.dto";
+import { UserInfo } from "./gateway/dto/userStatus.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
 export class UserService {
 
 	constructor(private prisma: PrismaService) {}
+
+	public connected_user_map = new Map<number, UserInfo>()
 
 	/*async getUserInfo(userId: number) {
 		const user = await this.prisma.user.findUnique({
@@ -141,8 +144,8 @@ export class UserService {
 		})
 	}
 
-	async generateQRCode(secret): Promise<string> {
-		const otp = authenticator.keyuri(null, 'ft_transcendence', secret)
+	async generateQRCode(secret: string): Promise<string> {
+		const otp = authenticator.keyuri('', 'ft_transcendence', secret)
 
 		try {
 			const t: string = await qrcode.toDataURL(otp)

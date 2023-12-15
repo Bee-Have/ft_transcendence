@@ -1,13 +1,11 @@
-import { Module, OnModuleInit } from "@nestjs/common";
+import { Module } from "@nestjs/common";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 import { AuthModule } from "src/auth/auth.module";
-import { AuthService } from "src/auth/auth.service";
+import { FriendshipService } from 'src/friendship/friendship.service';
 import { PrismaModule } from "src/prisma/prisma.module";
+import { UserGateway } from "src/user/gateway/user.gateway";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
-import { PrismaService } from "src/prisma/prisma.service";
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { UserGateway } from "src/user/gateway/user.gateway";
-import { FriendshipService } from 'src/friendship/friendship.service';
 
 
 @Module({

@@ -1,12 +1,12 @@
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
+import { FriendshipService } from 'src/friendship/friendship.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInfo, UserStatus, UserStatusEventDto } from 'src/user/gateway/dto/userStatus.dto';
 import { UserService } from 'src/user/user.service';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
-import { FriendshipService } from 'src/friendship/friendship.service';
 
 @WebSocketGateway({ namespace: 'user' })
 @UseFilters(new WsExceptionFilter())

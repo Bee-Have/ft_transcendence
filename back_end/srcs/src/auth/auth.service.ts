@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Inj
 import { JwtService } from '@nestjs/jwt';
 import { Interval } from '@nestjs/schedule';
 import { hash, verify } from 'argon2';
-import	 axios from 'axios';
+import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
 import { Response } from 'express';
 import * as fs from 'fs';

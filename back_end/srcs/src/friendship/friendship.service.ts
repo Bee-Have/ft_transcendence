@@ -1,7 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Length } from 'class-validator';
 
 class FriendRequestError extends WsException {
 	constructor(public cause: string, private receiverId:number, private action: string){

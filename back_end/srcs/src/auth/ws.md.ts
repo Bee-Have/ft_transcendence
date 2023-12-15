@@ -1,5 +1,5 @@
-import { Socket } from 'socket.io'
 import { verify } from 'jsonwebtoken'
+import { Socket } from 'socket.io'
 
 // type SocketIOMiddleware = {
 // 	(client: Socket, next: (err?: Error) => void)

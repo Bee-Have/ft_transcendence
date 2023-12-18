@@ -3,26 +3,26 @@ import  React, { useState, useEffect} from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending			from './files/pending';
-import  Welcome     	from './files/welcome';
-import  Menu        	from './files/menu';
-import  Profil      	from './files/profil';
-import  Header      	from './files/header';
-import  FriendList  	from './files/friendList';
-import	Bloqued			from './files/blocked';
-import	MatchHistory	from './files/matchHistory';
-import	sendBack 		from './files/sendBack';
-import	Chat			from	'./files/chat';
+import  Pending						from './files/pending';
+import  Welcome     				from './files/welcome';
+import  Menu        				from './files/menu';
+import  Profil      				from './files/profil';
+import  Header      				from './files/header';
+import  FriendList  				from './files/friendList';
+import	Bloqued						from './files/blocked';
+import	MatchHistory				from './files/matchHistory';
+import	sendBack, {sendBackPost}	from './files/sendBack';
+import	Chat						from	'./files/chat';
 
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]									= useState(false);
-	const [showChat, setChat]									= useState(true);
-	const [isLogged, setLogStatus]						= useState(true);
-	const [showWelcome, setWelcome] 					= useState(false);
-	const [showProfil, setViewProfil] 				= useState(false);
-	const [showOverlay, setShowOverlay] 			= useState(false);
+	const [showMenu, setMenu]					= useState(false);
+	const [showChat, setChat]					= useState(false);
+	const [isLogged, setLogStatus]				= useState(false);
+	const [showWelcome, setWelcome] 			= useState(true);
+	const [showProfil, setViewProfil] 			= useState(false);
+	const [showOverlay, setShowOverlay] 		= useState(false);
 	const [showFriendList, setFriendList] 		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
 	const [showBloquedList, setBloquedList]		= useState(false);
@@ -95,13 +95,13 @@ const App: React.FC = () => {
 	
 	const logout = (): void => {
 		alert("add here question <did you want to disconnected ?>");
-		sendBack('http://localhost:3001/auth/logout').then(function () {
+		sendBackPost('http://localhost:3001/auth/logout').then(function () {
 			updateBooleanStates({showWelcome: true});
 			
 //			setLogStatus(false);
 //			document.cookie = "payload_cookie=logged%3Dfalse%3BsameSite%3DStrict%3B";
 			
-			alert("You are now disconnected !");
+//			alert("You are now disconnected !");
 		})
 
 	};

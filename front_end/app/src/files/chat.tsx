@@ -1,14 +1,13 @@
 import	React from 'react';
 import	ChannelList from './channelList';
-import	ChannelPeople from './ChannelPeople';
+import	PrivateMessage from './privateMessage';
 import	TextArea from './textArea';
 
 const Chat: React.FC = () => {
-
   return (
     <div className="chat">
       <ChannelList/>
-			<ChannelPeople/>
+			<PrivateMessage/>
 			<TextArea/>
     </div>
   );

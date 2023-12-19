@@ -48,9 +48,13 @@ export class AuthController {
 		return this.authService.verifyTfa(query.code, userId) 
 	}
 
-
-
-
+	@ApiOperation({ description: 'Call this route if for any reason you no longer want your refresh token to be usable' })
+	@ApiOkResponse({ description: 'The refresh token is no longer usable' })
+	@Post('logout')
+	@HttpCode(HttpStatus.OK)
+	logout(@GetCurrentUser('sub') userId: number) {
+		return this.authService.logout(userId);
+	}
 
 	@ApiOperation({ description: 'Provide the refresh token to get new access and refresh tokens'})
 	@ApiOkResponse({ description: 'New tokens are returned', type: TokensDto })

@@ -10,50 +10,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       Int    @id
+  email    String @unique
+  username String @unique
 
-model User{
-	id			Int @id
-	email		String @unique
-	username	String @unique
+  hashedRt String?
 
-	hashedRt	String?
+  isTwoFAEnable Boolean @default(false)
+  twoFASecret   String?
 
-	isTwoFAEnable Boolean @default(false)
-	twoFASecret String?
+  score Int @default(2000)
+  win   Int @default(0)
+  loose Int @default(0)
 
-	score Int	@default(2000)
-	win Int		@default(0)
-	loose Int	@default(0)
+  // achiv Achievments[]
 
-	// achiv Achievments[]
+  // channel Channel[]
 
 	// channel Channel[]
 	User_Channel_channelOwner Channel[] @relation("Channel_OwnerUser")
 	User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
 
-	// message Direct[]
+  // message Direct[]
 
 
-	@@map("users")
-} 
+  friends         User[] @relation("friends")
+  friendsRelation User[] @relation("friends")
 
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+
+  @@map("users")
+}
 
 model Direct {
-	id Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-	// userOne User @relation(fields: [userOneId], references: [id])
-	// userOneId Int
+  // userOne User @relation(fields: [userOneId], references: [id])
+  // userOneId Int
 
-	// userTwo User @relation(fields: [userTwoId], references: [id])
-	// userTwoId Int
+  // userTwo User @relation(fields: [userTwoId], references: [id])
+  // userTwoId Int
 }
 
 model Channel {
-	id Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-	password String?
+  password String?
 
-	mode ChatMode @default(PUBLIC)
+  mode ChatMode @default(PUBLIC)
 
 	owner User @relation("Channel_OwnerUser", fields: [ownerId], references: [id])
 	ownerId Int
@@ -63,15 +69,24 @@ model Channel {
 	adminId Int
 }
 
-enum ChatMode{
-	PUBLIC
-	PRIVATE
-	PROTECTED
+enum ChatMode {
+  PUBLIC
+  PRIVATE
+  PROTECTED
 }
 
 model Achievments {
+  title String @unique
+  body  String
+}
 
-	title String @unique
-	body String
-
+model FriendRequest {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
 }

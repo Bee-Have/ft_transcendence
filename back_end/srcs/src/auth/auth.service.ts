@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Inj
 import { JwtService } from '@nestjs/jwt';
 import { Interval } from '@nestjs/schedule';
 import { hash, verify } from 'argon2';
-import	 axios from 'axios';
+import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
 import { Response } from 'express';
 import * as fs from 'fs';
@@ -16,7 +16,7 @@ import { URLSearchParams } from 'url';
 @Injectable()
 export class AuthService {
 
-	state_arr = new Map<string, Date>()
+	state_map = new Map<string, Date>()
 
 	constructor(private prisma: PrismaService, 
 		private jwtService: JwtService) {}
@@ -117,7 +117,7 @@ export class AuthService {
 
 	async getFtApiToken(code: string, state: string): Promise<any> {
 
-		if (!this.state_arr.delete(state))
+		if (!this.state_map.delete(state))
 			throw new BadRequestException('Are you trying to hack something ? I see you 👀');
 
 		const authCallbackUri = process.env.BACKEND_URL + process.env.AUTH_CALLBACK_URI;
@@ -234,7 +234,7 @@ export class AuthService {
 		
 		const state: string = authenticator.generateSecret(20)
 
-		this.state_arr.set(state, new Date())
+		this.state_map.set(state, new Date())
 
 		const authCallbackUri = process.env.BACKEND_URL + process.env.AUTH_CALLBACK_URI
 		const paramString = new URLSearchParams('')
@@ -292,7 +292,7 @@ export class AuthService {
 	@Interval(10000)
 	handleInterval() {
 		const time = new Date()
-		this.state_arr.forEach( (v, k, map) => {
+		this.state_map.forEach( (v, k, map) => {
 			if(time.valueOf() - v.valueOf() > 10000)
 				map.delete(k)
 		})

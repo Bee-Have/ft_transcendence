@@ -9,18 +9,16 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
-import { PrismaService } from './prisma/prisma.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
-import { UserService } from './user/user.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, AuthModule, PrismaModule, UserModule],
+  imports: [ConfigModule.forRoot({expandVariables: true}), HttpModule, AuthModule, PrismaModule, UserModule],
   controllers: [AppController, AuthController, UserController],
-  providers:	[AppService, AuthService, UserService, PrismaService,
+  providers:	[AppService, AuthService,
 				{
 					provide: APP_GUARD, 
-					useClass:AtGuard 
+					useClass:AtGuard
 				}]
 })
 export class AppModule {}

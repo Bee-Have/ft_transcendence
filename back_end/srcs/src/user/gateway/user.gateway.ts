@@ -7,6 +7,7 @@ import { UserInfo, UserStatus, UserStatusEventDto } from 'src/user/gateway/dto/u
 import { UserService } from 'src/user/user.service';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
+import { BlockedUserDto } from './dto/blocked-user.dto';
 
 @WebSocketGateway({ namespace: 'user' })
 @UseFilters(new WsExceptionFilter())
@@ -147,6 +148,14 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_REJECTED, receiverId)
 	}
 
+	@SubscribeMessage(process.env.SERVER_BLOCK_USER)
+	async handleBlockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
+
+		const userId: number = Number(client.handshake.headers.id)
+		const blockedUserId = data.blokedUserId
+
+		
+	}
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 

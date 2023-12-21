@@ -153,4 +153,64 @@ export class FriendshipService {
 		})	
 	}
 
+
+	async blockUser(userId: number, blockedUserId: number){
+		const userExist = await this.userExist(blockedUserId)
+
+		if (!userExist)
+			throw new WsException('The blocked user does not exist')
+		
+		const blocked = await this.prisma.blockedUser.findFirst({
+			where: {
+				userId,
+				blockedUserId
+			}
+		})
+
+		if (blocked)
+			throw new WsException('User Already Blocked')
+	
+		try {
+			await this.prisma.blockedUser.create({
+				data: {
+					userId,
+					blockedUserId
+				}
+			})
+		}
+		catch (error) {
+			console.log(error)
+			throw new WsException(error)
+		}
+	}
+
+	async unblockUser(userId: number, blockedUserId: number) {
+		const userExist = await this.userExist(blockedUserId)
+
+		if (!userExist)
+			throw new WsException('The User does not exist')
+		
+		const blocked = await this.prisma.blockedUser.findFirst({
+			where: {
+				userId,
+				blockedUserId
+			}
+		})
+	
+		if (!blocked)
+			throw new WsException("This User isn't blocked")
+
+		await this.prisma.blockedUser.delete({ where: {id: blocked.id} })
+	}
+
+	async userExist (userId: number) : Promise<boolean> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			}
+		})
+		if (user)
+			return true
+		return false
+	}
 }

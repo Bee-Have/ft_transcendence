@@ -92,8 +92,6 @@ export class UserGateway {
 	@SubscribeMessage(process.env.SERVER_CREATE_FRIEND_REQUEST)
 	async handleCreateFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
 		
-		console.log('ehejwfef')
-
 		const senderId: number = Number(client.handshake.headers.id)
 		const receiverId: number = data.receiverId
 		
@@ -102,13 +100,10 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_CREATED, receiverId)
 
 		const receiver = this.userService.connected_user_map.get(receiverId)
-		const receiv = await this.prisma.user.findUnique({where: {id: receiverId}})
 	
-		if (receiver && 
-			receiver.status != UserStatus.ingame && 
-			receiver.status != UserStatus.offline)
+		if (receiver)
 		{
-			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId, username: receiv.username} })
+			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId} })
 		}
 	}
 
@@ -132,8 +127,21 @@ export class UserGateway {
 		const receiverId: number = data.receiverId
 
 		await this.friendService.acceptFriendRequest(acceptorId, receiverId)
-		
+
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_ACCEPTED, receiverId)
+
+		const newFriend = this.userService.connected_user_map.get(receiverId)
+
+		if (newFriend)
+		{
+			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).status
+			
+			newFriend.socket.join(acceptorId.toString())
+			client.join(receiverId.toString())
+
+			newFriend.socket.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: acceptorId, status: acceptorStatus })
+			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.status})
+		}
 	}
 
 
@@ -152,20 +160,34 @@ export class UserGateway {
 	async handleBlockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
 
 		const userId: number = Number(client.handshake.headers.id)
-		const blockedUserId = data.blokedUserId
+		const blockedUserId = data.blockedUserId
 
+		await this.friendService.blockUser(userId, blockedUserId)
+
+		client.emit(process.env.CLIENT_BLOCK_USER_SUCCESS)
+	}
+
+	@SubscribeMessage(process.env.SERVER_UNBLOCK_USER)
+	async handleUnblockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
 		
+		const userId: number = Number(client.handshake.headers.id)
+		const blockedUserId = data.blockedUserId
+	
+		await this.friendService.unblockUser(userId, blockedUserId)
+
+		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
 	}
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 
 		const userId: number = Number(client.handshake.headers.id)
-		
+
 		const user = this.userService.connected_user_map.get(userId)
 
 		user.updateStatus(UserStatus.offline)
 
 		this.server.in(user.id.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.adapter.rooms.delete(user.id.toString())
 
 		this.userService.connected_user_map.delete(user.id)
 	}

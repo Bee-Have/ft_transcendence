@@ -2,113 +2,132 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int    @id
-  email    String @unique
-  username String @unique
+    id       Int    @id
+    email    String @unique
+    username String @unique
 
-  hashedRt String?
+    hashedRt String?
 
-  isTwoFAEnable Boolean @default(false)
-  twoFASecret   String?
+    isTwoFAEnable Boolean @default(false)
+    twoFASecret   String?
 
-  score Int @default(2000)
-  win   Int @default(0)
-  loose Int @default(0)
+    score Int @default(2000)
+    win   Int @default(0)
+    loose Int @default(0)
 
-  // achiv Achievments[]
+    // achiv Achievments[]
 
-  // channel Channel[]
+    // channel Channel[]
 
-	// channel Channel[]
-	User_Channel_channelOwner Channel[] @relation("Channel_OwnerUser")
-	User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
-
-  // message Direct[]
+    // channel Channel[]
+    User_Channel_channelOwner    Channel[] @relation("Channel_OwnerUser")
+    User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
 
 
-  friends         User[] @relation("friends")
-  friendsRelation User[] @relation("friends")
+    friends         User[] @relation("friends")
+    friendsRelation User[] @relation("friends")
 
-  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
-  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+    sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+    receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 
-  BlockedByUser BlockedUser[] @relation("BlockedByUser")
-  BlockedUser BlockedUser[] @relation("BlockedUser")
+    blockedByUser BlockedUser[] @relation("BlockedByUser")
+    blockedUser   BlockedUser[] @relation("BlockedUser")
 
-  @@map("users")
-}
+    conversationInitiated Conversation[] @relation("conv")
+    conversationReceived  Conversation[] @relation("convbis")
 
-model Direct {
-  id Int @id @default(autoincrement())
+    directMessages DirectMessage[]
 
-  // userOne User @relation(fields: [userOneId], references: [id])
-  // userOneId Int
-
-  // userTwo User @relation(fields: [userTwoId], references: [id])
-  // userTwoId Int
+    @@map("users")
 }
 
 model Channel {
-  id Int @id @default(autoincrement())
+    id Int @id @default(autoincrement())
 
-  password String?
+    password String?
 
-  mode ChatMode @default(PUBLIC)
+    mode ChatMode @default(PUBLIC)
 
-	owner User @relation("Channel_OwnerUser", fields: [ownerId], references: [id])
-	ownerId Int
+    owner   User @relation("Channel_OwnerUser", fields: [ownerId], references: [id])
+    ownerId Int
 
-	//list admin
-	admin User @relation("Channel_OPUser", fields: [adminId], references: [id])
-	adminId Int
+    //list admin
+    admin   User @relation("Channel_OPUser", fields: [adminId], references: [id])
+    adminId Int
 }
 
 enum ChatMode {
-  PUBLIC
-  PRIVATE
-  PROTECTED
+    PUBLIC
+    PRIVATE
+    PROTECTED
 }
 
 model Achievments {
-  title String @unique
-  body  String
+    title String @unique
+    body  String
 }
 
 model FriendRequest {
-  id         Int      @id @default(autoincrement())
-  status     String
+    id     Int    @id @default(autoincrement())
+    status String
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id])
-  senderId   Int
+    sender   User @relation("SentFriendRequests", fields: [senderId], references: [id])
+    senderId Int
 
-  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
-  receiverId Int
+    receiver   User @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+    receiverId Int
 
-  @@index([senderId, receiverId])
+    @@index([senderId, receiverId])
 }
 
-
 model BlockedUser {
-  id         Int      @id @default(autoincrement())
-  timestamp  DateTime @default(now())
-  
-  user       User     @relation("BlockedUser", fields: [userId], references: [id])
-  userId     Int
-  
-  blockedUser User   @relation("BlockedByUser", fields: [blockedUserId], references: [id])
-  blockedUserId Int
+    id        Int      @id @default(autoincrement())
+    timestamp DateTime @default(now())
 
-  @@index([userId, blockedUserId])
+    user   User @relation("BlockedUser", fields: [userId], references: [id])
+    userId Int
+
+    blockedUser   User @relation("BlockedByUser", fields: [blockedUserId], references: [id])
+    blockedUserId Int
+
+    @@index([userId, blockedUserId])
+}
+
+model Conversation {
+    id Int @id @default(autoincrement())
+
+    memberOneId Int
+    memberOne   User @relation("conv", fields: [memberOneId], references: [id])
+
+    memberTwoId Int
+    memberTwo   User @relation("convbis", fields: [memberTwoId], references: [id])
+
+    directMessages DirectMessage[]
+
+    @@unique([memberOneId, memberTwoId])
+}
+
+model DirectMessage {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime @default(now())
+    content   String
+
+    senderId Int
+    sender   User @relation(fields: [senderId], references: [id])
+
+    conversationId Int
+    conversation   Conversation @relation(fields: [conversationId], references: [id])
 }

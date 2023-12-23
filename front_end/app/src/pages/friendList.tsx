@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PopUp from '../files/popUp';
+import PopUp from '../components/popUp';
 
 interface CardProps {
   photo: string;

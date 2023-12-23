@@ -3,15 +3,15 @@ import  React, { useState, useEffect} from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending				from './files/pending';
-import  Welcome     	from './files/welcome';
-import  Menu        	from './files/menu';
-import  Profil      	from './files/profil';
-import  Header      	from './files/header';
-import  FriendList  	from './files/friendList';
-import	Blocked				from './files/blocked';
-import	MatchHistory	from './files/matchHistory';
-import	Chat 					from	'./files/chat';
+import  Pending				from './pages/pending';
+import  Welcome     	from './pages/welcome';
+import  Menu        	from './components/menu';
+import  Profil      	from './pages/profil';
+import  Header      	from './components/header';
+import  FriendList  	from './pages/friendList';
+import	Blocked				from './pages/blocked';
+import	MatchHistory	from './pages/matchHistory';
+import	Chat 					from	'./pages/chat';
 //import sendBack from './files/sendBack';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';

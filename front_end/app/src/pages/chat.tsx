@@ -1,7 +1,7 @@
 import	React from 'react';
-import	ChannelList from './channelList';
-import	PrivateMessage from './privateMessage';
-import	TextArea from './textArea';
+import	ChannelList from '../components/channelList';
+import	PrivateMessage from '../components/privateMessage';
+import	TextArea from '../components/textArea';
 
 const Chat: React.FC = () => {
   return (

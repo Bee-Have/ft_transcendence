@@ -105,7 +105,9 @@ const App: React.FC = () => {
 				<Route path="/profil" element={<Profil />} />
 				<Route path="/profil/friend-list" element={<FriendList />} />
 				<Route path="/profil/pending-friend-request" element={<Pending />} />
-				<Route path="/profil/blocked" element={<Pending />} />
+				<Route path="/profil/blocked" element={<Blocked />} />
+				<Route path="/profil/match-history" element={<MatchHistory />} />
+				<Route path="/chat" element={<Chat />} />
 			</Routes>
 		</BrowserRouter>
 	);

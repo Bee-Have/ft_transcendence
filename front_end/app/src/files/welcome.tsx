@@ -1,6 +1,8 @@
 import React from 'react';
 import '../css/welcome.css'
 
+import { useNavigate } from 'react-router-dom';
+
 interface WelcomeProps
 {
   isLogged: boolean;
@@ -10,6 +12,7 @@ interface WelcomeProps
 }
 
 const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConnection, updateBooleanStates}) => {
+  const navigate = useNavigate();
   return (
     <div className="log_window">
       <div className="welcome">

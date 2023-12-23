@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ isLogged, showProfil, showChat, updateB
       )}
       {showProfil && (
         <>
-          <button className="btn btn-light">Invit to game</button>
+          <button className="btn btn-light">Invite to game</button>
           <button className="btn btn-light">edit profil</button>
           <button className="btn btn-light" onClick={() => updateBooleanStates({ showWelcome: true})}>home</button>
           <button className="btn btn-light" onClick={logout}>Logout</button>

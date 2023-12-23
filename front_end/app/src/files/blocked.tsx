@@ -21,4 +21,19 @@ const Card: React.FC<CardProps> = ({text}) => { return (
   );
 };
 
+const Blocked: React.FC = () => {
+  return (
+    <div className="blocked">
+      <div className="content">
+        <div className="printCard">
+          <Card text={'test1'} />
+          <Card text={'test2'} />
+          <Card text={'test3'} />
+          <Card text={'test4'} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Blocked;

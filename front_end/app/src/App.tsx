@@ -9,11 +9,12 @@ import  Menu        	from './files/menu';
 import  Profil      	from './files/profil';
 import  Header      	from './files/header';
 import  FriendList  	from './files/friendList';
-import	Bloqued				from './files/blocked';
+import	Blocked				from './files/blocked';
 import	MatchHistory	from './files/matchHistory';
 import	Chat 					from	'./files/chat';
 //import sendBack from './files/sendBack';
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
 
@@ -25,7 +26,7 @@ const App: React.FC = () => {
 	const [showOverlay, setShowOverlay] 			= useState(false);
 	const [showFriendList, setFriendList] 		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
-	const [showBloquedList, setBloquedList] 	= useState(false);
+	const [showBlockedList, setBlockedList] 	= useState(false);
 	const [showHistoryMatch, setHistoryMatch] = useState(false);
 
 	const updateBooleanStates = (statesToUpdate: {
@@ -35,7 +36,7 @@ const App: React.FC = () => {
 		showWelcome?: boolean;
 		showFriendList?: boolean;
 		showPendingList?: boolean;
-		showBloquedList?: boolean;
+		showBlockedList?: boolean;
 		showHistoryMatch?: boolean;
 	}): void => {
 		setChat(statesToUpdate.showChat || false);
@@ -44,7 +45,7 @@ const App: React.FC = () => {
 		setViewProfil(statesToUpdate.showProfil || false);
 		setFriendList(statesToUpdate.showFriendList || false);
 		setPendingList(statesToUpdate.showPendingList || false);
-		setBloquedList(statesToUpdate.showBloquedList || false);
+		setBlockedList(statesToUpdate.showBlockedList || false);
 		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
 	};
 
@@ -92,10 +93,21 @@ const App: React.FC = () => {
 			{showProfil && <Profil/>}
 			{showFriendList && <FriendList/>}
 			{showPendingList && <Pending/>}
-			{showBloquedList && <Bloqued/>}
+			{showBlockedList && <Blocked/>}
 			{showHistoryMatch && <MatchHistory/>}
 			{showChat && <Chat/>}
 		</div>
+	);
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<Welcome />} />
+				<Route path="/profil" element={<Profil />} />
+				<Route path="/profil/friend-list" element={<FriendList />} />
+				<Route path="/profil/pending-friend-request" element={<Pending />} />
+				<Route path="/profil/blocked" element={<Pending />} />
+			</Routes>
+		</BrowserRouter>
 	);
 };
 

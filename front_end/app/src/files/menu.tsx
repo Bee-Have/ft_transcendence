@@ -18,8 +18,8 @@ const Menu: React.FC<MenuProps> = ({ updateBooleanStates }) => {
         <label className="btn btn-outline-primary fs-6" htmlFor="vbtn-radio3">all friends</label>
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio4" autoComplete="off" onClick={() => updateBooleanStates({ showPendingList: true, showMenu: true })}/>
         <label className="btn btn-outline-primary fs-6" htmlFor="vbtn-radio4">pending invitations</label>
-        <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio5" autoComplete="off" onClick={() => updateBooleanStates({ showBloquedList: true, showMenu: true })} />
-        <label className="btn btn-outline-primary fs-6" htmlFor="vbtn-radio5">bloqued users</label>
+        <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio5" autoComplete="off" onClick={() => updateBooleanStates({ showBlockedList: true, showMenu: true })} />
+        <label className="btn btn-outline-primary fs-6" htmlFor="vbtn-radio5">blocked users</label>
 
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio6" autoComplete="off" onClick={() => updateBooleanStates({ showHistoryMatch: true, showMenu: true })} />
         <label className="btn btn-outline-primary fs-1 text-start" htmlFor="vbtn-radio6">match history</label>

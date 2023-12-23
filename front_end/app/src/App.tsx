@@ -18,36 +18,36 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]									= useState(false);
-	const [showChat, setChat]									= useState(true);
+	// const [showMenu, setMenu]									= useState(false);
+	// const [showChat, setChat]									= useState(true);
 	const [isLogged, setLogStatus]						= useState(true);
-	const [showWelcome, setWelcome] 					= useState(false);
-	const [showProfil, setViewProfil] 				= useState(false);
+	// const [showWelcome, setWelcome] 					= useState(false);
+	// const [showProfil, setViewProfil] 				= useState(false);
 	const [showOverlay, setShowOverlay] 			= useState(false);
-	const [showFriendList, setFriendList] 		= useState(false);
-	const [showPendingList, setPendingList] 	= useState(false);
-	const [showBlockedList, setBlockedList] 	= useState(false);
-	const [showHistoryMatch, setHistoryMatch] = useState(false);
+	// const [showFriendList, setFriendList] 		= useState(false);
+	// const [showPendingList, setPendingList] 	= useState(false);
+	// const [showBlockedList, setBlockedList] 	= useState(false);
+	// const [showHistoryMatch, setHistoryMatch] = useState(false);
 
-	const updateBooleanStates = (statesToUpdate: {
-		showChat?: boolean;
-		showMenu?: boolean;
-		showProfil?: boolean;
-		showWelcome?: boolean;
-		showFriendList?: boolean;
-		showPendingList?: boolean;
-		showBlockedList?: boolean;
-		showHistoryMatch?: boolean;
-	}): void => {
-		setChat(statesToUpdate.showChat || false);
-		setMenu(statesToUpdate.showMenu || false);
-		setWelcome(statesToUpdate.showWelcome || false);
-		setViewProfil(statesToUpdate.showProfil || false);
-		setFriendList(statesToUpdate.showFriendList || false);
-		setPendingList(statesToUpdate.showPendingList || false);
-		setBlockedList(statesToUpdate.showBlockedList || false);
-		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
-	};
+	// const updateBooleanStates = (statesToUpdate: {
+	// 	showChat?: boolean;
+	// 	showMenu?: boolean;
+	// 	showProfil?: boolean;
+	// 	showWelcome?: boolean;
+	// 	showFriendList?: boolean;
+	// 	showPendingList?: boolean;
+	// 	showBlockedList?: boolean;
+	// 	showHistoryMatch?: boolean;
+	// }): void => {
+	// 	setChat(statesToUpdate.showChat || false);
+	// 	setMenu(statesToUpdate.showMenu || false);
+	// 	setWelcome(statesToUpdate.showWelcome || false);
+	// 	setViewProfil(statesToUpdate.showProfil || false);
+	// 	setFriendList(statesToUpdate.showFriendList || false);
+	// 	setPendingList(statesToUpdate.showPendingList || false);
+	// 	setBlockedList(statesToUpdate.showBlockedList || false);
+	// 	setHistoryMatch(statesToUpdate.showHistoryMatch || false);
+	// };
 
 	const acceptConnection = (): void => {
 		setLogStatus(true);
@@ -67,7 +67,8 @@ const App: React.FC = () => {
 	
 	const logout = (): void => {
 		alert("add here question <did you want to disconnected ?>");
-		updateBooleanStates({showWelcome: true});
+		// here set navigate query to show walcome not logged
+		// updateBooleanStates({showWelcome: true});
 		setLogStatus(false);
 		alert("You are now disconnected !");
 	};

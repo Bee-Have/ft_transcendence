@@ -22,7 +22,8 @@ const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConn
         <div className="container row justify-content-center">
           <div className="col-md-4">
             {!isLogged && <button className="btn btn-light" onClick={openLoginWindow}>Login</button>}
-            {isLogged && <button className="btn btn-light" onClick={() => updateBooleanStates({showChat:true})}>Chat</button>}
+            {isLogged && <button className="btn btn-light" onClick={() => navigate("/chat")}>Chat</button>}
+            {/* {isLogged && <button className="btn btn-light" onClick={() => updateBooleanStates({showChat:true})}>Chat</button>} */}
           </div>
           <div className="col-md-4">
             {!isLogged && <button className="btn btn-light" onClick={acceptConnection}>Guest</button>}

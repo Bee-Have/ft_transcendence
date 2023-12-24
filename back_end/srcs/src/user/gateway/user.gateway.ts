@@ -5,9 +5,11 @@ import { FriendshipService } from 'src/friendship/friendship.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInfo, UserStatus, UserStatusEventDto } from 'src/user/gateway/dto/userStatus.dto';
 import { UserService } from 'src/user/user.service';
+import { BlockedUserDto } from './dto/blocked-user.dto';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
-import { BlockedUserDto } from './dto/blocked-user.dto';
+import { plainToInstance } from 'class-transformer';
+import { IncomingDirectMessage, OutgoingDirectMessage } from 'src/privatemessage/dto/direct-message.dto';
 
 @WebSocketGateway({ namespace: 'user' })
 @UseFilters(new WsExceptionFilter())
@@ -27,39 +29,22 @@ export class UserGateway {
 	// }
 
 	async handleConnection(@ConnectedSocket() client: Socket) {
-		console.log(process.env.SERVER_UPDATE_USER_STATUS)				
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: Number(client.handshake.headers.id)
-			},
-			select: {
-				id: true,
-				friends: {
-					select: {
-						id: true
-					}
-				}
-			}
-		})
 
-		if(!user)
-		{
-			client.emit('error', {msg: 'User Not Found'})
-			client.disconnect()
-			return 
-		}
+		const userId: number = Number(client.handshake.headers.id)
 
-		this.userService.connected_user_map.set(user.id, new UserInfo(user.id, client, UserStatus.online))
+		const friendsIds = await this.userService.getUserFriendsId(userId)
 
-		const user_in_map = this.userService.connected_user_map.get(user.id)
+		this.userService.connected_user_map.set(userId, new UserInfo(userId, client, UserStatus.online))
 
-		for (const friend of user.friends) {
-			const friend_in_map = this.userService.connected_user_map.get(friend.id)
+		const user_in_map = this.userService.connected_user_map.get(userId)
+
+		for (const friendId of friendsIds) {
+			const friend_in_map = this.userService.connected_user_map.get(friendId)
 
 			if (friend_in_map)
 			{
-				friend_in_map.socket.join(user.id.toString())
-				client.join(friend.id.toString())
+				friend_in_map.socket.join(userId.toString())
+				client.join(friendId.toString())
 
 				client.emit('user-status', new UserStatusEventDto(friend_in_map))
 				friend_in_map.socket.emit('user-status', new UserStatusEventDto(user_in_map))
@@ -85,7 +70,7 @@ export class UserGateway {
 			if (data === key)
 				user.updateStatus(UserStatus[key])
 		}
-		this.server.in(user.id.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 
 
@@ -178,6 +163,39 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
 	}
 
+	@SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
+	async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
+
+		const senderId: number = Number(client.handshake.headers.id)
+		const receiverId: number = data.receiverId
+		const content: string = data.content
+
+		const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
+
+		if (senderBlockedReceiver){
+			throw new WsException("You can't send message to this user")
+		}
+
+		const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
+		const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
+		// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
+		const message = 'weif'
+		const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
+
+		client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
+
+		if (!receiverBlockedSender)
+		{
+			const receiver = this.userService.connected_user_map.get(receiverId)
+			
+			if (receiver)
+			{
+				receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
+			}
+		}
+
+	}
+
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 
 		const userId: number = Number(client.handshake.headers.id)
@@ -186,10 +204,10 @@ export class UserGateway {
 
 		user.updateStatus(UserStatus.offline)
 
-		this.server.in(user.id.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
-		this.server.adapter.rooms.delete(user.id.toString())
+		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.adapter.rooms.delete(userId.toString())
 
-		this.userService.connected_user_map.delete(user.id)
+		this.userService.connected_user_map.delete(userId)
 	}
 
 }

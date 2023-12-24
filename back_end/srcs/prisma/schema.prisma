@@ -39,11 +39,11 @@ model User {
     sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
     receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 
-    blockedByUser BlockedUser[] @relation("BlockedByUser")
-    blockedUser   BlockedUser[] @relation("BlockedUser")
+    blocked BlockedUser[] @relation("BlockedBy")
+    blockedBy  BlockedUser[] @relation("Blocked")
 
-    conversationInitiated Conversation[] @relation("conv")
-    conversationReceived  Conversation[] @relation("convbis")
+    conversationInitiated Conversation[] @relation("convInitiated")
+    conversationReceived  Conversation[] @relation("convReceived")
 
     directMessages DirectMessage[]
 
@@ -96,10 +96,10 @@ model BlockedUser {
     id        Int      @id @default(autoincrement())
     timestamp DateTime @default(now())
 
-    user   User @relation("BlockedUser", fields: [userId], references: [id])
+    user   User @relation("BlockedBy", fields: [userId], references: [id])
     userId Int
 
-    blockedUser   User @relation("BlockedByUser", fields: [blockedUserId], references: [id])
+    blockedUser   User @relation("Blocked", fields: [blockedUserId], references: [id])
     blockedUserId Int
 
     @@index([userId, blockedUserId])
@@ -109,10 +109,10 @@ model Conversation {
     id Int @id @default(autoincrement())
 
     memberOneId Int
-    memberOne   User @relation("conv", fields: [memberOneId], references: [id])
+    memberOne   User @relation("convInitiated", fields: [memberOneId], references: [id])
 
     memberTwoId Int
-    memberTwo   User @relation("convbis", fields: [memberTwoId], references: [id])
+    memberTwo   User @relation("convReceived", fields: [memberTwoId], references: [id])
 
     directMessages DirectMessage[]
 
@@ -121,9 +121,11 @@ model Conversation {
 
 model DirectMessage {
     id Int @id @default(autoincrement())
-
     createdAt DateTime @default(now())
+
     content   String
+	isBlocked Boolean @default(false)
+	isRead    Boolean @default(false)
 
     senderId Int
     sender   User @relation(fields: [senderId], references: [id])

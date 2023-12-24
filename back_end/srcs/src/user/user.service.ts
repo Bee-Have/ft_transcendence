@@ -7,6 +7,7 @@ import { authenticator } from 'otplib';
 import { PrismaService } from "src/prisma/prisma.service";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo } from "./gateway/dto/userStatus.dto";
+import { OutgoingDirectMessage } from "src/privatemessage/dto/direct-message.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
@@ -170,6 +171,87 @@ export class UserService {
 		return user
 	}
 
+	async getUserFriendsId(userId: number) {
+		const friends = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			select: {
+				friends: {
+					select: {
+						id: true
+					}
+				},
+				friendsRelation: {
+					select: {
+						id: true
+					}
+				}
+			}
+		})
 
+		const friendsWithDuplicate = friends.friends.concat(friends.friendsRelation) 
+
+		const unique = new Array()
+
+		friendsWithDuplicate.forEach((obj) => {
+			if (!unique.includes(obj.id) && obj.id != userId)
+				unique.push(obj.id)
+		})
+
+		return unique 
+	}
+
+	async getOrCreateConversation(memberOneId: number, memberTwoId: number) {
+
+		const [lowestId, greaterId] = memberOneId < memberTwoId ? [memberOneId, memberTwoId] : [memberTwoId, memberOneId];
+
+		const conversation = await this.prisma.conversation.findFirst({
+			where: {
+				memberOneId: lowestId,
+				memberTwoId: greaterId
+			}
+		})
+
+		if (conversation)
+			return conversation
+
+		return await this.prisma.conversation.create({
+			data: {
+				memberOneId: lowestId,
+				memberTwoId: greaterId
+			}
+		})
+	}
+
+	async doMemberOneBlockedMemberTwo (memberOneId: number, memberTwoId: number) {
+		const User = await this.prisma.user.findUnique({
+			where: {
+				id: memberOneId
+			},
+			select: {
+				blocked: true
+			}
+		})
+
+		if (!User)
+			throw new Error('User not found')
+
+		const blockedUsers = User.blocked
+
+		if (!blockedUsers)
+			return false
+	
+		for (const blockedUser of blockedUsers) {
+			if (blockedUser.blockedUserId === memberTwoId)
+				return true
+		}
+
+		return false
+	}
+
+	async isMemberOneBlockedByMemberTwo(memberOneId: number, memberTwoId: number) {
+		return this.doMemberOneBlockedMemberTwo(memberTwoId, memberOneId)
+	}
 
 }

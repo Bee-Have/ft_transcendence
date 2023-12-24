@@ -105,4 +105,12 @@ export class UserController {
 		return this.userService.disableTFA(userId)
 	}
 
+
+	@Public()
+	@Get('test')
+	async weif(){
+		console.log(await this.userService.doMemberOneBlockedMemberTwo(1,2))
+		console.log(await this.userService.isMemberOneBlockedByMemberTwo(1,2))
+	}
+
 }

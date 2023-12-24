@@ -114,17 +114,6 @@ export class FriendshipService {
 			}
 		})
 
-		await this.prisma.user.update({
-			where: {
-				id: receiverId
-			},
-			data: {
-				friends: {
-					connect: [{ id: acceptorId }]
-				}
-			}
-		})
-
 		await this.prisma.friendRequest.delete({
 			where:{
 				id: req.id

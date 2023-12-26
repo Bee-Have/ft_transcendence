@@ -18,7 +18,7 @@ const Menu: React.FC = () => {
 
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio2" autoComplete="off" onClick={() => navigate("/profil/friend-list")}/>
         {/* <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio2" autoComplete="off" onClick={() => updateBooleanStates({ showFriendList: true, showMenu: true })}/> */}
-        <label className="btn btn-outline-primary fs-1 text-start">Friend list</label>
+        <label className="btn btn-outline-primary fs-1 text-start">Friend listp</label>
 
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio3" autoComplete="off" onClick={() => navigate("/profil/friend-list")} />
         {/* <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio3" autoComplete="off" onClick={() => updateBooleanStates({ showFriendList: true, showMenu: true })} /> */}

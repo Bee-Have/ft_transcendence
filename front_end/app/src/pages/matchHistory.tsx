@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import PopUp from '../components/popUp';
 
+import Menu from '../components/menu';
 
 interface CardProps {
   winner: string;
@@ -55,6 +56,7 @@ const MatchHistory: React.FC = () => {
 
   return (
     <div className="matchHistory">
+      <Menu/>
       <div className="content">
         <div className="printCard">
           <Match winner='tie' photo={require('../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>

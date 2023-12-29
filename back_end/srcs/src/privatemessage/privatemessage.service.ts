@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { OutgoingDirectMessage } from './dto/direct-message.dto';
@@ -7,24 +7,31 @@ import { OutgoingDirectMessage } from './dto/direct-message.dto';
 export class PrivateMessageService {
 
 	constructor(private prisma: PrismaService,
-				private userService: UserService)
-	{}
+		private userService: UserService) { }
 
 	async getAllConvsAndLastMessage(userId: number) {
 		const conversations = await this.getAllUserConversations(userId)
 		const convsAndMessage = new Array()
 
 		for (const conversation of conversations) {
+			const friendId = this.getFriendId(userId, conversation)
+
+			conversation["friendUsername"] = await this.getUsername(friendId)
+			conversation["username"] = await this.getUsername(userId)
+
 			const lastMessage = await this.getLastMessage(userId, conversation.id)
-			convsAndMessage.push({conversation, lastMessage})
+			convsAndMessage.push({ conversation, lastMessage })
 		}
 
 		return convsAndMessage
 	}
 
-	async getOrCreateConversation(memberOneId: number, memberTwoId: number) {
+	async getOrCreateConversation(userId: number, receiverId: number): Promise<any> {
 
-		const [lowestId, greaterId] = memberOneId < memberTwoId ? [memberOneId, memberTwoId] : [memberTwoId, memberOneId];
+		if (userId === receiverId)
+			throw new BadRequestException('User cannot create conversation with his self')
+
+		const [lowestId, greaterId] = userId < receiverId ? [userId, receiverId] : [receiverId, userId];
 
 		const conversation = await this.prisma.conversation.findFirst({
 			where: {
@@ -33,15 +40,29 @@ export class PrivateMessageService {
 			}
 		})
 
-		if (conversation)
-			return conversation
+		if (conversation) {
+			conversation["friendUsername"] = await this.getUsername(receiverId)
+			conversation["username"] = await this.getUsername(userId)
 
-		return await this.prisma.conversation.create({
-			data: {
-				memberOneId: lowestId,
-				memberTwoId: greaterId
-			}
-		})
+			return conversation
+		}
+
+		try {
+			const createdConv = await this.prisma.conversation.create({
+				data: {
+					memberOneId: lowestId,
+					memberTwoId: greaterId
+				}
+			})
+			createdConv["friendUsername"] = await this.getUsername(receiverId)
+			createdConv["username"] = await this.getUsername(userId)
+
+			return createdConv
+		}
+		catch (err) {
+			throw new BadRequestException('Error While Creation the Conversation')
+		}
+
 	}
 
 	async getAllMessages(userId: number, conversationId: number) {
@@ -49,11 +70,11 @@ export class PrivateMessageService {
 			where: {
 				conversationId,
 				NOT: {
-					AND: [{senderId: {not: userId}}, {isBlocked: true}]
+					AND: [{ senderId: { not: userId } }, { isBlocked: true }]
 				}
 			},
 			orderBy: {
-				createdAt: 'desc'
+				createdAt: 'asc'
 			},
 			select: {
 				id: true,
@@ -107,19 +128,19 @@ export class PrivateMessageService {
 	async getAllUserConversations(userId: number) {
 		const conversations = await this.prisma.conversation.findMany({
 			where: {
-				OR: [{ memberOneId: userId }, { memberTwoId: userId}]
+				OR: [{ memberOneId: userId }, { memberTwoId: userId }]
 			}
 		})
 
 		return conversations
 	}
 
-	async getLastMessage(userId:number, conversationId: number) {
+	async getLastMessage(userId: number, conversationId: number) {
 		const lastMessage = await this.prisma.directMessage.findFirst({
 			where: {
 				conversationId,
 				NOT: {
-					AND: [{senderId: {not: userId}}, {isBlocked: true}]
+					AND: [{ senderId: { not: userId } }, { isBlocked: true }]
 				}
 			},
 			orderBy: {
@@ -160,6 +181,22 @@ export class PrivateMessageService {
 		})
 
 		return [conv.memberOneId, conv.memberTwoId]
+	}
+
+	async getUsername(userId: number): Promise<string> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			select: {
+				username: true
+			}
+		})
+		return user?.username
+	}
+
+	getFriendId(userId: number, conversation: any) {
+		return userId === conversation.memberOneId ? conversation.memberTwoId : conversation.memberOneId
 	}
 
 }

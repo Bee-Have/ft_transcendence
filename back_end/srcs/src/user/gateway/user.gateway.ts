@@ -3,22 +3,23 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Namespace, Socket } from 'socket.io';
 import { FriendshipService } from 'src/friendship/friendship.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { OutgoingDirectMessage } from 'src/privatemessage/dto/direct-message.dto';
 import { UserInfo, UserStatus, UserStatusEventDto } from 'src/user/gateway/dto/userStatus.dto';
 import { UserService } from 'src/user/user.service';
+import { PrivateMessageService } from '../../privatemessage/privatemessage.service';
 import { BlockedUserDto } from './dto/blocked-user.dto';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
-import { plainToInstance } from 'class-transformer';
-import { IncomingDirectMessage, OutgoingDirectMessage } from 'src/privatemessage/dto/direct-message.dto';
 
-@WebSocketGateway({ namespace: 'user' })
+@WebSocketGateway({ namespace: 'user', cors: true })
 @UseFilters(new WsExceptionFilter())
 @UsePipes(new ValidationPipe())
 export class UserGateway {
 
 	constructor(private prisma: PrismaService, 
 				private userService: UserService,
-				private friendService: FriendshipService) {}
+				private friendService: FriendshipService,
+				private privmessage: PrivateMessageService) {}
 
 	@WebSocketServer()
 	server: Namespace
@@ -30,7 +31,17 @@ export class UserGateway {
 
 	async handleConnection(@ConnectedSocket() client: Socket) {
 
-		const userId: number = Number(client.handshake.headers.id)
+		const userId: number = Number(client.handshake?.headers?.id)
+
+		console.log(userId)
+
+		if (Number.isNaN(userId))
+		{
+			client.disconnect()
+			return
+		}
+
+		client.emit('we')
 
 		const friendsIds = await this.userService.getUserFriendsId(userId)
 
@@ -163,44 +174,60 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
 	}
 
-	@SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
-	async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
+	// @SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
+	// async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
 
-		const senderId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-		const content: string = data.content
+	// 	const senderId: number = Number(client.handshake.headers.id)
+	// 	const receiverId: number = data.receiverId
+	// 	const content: string = data.content
 
-		const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
+	// 	const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
 
-		if (senderBlockedReceiver){
-			throw new WsException("You can't send message to this user")
-		}
+	// 	if (senderBlockedReceiver){
+	// 		throw new WsException("You can't send message to this user")
+	// 	}
 
-		const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
-		const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
-		// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
-		const message = 'weif'
-		const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
+	// 	const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
+	// 	const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
+	// 	// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
+	// 	const message = 'weif'
+	// 	const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
 
-		client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
+	// 	client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
 
-		if (!receiverBlockedSender)
-		{
-			const receiver = this.userService.connected_user_map.get(receiverId)
+	// 	if (!receiverBlockedSender)
+	// 	{
+	// 		const receiver = this.userService.connected_user_map.get(receiverId)
 			
-			if (receiver)
-			{
-				receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
-			}
-		}
+	// 		if (receiver)
+	// 		{
+	// 			receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
+	// 		}
+	// 	}
+
+	// }
+
+	@SubscribeMessage('message')
+	handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
+	{
+		const friendId = this.privmessage.getFriendId(body.senderId, body.conversationId)
+	
+		const friend = this.userService.connected_user_map.get(friendId)
+
+		if (friend)
+			friend.socket.emit('new-message', body)
 
 	}
+
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 
 		const userId: number = Number(client.handshake.headers.id)
 
 		const user = this.userService.connected_user_map.get(userId)
+
+		if (!user)
+			return
 
 		user.updateStatus(UserStatus.offline)
 

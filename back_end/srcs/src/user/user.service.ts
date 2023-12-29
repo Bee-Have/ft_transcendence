@@ -61,6 +61,38 @@ export class UserService {
 		return trimuser
 	}
 
+	async getUserIdByName(username: string) { 
+		const user = await this.prisma.user.findUnique({
+			where: {
+				username
+			},
+			select: {
+				id: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('Username not found')
+
+		return user.id
+	}
+
+	async getUsername(userId: number): Promise<string> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			select: {
+				username: true
+			}
+		})
+		
+		if (!user)
+			throw new NotFoundException('User Not Found')
+
+		return user.username
+	}
+
 	getUserImage(res: Response, userId: number)
 	{
 		const imagePath = process.env.AVATAR_DIRECTORY + '/' + userId + '.jpeg'

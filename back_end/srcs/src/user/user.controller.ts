@@ -21,6 +21,11 @@ export class UserController {
 	// 	return this.userService.getUserProfil(username)
 	// }
 
+	@Get('idbyname/:username')
+	async getuserIdbyName(@Param('username') username: string) {
+		return await this.userService.getUserIdByName(username)
+	}
+
 	// @Public()
 	// @Get('image/:username')
 	// async getImage(@Res() res: Response, @Param('username') username: string) {
@@ -30,6 +35,12 @@ export class UserController {
 	@Get('profile/:id')
 	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
 		return this.userService.getUserProfil(userId)
+	}
+
+	@Public()
+	@Get('username/:id')
+	async getUsername(@Param('id', ParseIntPipe) userId: number): Promise<string> {
+		return await this.userService.getUsername(userId)
 	}
 
 	@Public()

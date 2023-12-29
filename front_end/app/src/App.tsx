@@ -11,8 +11,10 @@ import  Header      				from './files/header';
 import  FriendList  				from './files/friendList';
 import	Bloqued						from './files/blocked';
 import	MatchHistory				from './files/matchHistory';
-import	sendBack, {sendBackPost}	from './files/sendBack';
+import	{sendBackPost}	from './files/sendBack';
 import	Chat						from	'./files/chat';
+import { ReadCookie } from './files/ReadCookie';
+import axios from 'axios';
 
 
 const App: React.FC = () => {
@@ -22,7 +24,7 @@ const App: React.FC = () => {
 	const [isLogged, setLogStatus]				= useState(false);
 	const [showWelcome, setWelcome] 			= useState(true);
 	const [showProfil, setViewProfil] 			= useState(false);
-	const [showOverlay, setShowOverlay] 		= useState(false);
+	// const [showOverlay, setShowOverlay] 		= useState(false);
 	const [showFriendList, setFriendList] 		= useState(false);
 	const [showPendingList, setPendingList] 	= useState(false);
 	const [showBloquedList, setBloquedList]		= useState(false);
@@ -54,9 +56,13 @@ const App: React.FC = () => {
 	{
 		if (document.cookie)
 		{
-			let temp = document.cookie;			
-			let test = temp.split("=");
-			let keys = test[1].split("%3B");
+			// console.log(document.cookie)
+			// let temp = document.cookie;			
+			// let test = temp.split("=");
+			// console.log(test)
+			const payload = ReadCookie('payload_cookie')
+
+			let keys = payload?.split("%3B");
 			
 			for (let item in keys)
 			{
@@ -71,27 +77,35 @@ const App: React.FC = () => {
 		setLogStatus(true);
 	};
 
-	const openLoginWindow = (): void => {
-		setShowOverlay(true);
+	// const openLoginWindow = (): void => {
+	// 	setShowOverlay(true);
 
-		sendBack('http://localhost:3001/auth').then(function (data)
-		{
-			let url = data ? data.data : ""
+	// 	sendBack('http://localhost:3001/auth').then(function (data)
+	// 	{
+	// 		let url = data ? data.data : ""
 			
-			const newWindow = window.open(url, '_blank', 'width=400,height=200');
+	// 		const newWindow = window.open(url, '_blank', 'width=400,height=200');
 
-			if (newWindow) {
-				newWindow.addEventListener('beforeunload', () => {
-					setShowOverlay(false);
-				});
-			}
+	// 		if (newWindow) {
+	// 			newWindow.addEventListener('beforeunload', () => {
+	// 				setShowOverlay(false);
+	// 			});
+	// 		}
 			
-			update_cookie();
+	// 		update_cookie();
 			
-			if (pairs["logged"] === "true")
-				acceptConnection();
+	// 		if (pairs["logged"] === "true")
+	// 			acceptConnection();
+	// 	})
+	// };
+
+	const login = () => {
+		axios.get('http://localhost:3001/auth')
+		.then((res: any) => {
+			window.location.replace(res.data)
 		})
-	};
+		.catch(e => console.log(e))
+	}
 	
 	const logout = (): void => {
 		alert("add here question <did you want to disconnected ?>");
@@ -107,28 +121,27 @@ const App: React.FC = () => {
 	};
 
 	useEffect(() => {
-		const handleMessage = (event: MessageEvent): void => {
-			if (event.data === "OK")
-				setLogStatus(true);
-		};
-		window.addEventListener('message', handleMessage);
+		// const handleMessage = (event: MessageEvent): void => {
+		// 	if (event.data === "OK")
+		// 		setLogStatus(true);
+		// };
+		// window.addEventListener('message', handleMessage);
 		
 		update_cookie();
 		if (pairs["logged"] === "true")
 			acceptConnection();
-		
-
-		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, []);
+	
+		// return () => {
+		// 	window.removeEventListener('message', handleMessage);
+		// };
+	});
 	
 
 	return (
 		<div className="App">
 			<Header isLogged={isLogged} showProfil={showProfil} showChat={showChat} updateBooleanStates={updateBooleanStates} logout={logout} />
-			{showOverlay && <div className="overlay"></div>}
-			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} 
+			{/* {showOverlay && <div className="overlay"></div>} */}
+			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={login} 
 													acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
 			{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
 			{showProfil && <Profil/>}

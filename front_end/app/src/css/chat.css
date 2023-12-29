@@ -1,11 +1,12 @@
 /* Member list */
 .privMsg{
-	height: 50px;
-	width: 96%;
+	/* height: 50px;
+	width: 96%; */
 	margin: 2% 2% 10px 2%;
 	padding-left: 2%;
 	padding-right: 2%;
-	border-radius: 10em;
+	border-radius: 20px;
+	/* border-radius: 10em; */
 	background-color: grey;
 	color: white;
 	text-align: center;

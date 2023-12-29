@@ -11,7 +11,7 @@ const Profil: React.FC = () => {
 		<div className='profil'>
 			<center>
   				<div className="PP">
-  					<img src={require('../asset/default.jpg')} alt="profile picture" className="person-image"/>
+  					<img src={require('../asset/default.jpg')} alt="profile" className="person-image"/>
   				</div>
 			</center>
   			<div className='information'>

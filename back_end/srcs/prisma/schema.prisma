@@ -131,5 +131,5 @@ model DirectMessage {
     sender   User @relation(fields: [senderId], references: [id])
 
     conversationId Int
-    conversation   Conversation @relation(fields: [conversationId], references: [id])
+    conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

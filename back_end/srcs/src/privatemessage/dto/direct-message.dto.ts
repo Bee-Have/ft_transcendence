@@ -2,16 +2,11 @@ import { Expose } from "class-transformer";
 import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class IncomingDirectMessage {
-
 	@IsNumber()
 	conversationId: number
-
-	@IsNumber()
-	receiverId: number
-
+	
 	@IsNotEmpty()
 	content: string
-
 }
 
 export class OutgoingDirectMessage {

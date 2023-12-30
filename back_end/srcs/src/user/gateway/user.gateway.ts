@@ -41,8 +41,6 @@ export class UserGateway {
 			return
 		}
 
-		client.emit('we')
-
 		const friendsIds = await this.userService.getUserFriendsId(userId)
 
 		this.userService.connected_user_map.set(userId, new UserInfo(userId, client, UserStatus.online))

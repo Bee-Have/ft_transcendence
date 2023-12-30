@@ -7,6 +7,7 @@ import PrivateTextArea from './private-message.text-area';
 import { userId } from './global/userId';
 import ListItemButton from '@mui/material/ListItemButton';
 import TextInputWithEnterCallback from './global/TextInput';
+import { socket } from './global/websocket';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -27,7 +28,7 @@ import TextInputWithEnterCallback from './global/TextInput';
 
 interface ConversationProps {
 	conversation: {
-		id:number
+		id: number
 		createdAt: number,
 		memberOneId: number
 		memberTwoId: number
@@ -42,7 +43,7 @@ console.log(userId)
 const Conversation = ({onClick, conv}: any) => {
 
 	// console.log(conv)
-	
+
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
@@ -69,18 +70,28 @@ const Conversations: React.FC = () => {
 
 
 	useEffect(() => {
-		const getConvs = async () => {
-			axios.get('http://localhost:3001/privatemessage/conversations/' + userId)
+		axios.get('http://localhost:3001/privatemessage/conversations/' + userId)
 			.then((res) => {
 				setConvs(res.data)
 			})
 			.catch((err) => {
 				console.log(err)
 			})
-		}
-		getConvs()
 	}, [])
-	
+
+	useEffect(() => {
+		const listenNewConv = (conv: ConversationProps) => {
+			console.log(conv)
+			setConvs((prev) => [...prev, conv])
+		}
+
+		socket.on('new-conv', listenNewConv)
+
+		return () => {
+			socket.off('new-conv', listenNewConv)
+		}
+	}, [])
+
 	const handleclick = (e: any) => {
 		setCurrentChat(e)
 		setshowTextArea(showTextArea + 1)
@@ -90,27 +101,29 @@ const Conversations: React.FC = () => {
 		setCreateConvBool(!createConvBool)
 	}
 
+	const hideInput = () => {
+		setCreateConvBool(false)
+	}
+
 	const createConvCallBack = (inputValue: any) => {
 		axios.get('http://localhost:3001/user/idbyname/' + inputValue, { withCredentials: true })
-		.then( (res) => {
-			axios.post('http://localhost:3001/' + 'privatemessage/conversations/' + userId + '/' + res.data)
-			.then((res) => {
-				const data: any = new Object()
-				data["conversation"] = res.data
-				const exist = convs.some((conv) => conv.conversation.id === res.data.id)
-				if (!exist)	
-					setConvs((prev) => [...prev, data])
+			.then((response) => {
+				axios.post('http://localhost:3001/' + 'privatemessage/conversations/' + userId + '/' + response.data, null, { withCredentials: true })
+					.then((res) => {
+						const exist = convs.some((conv) => conv.conversation.id === res.data.conversation.id)
+						if (!exist)
+							setConvs((prev) => [...prev, res.data])
+					})
+					.catch(e => console.log(e))
 			})
-			.catch(e => console.log(e))
-		})
-		.catch((e) => console.log(e))
+			.catch((e) => console.log(e))
 	}
 
 	return (
 		<div className="channelPeople">
-		  	<div onClick={createConv} className='privMsg'>
+			<div onClick={createConv} className='privMsg'>
 				Private message +
-				{createConvBool && <TextInputWithEnterCallback onEnterPress={createConvCallBack}/>}
+				{createConvBool && <TextInputWithEnterCallback onEnterPress={createConvCallBack} hideInput={hideInput} />}
 			</div>
 			<List component="nav" aria-label="mailbox folders">
 				{ convs ? (
@@ -123,7 +136,7 @@ const Conversations: React.FC = () => {
 			</List>
 			{showTextArea === 0 ? false : <PrivateTextArea currentChat={currentChat} userId={userId}/>}
 		</div>
-	  );
+	);
 }
 
 export default Conversations;

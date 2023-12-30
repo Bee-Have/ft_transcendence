@@ -44,7 +44,11 @@ export class PrivateMessageService {
 			conversation["friendUsername"] = await this.getUsername(receiverId)
 			conversation["username"] = await this.getUsername(userId)
 
-			return conversation
+			const c = {}
+			c["conversation"] = conversation
+			c["lastMessage"] = await this.getLastMessage(userId, conversation.id)
+
+			return c
 		}
 
 		try {
@@ -54,10 +58,28 @@ export class PrivateMessageService {
 					memberTwoId: greaterId
 				}
 			})
+			
 			createdConv["friendUsername"] = await this.getUsername(receiverId)
 			createdConv["username"] = await this.getUsername(userId)
 
-			return createdConv
+			const conv = {}
+
+			conv["conversation"] = createdConv
+			conv["lastMessage"] = null
+			
+			const receiver = this.userService.connected_user_map.get(receiverId)
+			console.log(conv)
+			if (receiver)
+			{
+				let tmp = conv["conversation"]["username"]
+				conv["conversation"]["username"] = conv["conversation"]["friendUsername"]
+				conv["conversation"]["friendUsername"]  = tmp
+				receiver.socket.emit('new-conv', conv)
+				tmp = conv["conversation"]["username"]
+				conv["conversation"]["username"] = conv["conversation"]["friendUsername"]
+				conv["conversation"]["friendUsername"]  = tmp
+			}
+			return conv
 		}
 		catch (err) {
 			throw new BadRequestException('Error While Creation the Conversation')

@@ -52,8 +52,8 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 
 	useEffect(() => {
 		const listenMessage = (message: MessageProps) => {
-			console.log(message)
-			setMessages((prev) => [...prev, message]);
+			if (currentChat.conversation.id === message.conversationId)
+				setMessages((prev) => [...prev, message]);
 		}
 
 		socket.on('new-message', listenMessage)

@@ -65,8 +65,15 @@ export class AuthController {
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
   	async refreshTokens(	@GetCurrentUser('sub') userId: number, 
-  					@GetCurrentUser('refreshToken') rt: string): Promise<Tokens> {
-		return await this.authService.refreshTokens(userId, rt);
+  					@GetCurrentUser('refreshToken') rt: string,
+					@Res() res: Response): Promise<void> {
+		const tokens = await this.authService.refreshTokens(userId, rt);
+
+		res.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+		res.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+		res.cookie('userId', userId, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
+
+		res.send()
 	}
 }
 

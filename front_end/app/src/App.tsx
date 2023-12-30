@@ -15,6 +15,7 @@ import	{sendBackPost}	from './files/sendBack';
 import	Chat						from	'./files/chat';
 import { ReadCookie } from './files/ReadCookie';
 import axios from 'axios';
+import isTokenExpired from './files/global/isTokenExpired';
 
 
 const App: React.FC = () => {
@@ -30,7 +31,7 @@ const App: React.FC = () => {
 	const [showBloquedList, setBloquedList]		= useState(false);
 	const [showHistoryMatch, setHistoryMatch]	= useState(false);
 
-	let pairs = {};
+	// let pairs = {};
 
 	const updateBooleanStates = (statesToUpdate: {
 		showChat?: boolean;
@@ -52,26 +53,26 @@ const App: React.FC = () => {
 		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
 	};
 
-	function update_cookie()
-	{
-		if (document.cookie)
-		{
-			// console.log(document.cookie)
-			// let temp = document.cookie;			
-			// let test = temp.split("=");
-			// console.log(test)
-			const payload = ReadCookie('payload_cookie')
+	// function update_cookie()
+	// {
+	// 	if (document.cookie)
+	// 	{
+	// 		// console.log(document.cookie)
+	// 		// let temp = document.cookie;			
+	// 		// let test = temp.split("=");
+	// 		// console.log(test)
+	// 		const payload = ReadCookie('payload_cookie')
 
-			let keys = payload?.split("%3B");
+	// 		let keys = payload?.split("%3B");
 			
-			for (let item in keys)
-			{
-				if (keys[item] === "")
-					break;
-				pairs[keys[item].split("%3D")[0].slice()] = keys[item].split("%3D")[1].slice();
-			}
-		}
-	}
+	// 		for (let item in keys)
+	// 		{
+	// 			if (keys[item] === "")
+	// 				break;
+	// 			pairs[keys[item].split("%3D")[0].slice()] = keys[item].split("%3D")[1].slice();
+	// 		}
+	// 	}
+	// }
 
 	const acceptConnection = (): void => {
 		setLogStatus(true);
@@ -127,9 +128,42 @@ const App: React.FC = () => {
 		// };
 		// window.addEventListener('message', handleMessage);
 		
-		update_cookie();
-		if (pairs["logged"] === "true")
-			acceptConnection();
+		const aToken = ReadCookie('access_token')
+		const rToken = ReadCookie('refresh_token')
+		if (!aToken)
+		{
+			console.log('login')
+			// login()
+			setLogStatus(false)
+		}
+		else if ( isTokenExpired(aToken) )
+		{
+			console.log('Atoken Expired')
+			if ( !rToken || isTokenExpired(rToken) )
+			{
+				console.log('No Rt or expired')
+				setLogStatus(false)
+			// login()
+			}
+			else
+			{
+				console.log('posting')
+				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
+				.then((res): any => {
+					console.log('post refresh success')
+					window.location.reload()
+					console.log(res.data)
+				})
+				.catch((e) => console.log(e))
+			}
+
+		}
+		else
+			setLogStatus(true)
+
+		// update_cookie();
+		// if (pairs["logged"] === "true")
+		// 	acceptConnection();
 	
 		// return () => {
 		// 	window.removeEventListener('message', handleMessage);

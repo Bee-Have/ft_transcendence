@@ -1,5 +1,4 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
-import { NotFoundException } from "@nestjs/common/exceptions/not-found.exception";
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { Response } from "express";
 import * as fs from 'fs';
@@ -7,7 +6,6 @@ import { authenticator } from 'otplib';
 import { PrismaService } from "src/prisma/prisma.service";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo } from "./gateway/dto/userStatus.dto";
-import { OutgoingDirectMessage } from "src/privatemessage/dto/direct-message.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
@@ -222,11 +220,11 @@ export class UserService {
 			}
 		})
 
-		const friendsWithDuplicate = friends.friends.concat(friends.friendsRelation) 
+		const friendsWithDuplicate = friends?.friends?.concat(friends.friendsRelation) 
 
 		const unique = new Array()
 
-		friendsWithDuplicate.forEach((obj) => {
+		friendsWithDuplicate?.forEach((obj) => {
 			if (!unique.includes(obj.id) && obj.id != userId)
 				unique.push(obj.id)
 		})

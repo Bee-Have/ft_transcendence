@@ -35,23 +35,25 @@ interface ConversationProps {
 		friendUsername: string
 		username: string
 	}
-	lastmessage: object
+	lastMessage: object
+	convIsUnRead: boolean
 }
 
 console.log(userId)
 
 const Conversation = ({onClick, conv}: any) => {
 
-	// console.log(conv)
-
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
 	return (
-		<div className="friend">
+		<div className="friend" >
 			<ListItemButton key={id} onClick={onClick}>
-				<Avatar className="avatar" alt={friendUsername} src={'http://localhost:3001/user/image/' + friendId} />
+				<Avatar
+					className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
+					alt={friendUsername} 
+					src={'http://localhost:3001/user/image/' + friendId} />
 				<div className="name">{friendUsername}</div>
 			</ListItemButton>
 		</div>
@@ -65,13 +67,13 @@ const Conversations: React.FC = () => {
 
 	const [convs, setConvs] = useState<ConversationProps[]>([])
 	const [showTextArea, setshowTextArea] = useState(0)
-	const [currentChat, setCurrentChat] = useState(null)
+	const [currentChat, setCurrentChat] = useState<ConversationProps>()
 	const [createConvBool, setCreateConvBool] = useState(false)
 
 
 	useEffect(() => {
 		axios.get('http://localhost:3001/privatemessage/conversations/' + userId)
-			.then((res) => {
+			.then((res): any => {
 				setConvs(res.data)
 			})
 			.catch((err) => {
@@ -81,7 +83,6 @@ const Conversations: React.FC = () => {
 
 	useEffect(() => {
 		const listenNewConv = (conv: ConversationProps) => {
-			console.log(conv)
 			setConvs((prev) => [...prev, conv])
 		}
 
@@ -92,7 +93,8 @@ const Conversations: React.FC = () => {
 		}
 	}, [])
 
-	const handleclick = (e: any) => {
+	const handleclick = (e: ConversationProps) => {
+		convUpdateUnReadStatus(e.conversation.id, false)
 		setCurrentChat(e)
 		setshowTextArea(showTextArea + 1)
 	}
@@ -119,6 +121,26 @@ const Conversations: React.FC = () => {
 			.catch((e) => console.log(e))
 	}
 
+	const convUpdateUnReadStatus = (conversationId: number, readStatus: boolean) => {
+		const updated =	convs.map(conv => conv.conversation.id === conversationId ? {...conv, convIsUnRead: readStatus}: conv)
+
+		setConvs(updated)
+	}
+
+
+	useEffect(() => {
+		const listenNewMessage = (message: any) => {
+			if (!currentChat || currentChat.conversation.id !== message.conversationId)
+				convUpdateUnReadStatus(message.conversationId, true)
+		}
+
+		socket.on('new-message', listenNewMessage)
+
+		return () => {
+			socket.off('new-message', listenNewMessage)
+		}
+	}, [currentChat, convs])
+
 	return (
 		<div className="channelPeople">
 			<div onClick={createConv} className='privMsg'>
@@ -134,7 +156,7 @@ const Conversations: React.FC = () => {
 					</div>
 				) : null }
 			</List>
-			{showTextArea === 0 ? false : <PrivateTextArea currentChat={currentChat} userId={userId}/>}
+			{showTextArea === 0 ? false : <PrivateTextArea currentChat={currentChat} userId={userId} />}
 		</div>
 	);
 }

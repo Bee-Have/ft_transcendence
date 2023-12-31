@@ -31,13 +31,8 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
-	// const friendId = userId === currentChat.conversation.memberOneId ? currentChat.conversation.memberTwoId : currentChat.conversation.memberOneId
-
-
 	useEffect(() => {
-		if (messagesEndRef.current) {
-			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-		}
+		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest", behavior: 'smooth' });
 	}, [messages]);
 
 	useEffect(() => {
@@ -53,7 +48,12 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	useEffect(() => {
 		const listenMessage = (message: MessageProps) => {
 			if (currentChat.conversation.id === message.conversationId)
+			{
 				setMessages((prev) => [...prev, message]);
+				axios.get('http://localhost:3001/privatemessage/conversations/isread/' + userId + '/' + currentChat.conversation.id)
+					.then((res) => console.log(res.data))
+					.catch((err) => console.log(err))
+			}
 		}
 
 		socket.on('new-message', listenMessage)
@@ -61,7 +61,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 		return () => {
 			socket.off('new-message', listenMessage)
 		}
-	}, [])
+	}, [currentChat])
 
 	// const listenMessage = (message: MessageProps) => {
 	// 	console.log(message)
@@ -77,12 +77,9 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 				element.scrollTop = element.scrollHeight;
 			}
 			axios.post('http://localhost:3001/privatemessage/messages/' + userId, { conversationId: currentChat.conversation.id, content: inputValue })
-				.then((res) => {
-					console.log(res.data)
-					socket.emit('message', res.data)
+				.then((res): any => {
 					setMessages([...messages, res.data]);
 					setInputValue('');
-
 				})
 				.catch((err) => {
 					//TODO: popup try again error with message
@@ -97,6 +94,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 				{messages.map((message, index) => (
 					<Message key={index} message={message} currentChat={currentChat} userId={userId} />
 				))}
+				<div ref={messagesEndRef} />
 			</div>
 			<div className="prompt">
 				<Input

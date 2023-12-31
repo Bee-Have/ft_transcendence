@@ -149,10 +149,8 @@ const App: React.FC = () => {
 			{
 				console.log('posting')
 				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
-				.then((res): any => {
-					console.log('post refresh success')
+				.then(() => {
 					window.location.reload()
-					console.log(res.data)
 				})
 				.catch((e) => console.log(e))
 			}

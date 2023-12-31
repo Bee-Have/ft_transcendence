@@ -19,6 +19,10 @@
 	margin-bottom: 10px;
 }
 
+.unread{
+	border: 1px solid red
+}
+
 .avatar{
 	width: 40px;
 	height: 40px;

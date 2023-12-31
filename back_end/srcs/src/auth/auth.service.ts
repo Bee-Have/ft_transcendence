@@ -175,7 +175,7 @@ export class AuthService {
 		const [at, rt] = await Promise.all([
 			this.jwtService.signAsync(userData, {
 				secret: process.env.JWT_AT_SECRET,
-				expiresIn: '5s'
+				expiresIn: '2h'
 			})
 			.catch((error) => {
 				console.log(error)
@@ -183,7 +183,7 @@ export class AuthService {
 			}),
 			this.jwtService.signAsync(userData, {
 			 	secret: process.env.JWT_RT_SECRET,
-				expiresIn: '15s'
+				expiresIn: '7d'
 			})
 			.catch((error) => {
 				console.log(error)

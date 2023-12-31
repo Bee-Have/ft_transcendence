@@ -15,6 +15,11 @@ import	MatchHistory	from './pages/matchHistory';
 import	Chat 					from	'./pages/chat';
 //import sendBack from './files/sendBack';
 
+import ClassicGame from "./pages/game/Classic";
+import TimedGame from "./pages/game/Timed";
+import SpeedGame from "./pages/game/Speed";
+import RetroGame from "./pages/game/Retro";
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
@@ -110,6 +115,12 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/chat" element={<Chat />} />
+
+				<Route path="/game/classic" element={<ClassicGame />} />
+				<Route path="/game/timed" element={<TimedGame />} />
+				<Route path="/game/speed" element={<SpeedGame />} />
+				<Route path="/game/retro" element={<RetroGame />} />
+
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>
 		</BrowserRouter>

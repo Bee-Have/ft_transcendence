@@ -1,0 +1,24 @@
+@font-face {
+	font-family: "Quinquefive";
+	src: url("./Quinquefive.ttf");
+}
+
+.RetroScore {
+    display: flex;
+    justify-content: center;
+    font-size: 5vh;
+	
+	font-family: "Quinquefive";
+
+	transform: scaleY(2);
+}
+
+.RetroScore > * {
+	flex-grow: 1;
+	padding: 5vh;
+
+	transition: opacity 1s ease-in-out;
+
+	color: #ffffff;
+	text-align: center;
+}

@@ -1,6 +1,8 @@
 import React from 'react';
 import '../css/welcome.css'
 
+import GameModeDialogButton from '../components/game/GameModeDialogButton';
+
 import { useNavigate } from 'react-router-dom';
 
 // interface WelcomeProps
@@ -41,7 +43,8 @@ const Welcome: React.FC = () => {
           </div>
           <div className="col-md-4">
             {!authenticated && !guest && <button className="btn btn-light" onClick={guestUser}>guest</button>}
-            {(authenticated || guest) && <button className="btn btn-light">play</button>}
+            {/* {(authenticated || guest) && <button className="btn btn-light">play</button>} */}
+            {(authenticated || guest) && <GameModeDialogButton />}
           </div>
           <div className="col-md-4">
             <button className="btn btn-light" >leaderboard</button>

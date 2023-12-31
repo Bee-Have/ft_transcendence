@@ -1,0 +1,26 @@
+.GamePad {
+	--position: 50;
+	position: absolute;
+	top: calc(var(--position) * 1vh);
+	transform: translateY(-50%);
+	left: 5vw;
+
+	height: 10vh;
+	width: 2vh;
+	background-color: #B4B4B4;
+	border-radius: 0.8vh;
+}
+
+.OpponentPad {
+	--position: 50;
+	
+	position: absolute;
+	top: calc(var(--position) * 1vh);
+	transform: translateY(-50%);
+	right: 5vw;
+	
+	height: 10vh;
+	width: 2vh;
+	background-color: #6D6D6D;
+	border-radius: 0.8vh;
+}

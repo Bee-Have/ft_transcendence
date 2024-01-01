@@ -5,12 +5,14 @@ import { IncomingDirectMessage, OutgoingDirectMessage } from './dto/direct-messa
 import { Conversation, ConversationProps } from './dto/conversation.dto';
 import { UserInfo } from 'src/user/gateway/dto/userStatus.dto';
 import { Conversation as ConversationPrisma, DirectMessage} from '@prisma/client';
+import { FriendshipService } from 'src/friendship/friendship.service';
 
 @Injectable()
 export class PrivateMessageService {
 
 	constructor(private prisma: PrismaService,
-		private userService: UserService) { }
+		private userService: UserService,
+		private friendshipService: FriendshipService) { }
 
 	async getAllConvsAndLastMessage(userId: number): Promise<ConversationProps[]> {
 		const convs = await this.getAllUserConversations(userId)
@@ -63,20 +65,21 @@ export class PrivateMessageService {
 
 	async createNewMessage(userId: number, message: IncomingDirectMessage): Promise<OutgoingDirectMessage> {
 		let prvmsg: OutgoingDirectMessage
+		const receiverId = await this.getFriendIdByConvId(userId, message.conversationId)
+		const receiverBlockedSender: boolean = await this.friendshipService.isUserBlocked(receiverId, userId)
 
-		try {
+		try { 
 			prvmsg = await this.createDirectMessage(
 				userId,
 				message.conversationId,
 				message.content,
-				false)
+				receiverBlockedSender)
 
-			const [memberOne, memberTwo] = await this.getUsersofConversation(message.conversationId)
-			const friendId = memberOne === userId ? memberTwo : memberOne
+			if (!receiverBlockedSender){
+				const receiver = this.userService.connected_user_map.get(receiverId)
 
-			const friend = this.userService.connected_user_map.get(friendId)
-
-			friend?.socket.emit('new-message', prvmsg)
+				receiver?.socket.emit('new-message', prvmsg)
+			}
 
 			return prvmsg
 		}
@@ -203,6 +206,9 @@ export class PrivateMessageService {
 			}
 		})
 
+		if (!conv)
+			throw new NotFoundException('Conv Not found')
+
 		return [conv.memberOneId, conv.memberTwoId]
 	}
 
@@ -218,12 +224,24 @@ export class PrivateMessageService {
 		return user?.username
 	}
 
-	getFriendId(userId: number, conversation: any): number {
+	getFriendId(userId: number, conversation: ConversationPrisma): number {
 		return userId === conversation.memberOneId ? conversation.memberTwoId : conversation.memberOneId
 	}
 
+	async getFriendIdByConvId(userId: number, conversationId: number): Promise<number> {
+		const [memberOneId, memberTwoId] = await this.getUsersofConversation(conversationId)
+	
+		const conv: ConversationPrisma = {
+			id: conversationId,
+			memberOneId,
+			memberTwoId
+		}
+
+		return this.getFriendId(userId, conv)
+	}
+
 	async buildConversationObject(userId: number, conversationId: number): Promise<ConversationProps> {
-		const conversation = await this.prisma.conversation.findUnique({
+		const conversation: ConversationPrisma = await this.prisma.conversation.findUnique({
 			where: {
 				id: conversationId
 			}
@@ -253,6 +271,10 @@ export class PrivateMessageService {
 		}
 
 		return obj
+	}
+
+	async isBlocked(userId, receiverId) {
+		return await this.friendshipService.isUserBlocked(userId, receiverId)
 	}
 
 

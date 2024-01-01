@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
+import { NotFoundError } from "rxjs";
 import { PrismaService } from "src/prisma/prisma.service";
 
 class FriendRequestError extends WsException {
@@ -190,6 +191,27 @@ export class FriendshipService {
 			throw new WsException("This User isn't blocked")
 
 		await this.prisma.blockedUser.delete({ where: {id: blocked.id} })
+	}
+
+	async isUserBlocked(blockerId: number, blockedId: number) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: blockerId
+			},
+			select: {
+				id: true,
+				blocked: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('User Not found')
+
+		for (const blocked of user.blocked) {
+			if (blockedId === blocked.blockedUserId)
+				return true
+		}
+		return false
 	}
 
 	async userExist (userId: number) : Promise<boolean> {

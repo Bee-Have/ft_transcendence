@@ -206,9 +206,9 @@ export class UserGateway {
 	// }
 
 	@SubscribeMessage('message')
-	handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
+	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
 	{
-		const friendId = this.privmessage.getFriendId(body.senderId, body.conversationId)
+		const friendId = await this.privmessage.getFriendIdByConvId(body.senderId, body.conversationId)
 	
 		const friend = this.userService.connected_user_map.get(friendId)
 

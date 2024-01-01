@@ -99,8 +99,8 @@ export class PrivateMessageController {
 	@Get('test/:userId/:conversationId')
 	async wigf(
 		@Param("conversationId", ParseIntPipe) conversationId: number,
-		@Param("userId", ParseIntPipe) userId: number): Promise<OutgoingDirectMessage> {
-		return await this.privateMessageService.getLastMessage(userId, conversationId)
+		@Param("userId", ParseIntPipe) userId: number) {
+		return await this.privateMessageService.isBlocked(userId, conversationId)
 	}
 
 	@Get('conversations/isread/:userId/:conversationId')

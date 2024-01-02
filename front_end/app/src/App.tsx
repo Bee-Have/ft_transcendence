@@ -13,7 +13,7 @@ import	Bloqued						from './files/blocked';
 import	MatchHistory				from './files/matchHistory';
 import	sendBack, {sendBackPost}	from './files/sendBack';
 import	Chat						from './files/chat';
-import {getCookieValue}				from './cookies_managment';
+import {deleteCookie, getCookieValue} from './cookies_managment';
 
 
 const App: React.FC = () => {
@@ -82,10 +82,11 @@ const App: React.FC = () => {
 		alert("add here question <did you want to disconnected ?>");
 		sendBackPost('http://localhost:3001/auth/logout').then(function () {
 			updateBooleanStates({showWelcome: true});
-			
-			setLogStatus(false);
 
-//			alert("You are now disconnected !");
+			deleteCookie("access_token");
+			deleteCookie("refresh_token");
+			deleteCookie("TfaEnable");
+			setLogStatus(false);
 		})
 
 	};

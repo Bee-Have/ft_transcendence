@@ -2,7 +2,6 @@ import axios from 'axios';
 import {getCookieValue} from "../cookies_managment";
 
 const sendBack = async (url: string) => {
-  console.log("Send Get Back Called");
   try {
     const response = await axios.get(url);
     return response;

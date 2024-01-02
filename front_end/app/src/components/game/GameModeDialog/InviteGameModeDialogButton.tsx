@@ -8,16 +8,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 
 import { useNavigate } from "react-router-dom";
-import { Box, CardContent, DialogContent } from "@mui/material";
-
-import Switch from "@mui/material/Switch";
-import Card from "@mui/material/Card";
-import RobotIcon from "@mui/icons-material/SmartToyTwoTone";
-import PersonIcon from "@mui/icons-material/PersonOutlineTwoTone";
+import { DialogContent } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
 
-import styles from "./GameModeDialogButton.module.css";
+import styles from "./PlayGameModeDialogButton.module.css";
 
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
@@ -30,7 +25,6 @@ export interface GameModeDialogProps {
 }
 
 function GameModeDialog(props: GameModeDialogProps) {
-  const [isMulti, setIsMulti] = React.useState(false);
   const { onClose, selectedMode, open, updateGameMode } = props;
   const navigate = useNavigate();
 
@@ -43,7 +37,7 @@ function GameModeDialog(props: GameModeDialogProps) {
   };
 
   const handleLaunchGame = () => {
-    navigate("/game/" + selectedMode + "?multi=" + isMulti);
+    navigate("/game/" + selectedMode + "?multi=true");
   };
 
   return (
@@ -54,38 +48,7 @@ function GameModeDialog(props: GameModeDialogProps) {
         </DialogTitle>
         <Divider />
         <br />
-        <Box className={styles.Box}>
-          <RobotIcon
-            style={{
-              color: "#26640a",
-              fontSize: isMulti === true ? 25 : 50,
-              transition: "0.5s",
-            }}
-          />
-          <Card className={styles.SwitchCard} elevation={3}>
-            <CardContent>
-              <Switch
-                classes={{
-                  switchBase: styles.Base,
-                  track: styles.Track,
-                  checked: styles.Checked,
-                  root: styles.Root,
-                }}
-                checked={isMulti}
-                onChange={() => setIsMulti(!isMulti)}
-                name="gameType"
-                color="primary"
-              />
-            </CardContent>
-          </Card>
-          <PersonIcon
-            style={{
-              color: "rgb(43, 100, 185)",
-              fontSize: isMulti === false ? 25 : 50,
-              transition: "0.5s",
-            }}
-          />
-        </Box>
+			NICKNAME HERE
         <br />
         <Divider />
         {/* The list should be two row and three columns */}
@@ -123,14 +86,14 @@ function GameModeDialog(props: GameModeDialogProps) {
         <Divider />
         <br />
         <Button className={styles.StartGameButton} onClick={handleLaunchGame}>
-          {isMulti === false ? "Start Game" : "Matchmaking"}
+          send Invite
         </Button>
       </DialogContent>
     </Dialog>
   );
 }
 
-function GameModeDialogButton() {
+function InviteGameModeDialogButton() {
   const [open, setOpen] = React.useState(false);
   const [selectedMode, setSelectedMode] = React.useState(modes[0]);
 
@@ -149,7 +112,7 @@ function GameModeDialogButton() {
   return (
     <div>
       <Button className={styles.ButtonDialogOpen} variant="outlined" onClick={handleClickOpen}>
-        play
+        invite to game
       </Button>
       <GameModeDialog
         selectedMode={selectedMode}
@@ -161,4 +124,4 @@ function GameModeDialogButton() {
   );
 }
 
-export default GameModeDialogButton;
+export default InviteGameModeDialogButton;

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/welcome.css'
 
-import GameModeDialogButton from '../components/game/GameModeDialogButton';
+import PlayGameModeDialogButton from '../components/game/GameModeDialog/PlayGameModeDialogButton';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ const Welcome: React.FC = () => {
           <div className="col-md-4">
             {!authenticated && !guest && <button className="btn btn-light" onClick={guestUser}>guest</button>}
             {/* {(authenticated || guest) && <button className="btn btn-light">play</button>} */}
-            {(authenticated || guest) && <GameModeDialogButton />}
+            {(authenticated || guest) && <PlayGameModeDialogButton />}
           </div>
           <div className="col-md-4">
             <button className="btn btn-light" >leaderboard</button>

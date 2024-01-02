@@ -2,6 +2,8 @@ import React from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import InviteSpectateButton from './DynamicInviteSpectateButton';
+
 interface PopUpProps {
     x: number;
     y: number;
@@ -21,7 +23,7 @@ const PopUp: React.FC<PopUpProps> = ({ x, y, user}) => {
   <div style={squareStyle} className='popUp'>
   {/* make a query string for other users profiles when they are implemented */}
     <span className="btn d-block p-2" onClick={() => navigate("/profil")}>Profil</span>
-    <span className="btn d-block p-2">Spectate</span>
+    <span><InviteSpectateButton /></span>
   {/* link navigate to specific private message */}
     <span className="btn d-block p-2" onClick={() => navigate("/chat")} >Message</span>
     <span className="btn d-block p-2">add friend</span>

@@ -167,10 +167,7 @@ export class UserService {
 	async disableTFA (userId: number) {
 		await this.prisma.user.updateMany({
 			where: {
-				id: userId,
-				isTwoFAEnable: {
-					not: false
-				}
+				id: userId
 			},
 			data: {
 				isTwoFAEnable: false,

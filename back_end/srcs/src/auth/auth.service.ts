@@ -72,6 +72,9 @@ export class AuthService {
 				id: userId
 			}
 		})
+
+		if (!user.isTwoFAEnable || !user.twoFASecret)
+			throw new BadRequestException('TFA is not enabled')
 		
 		const bool = authenticator.verify({ token: code, secret: user.twoFASecret })
 

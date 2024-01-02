@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Response } from "express";
 import { TfaDto } from "src/auth/dto/tfa.dto";
@@ -10,6 +10,7 @@ import { updateUsernameDto } from "./dto/updateUsername.dto";
 import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
 import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { UserService } from './user.service';
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiBearerAuth()
 @Controller('user')
@@ -171,6 +172,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'A valid code has been given and the TFA is now enabled'})
 	@ApiUnauthorizedResponse({ description: 'A wrong code has been given, you can try again'})
 	@Get('tfa/enable/callback')
+	@UseGuards(ThrottlerGuard)
 	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
 						@Query() query: TfaDto) {
 		return this.userService.enableTFACallback(userId, query.code)

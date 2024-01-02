@@ -41,6 +41,14 @@ export class UserGateway {
 			return
 		}
 
+		// if (this.userService.connected_user_map.get(userId))
+		// {
+		// 	console.log('UserId: ' + userId, 'tried to connect to websocket while already being connected')
+		// 	client.disconnect()
+		// 	return
+		// }
+
+
 		const friendsIds = await this.userService.getUserFriendsId(userId)
 
 		this.userService.connected_user_map.set(userId, new UserInfo(userId, client, UserStatus.online))

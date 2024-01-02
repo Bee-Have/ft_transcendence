@@ -12,7 +12,8 @@ import  FriendList  				from './files/friendList';
 import	Bloqued						from './files/blocked';
 import	MatchHistory				from './files/matchHistory';
 import	sendBack, {sendBackPost}	from './files/sendBack';
-import	Chat						from	'./files/chat';
+import	Chat						from './files/chat';
+import {getCookieValue}				from './cookies_managment';
 
 
 const App: React.FC = () => {
@@ -28,7 +29,6 @@ const App: React.FC = () => {
 	const [showBloquedList, setBloquedList]		= useState(false);
 	const [showHistoryMatch, setHistoryMatch]	= useState(false);
 
-	let pairs = {};
 
 	const updateBooleanStates = (statesToUpdate: {
 		showChat?: boolean;
@@ -50,23 +50,6 @@ const App: React.FC = () => {
 		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
 	};
 
-	function update_cookie()
-	{
-		if (document.cookie)
-		{
-			let temp = document.cookie;			
-			let test = temp.split("=");
-			let keys = test[1].split("%3B");
-			
-			for (let item in keys)
-			{
-				if (keys[item] === "")
-					break;
-				pairs[keys[item].split("%3D")[0].slice()] = keys[item].split("%3D")[1].slice();
-			}
-		}
-	}
-
 	const acceptConnection = (): void => {
 		setLogStatus(true);
 	};
@@ -84,12 +67,14 @@ const App: React.FC = () => {
 				newWindow.addEventListener('beforeunload', () => {
 					setShowOverlay(false);
 				});
+
+				let access_token = getCookieValue("access_token");
+				if ( access_token !== null)
+				{
+					setLogStatus(true);
+				}
+
 			}
-			
-			update_cookie();
-			
-			if (pairs["logged"] === "true")
-				acceptConnection();
 		})
 	};
 	
@@ -98,25 +83,31 @@ const App: React.FC = () => {
 		sendBackPost('http://localhost:3001/auth/logout').then(function () {
 			updateBooleanStates({showWelcome: true});
 			
-//			setLogStatus(false);
-//			document.cookie = "payload_cookie=logged%3Dfalse%3BsameSite%3DStrict%3B";
-			
+			setLogStatus(false);
+
 //			alert("You are now disconnected !");
 		})
 
 	};
 
+	/**
+	 * useEffect(() => {
+	 *   // Your code here
+	 * }, []);
+	 * is similar to componentDidMount in class based component and let code run when a component finished mounting.
+	 */
 	useEffect(() => {
+
+		if (getCookieValue("access_token") !== null)
+		{
+			// TODO : Change this so it send a ping to the backend to know if user is still logged or not
+			setLogStatus(true);
+		}
 		const handleMessage = (event: MessageEvent): void => {
 			if (event.data === "OK")
 				setLogStatus(true);
 		};
 		window.addEventListener('message', handleMessage);
-		
-		update_cookie();
-		if (pairs["logged"] === "true")
-			acceptConnection();
-		
 
 		return () => {
 			window.removeEventListener('message', handleMessage);

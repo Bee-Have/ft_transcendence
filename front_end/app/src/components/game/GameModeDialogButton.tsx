@@ -148,9 +148,9 @@ function GameModeDialogButton() {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button className={styles.ButtonDialogOpen} variant="outlined" onClick={handleClickOpen}>
+      {/* <Button className="btn btn-light" variant="outlined" onClick={handleClickOpen}> */}
         play
-		
       </Button>
       <GameModeDialog
         selectedMode={selectedMode}

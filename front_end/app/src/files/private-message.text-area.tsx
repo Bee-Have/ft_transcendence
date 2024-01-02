@@ -13,14 +13,18 @@ interface MessageProps {
 	conversationId: number,
 }
 
-const Message = ({ message, currentChat, userId }: any) => {
+const Message = ({ message, currentChat, userId, isSame }: any) => {
 
 	return (
 		<div className="message">
-			<Avatar alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={'http://localhost:3001/user/image/' + message.senderId} />
-			<div className="message-content">
-				<div className='name'>{message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}</div>
-				<div className='msg'>{message.content}</div>
+			{ isSame ? "" :
+			<div className='private-message-header'>
+				<Avatar className="private-message-avatar" alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={'http://localhost:3001/user/image/' + message.senderId} />
+				<div className='private-message-name'>{message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}</div>
+			</div>}
+
+			<div className={"private-message-message-wrapper "}>
+				<div className='private-message-message'>{message.content}</div>
 			</div>
 		</div>
 	)
@@ -88,11 +92,19 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 		}
 	};
 
+	const isLastMessageSameSender = (index: number) => {
+		if (index === 0)
+			return false
+		if (messages[index].senderId === messages[index - 1].senderId)
+			return true
+		return false
+	}
+
 	return (
 		<div className="textArea" id="test">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
-					<Message key={index} message={message} currentChat={currentChat} userId={userId} />
+					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)}/>
 				))}
 				<div ref={messagesEndRef} />
 			</div>

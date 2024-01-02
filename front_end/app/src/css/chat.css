@@ -150,14 +150,57 @@
 	max-height: calc(100vh - 125px);
 	}
 
-.message{
+.message-content{
 	display: flex;
 	min-height: 50px;
 }
 
 .name{
 	font-weight: bold;
+	font-size: 50%;
+	display: flex;
+	margin-left: 10%;
 }
+
+.private-message-header {
+	display: flex;
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+.private-message-avatar {
+	width: 40px;
+	height: 40px;
+	margin-right: 20px;
+	margin-left: 10px;
+}
+
+.private-message-name {
+	font-weight: bold;
+	font-size: 150%;
+	display: flex;
+	align-items: center;
+}
+
+.private-message-message {
+	display: inline-block;
+	align-items: center;
+	max-width: 500px;
+	word-wrap: break-word;
+	margin: 1px;
+	padding: 10px 12px 10px 12px;
+	background-color: lightgrey;
+	border-radius: 10px;
+	border: lightslategray solid 2px;
+	box-sizing: border-box;
+}
+
+.private-message-message-wrapper{
+	width: 50%;
+	display: flex;
+	margin-left: 15px;
+}
+
 
 .prompt{
 	height: 50px;

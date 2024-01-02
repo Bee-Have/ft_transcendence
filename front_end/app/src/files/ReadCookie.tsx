@@ -11,5 +11,5 @@ export function ReadCookie(name: string) {
 		}
 	}
 
-	return '';
+	return null;
 };

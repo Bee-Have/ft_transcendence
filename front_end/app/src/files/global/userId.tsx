@@ -1,5 +1,5 @@
 import { ReadCookie } from "../ReadCookie"
 
-const userID: any  = ReadCookie('userId')
+const userID: string | null  = ReadCookie('userId')
 
 export const userId: number = Number(userID)

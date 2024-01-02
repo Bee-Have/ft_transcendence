@@ -3,13 +3,13 @@ import  React, { useState, useEffect} from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending						from './files/pending';
+import  Pending						from './files/pendingMabriel';
 import  Welcome     				from './files/welcome';
 import  Menu        				from './files/menu';
 import  Profil      				from './files/profil';
 import  Header      				from './files/header';
-import  FriendList  				from './files/friendList';
-import	Bloqued						from './files/blocked';
+import  FriendList  				from './files/FriendsList';
+import	Bloqued						from './files/blockedMabriel';
 import	MatchHistory				from './files/matchHistory';
 import	{sendBackPost}	from './files/sendBack';
 import	Chat						from	'./files/chat';

@@ -3,15 +3,19 @@ import { plainToInstance } from "class-transformer";
 import { Response } from "express";
 import * as fs from 'fs';
 import { authenticator } from 'otplib';
+import { FriendshipService } from "src/friendship/friendship.service";
 import { PrismaService } from "src/prisma/prisma.service";
+import { BlockedUser } from "./dto/blocked-user.dto";
+import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
-import { UserInfo } from "./gateway/dto/userStatus.dto";
+import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
 const qrcode =  require('qrcode')
 
 @Injectable()
 export class UserService {
 
-	constructor(private prisma: PrismaService) {}
+	constructor(private prisma: PrismaService,
+				private friendService: FriendshipService) {}
 
 	public connected_user_map = new Map<number, UserInfo>()
 
@@ -196,12 +200,12 @@ export class UserService {
 		})
 
 		if (!user)
-			throw new NotFoundException()
+			throw new NotFoundException('User Not Found')
 
 		return user
 	}
 
-	async getUserFriendsId(userId: number) {
+	async getUserFriendsId(userId: number): Promise<number[]> {
 		const friends = await this.prisma.user.findUnique({
 			where: {
 				id: userId
@@ -222,7 +226,7 @@ export class UserService {
 
 		const friendsWithDuplicate = friends?.friends?.concat(friends.friendsRelation) 
 
-		const unique = new Array()
+		const unique = new Array<number>()
 
 		friendsWithDuplicate?.forEach((obj) => {
 			if (!unique.includes(obj.id) && obj.id != userId)
@@ -230,6 +234,24 @@ export class UserService {
 		})
 
 		return unique 
+	}
+
+	async getUserFriends(userId: number) {
+		const friendsIds = await this.getUserFriendsId(userId)
+
+		const friends: Friend[] = new Array<Friend>()
+
+		for (const friendId of friendsIds) {
+			const friendStatus = this.connected_user_map.get(friendId)?.status
+
+			friends.push({
+				id: friendId, 
+				username: await this.getUsername(friendId),
+				status: friendStatus ? friendStatus : UserStatus.offline
+			})
+		}
+
+		return friends
 	}
 
 	async getOrCreateConversation(memberOneId: number, memberTwoId: number) {
@@ -252,6 +274,33 @@ export class UserService {
 				memberTwoId: greaterId
 			}
 		})
+	}
+
+	async getUserPendingInvite(userId: number) : Promise<FriendRequest[]> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				receivedFriendRequests: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('User Not found')
+		
+		const friendsRequest = new Array<FriendRequest>()
+		
+		for (const friendReq of user.receivedFriendRequests) {
+			if (friendReq.status === 'pending') {
+			friendsRequest.push({ 
+				id: friendReq.senderId,
+				username: await this.getUsername(friendReq.senderId)})
+			}
+		}
+
+		return  friendsRequest
 	}
 
 	async doMemberOneBlockedMemberTwo (memberOneId: number, memberTwoId: number) {
@@ -282,6 +331,31 @@ export class UserService {
 
 	async isMemberOneBlockedByMemberTwo(memberOneId: number, memberTwoId: number) {
 		return this.doMemberOneBlockedMemberTwo(memberTwoId, memberOneId)
+	}
+
+	async getBlockedUser(userId: number): Promise<BlockedUser[]> {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId
+			},
+			select: {
+				blocked: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('User Not found')
+
+		const blockedUser = new Array<BlockedUser>()
+
+		for (const blocked of user.blocked) {
+			blockedUser.push({
+				id: blocked.blockedUserId,
+				username: await this.getUsername(blocked.blockedUserId)
+			})
+		}
+
+		return blockedUser
 	}
 
 }

@@ -86,10 +86,10 @@ const Conversations: React.FC = () => {
 			setConvs((prev) => [...prev, conv])
 		}
 
-		socket.on('new-conv', listenNewConv)
+		socket?.on('new-conv', listenNewConv)
 
 		return () => {
-			socket.off('new-conv', listenNewConv)
+			socket?.off('new-conv', listenNewConv)
 		}
 	}, [])
 
@@ -134,10 +134,10 @@ const Conversations: React.FC = () => {
 				convUpdateUnReadStatus(message.conversationId, true)
 		}
 
-		socket.on('new-message', listenNewMessage)
+		socket?.on('new-message', listenNewMessage)
 
 		return () => {
-			socket.off('new-message', listenNewMessage)
+			socket?.off('new-message', listenNewMessage)
 		}
 	}, [currentChat, convs])
 

@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
-import { NotFoundError } from "rxjs";
 import { PrismaService } from "src/prisma/prisma.service";
 
 class FriendRequestError extends WsException {
@@ -93,7 +92,7 @@ export class FriendshipService {
 
 	async acceptFriendRequest(acceptorId: number, receiverId: number) {
 		if (acceptorId === receiverId)
-			throw new FriendRequestError('Acceptor cant be receiver', receiverId, 'acceptation')
+			throw new BadRequestException('Acceptor cant be receiver')
 
 		const req = await this.prisma.friendRequest.findFirst({
 			where: {
@@ -102,7 +101,7 @@ export class FriendshipService {
 			}
 		})
 		if (!req)
-			throw new FriendRequestError('Friend Request does not exist', receiverId, 'acceptation')
+			throw new NotFoundException('Friend Request Not Found')
 	
 		await this.prisma.user.update({
 			where: {
@@ -125,7 +124,7 @@ export class FriendshipService {
 	
 	async rejectFriendRequest(rejectorId: number , receiverId: number) {
 		if (rejectorId === receiverId)
-			throw new FriendRequestError('Rejector cant be receiver', receiverId, 'rejection')
+			throw new BadRequestException('Rejector cant be receiver')
 	
 		const req = await this.prisma.friendRequest.findFirst({
 			where: {
@@ -134,7 +133,7 @@ export class FriendshipService {
 			}
 		})
 		if (!req)
-			throw new FriendRequestError('Friend Request does not exist', receiverId, 'rejection')
+			throw new NotFoundException('Friend Request does not exist')
 
 		await this.prisma.friendRequest.delete({
 			where:{
@@ -148,7 +147,7 @@ export class FriendshipService {
 		const userExist = await this.userExist(blockedUserId)
 
 		if (!userExist)
-			throw new WsException('The blocked user does not exist')
+			throw new NotFoundException('The blocked user does not exist')
 		
 		const blocked = await this.prisma.blockedUser.findFirst({
 			where: {
@@ -158,7 +157,7 @@ export class FriendshipService {
 		})
 
 		if (blocked)
-			throw new WsException('User Already Blocked')
+			throw new BadRequestException('User Already Blocked')
 	
 		try {
 			await this.prisma.blockedUser.create({
@@ -170,7 +169,7 @@ export class FriendshipService {
 		}
 		catch (error) {
 			console.log(error)
-			throw new WsException(error)
+			throw new Error(error)
 		}
 	}
 
@@ -178,7 +177,7 @@ export class FriendshipService {
 		const userExist = await this.userExist(blockedUserId)
 
 		if (!userExist)
-			throw new WsException('The User does not exist')
+			throw new NotFoundException('The User does not exist')
 		
 		const blocked = await this.prisma.blockedUser.findFirst({
 			where: {
@@ -188,7 +187,7 @@ export class FriendshipService {
 		})
 	
 		if (!blocked)
-			throw new WsException("This User isn't blocked")
+			throw new BadRequestException("This User isn't blocked")
 
 		await this.prisma.blockedUser.delete({ where: {id: blocked.id} })
 	}

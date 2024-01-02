@@ -56,10 +56,10 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 			}
 		}
 
-		socket.on('new-message', listenMessage)
+		socket?.on('new-message', listenMessage)
 
 		return () => {
-			socket.off('new-message', listenMessage)
+			socket?.off('new-message', listenMessage)
 		}
 	}, [currentChat])
 
@@ -68,7 +68,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	// 	setMessages([...messages, message]);
 	// }
 
-	// socket.on('new-message', listenMessage)
+	// socket?.on('new-message', listenMessage)
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {

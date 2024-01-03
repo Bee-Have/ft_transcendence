@@ -1,16 +1,18 @@
-import React from 'react';
-import ChannelList from '../components/channelList';
-import PrivateMessage from '../components/privateMessage';
-import TextArea from '../components/textArea';
+import	React from 'react';
+// import	ChannelPeople from './ChannelPeople';
+// import	TextArea from './textArea';
+import Conversations from './Conversation';
+import ChannelList from 'src/components/channelList';
 
 const Chat: React.FC = () => {
-	return (
-		<div className="chat">
-			<ChannelList />
-			<PrivateMessage />
-			<TextArea />
-		</div>
-	);
+
+  return (
+    <div className="chat">
+    	<ChannelList/>
+		<Conversations/>
+			{/* <TextArea/> */}
+    </div>
+  );
 };
 
 export default Chat;

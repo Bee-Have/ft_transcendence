@@ -1,16 +1,16 @@
 // import  React, { useState, useEffect} from 'react';
-import  React, { useEffect } from 'react';
+import  React from 'react';
 
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending				from './pages/pending';
+import  Pending				from './pages/pendingMabriel';
 import  Welcome     	from './pages/welcome';
 // import  Menu        	from './components/menu';
 import  Profil      	from './pages/profil';
 // import  Header      	from './components/header';
-import  FriendList  	from './pages/friendList';
-import	Blocked				from './pages/blocked';
+import  FriendList  	from './pages/FriendsList';
+import	Blocked				from './pages/blockedMabriel';
 import	MatchHistory	from './pages/matchHistory';
 import	Chat 					from	'./pages/chat';
 //import sendBack from './files/sendBack';
@@ -221,6 +221,7 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/chat" element={<Chat />} />
+				<Route path="*" element={<p>404 Not found</p> } />
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>
 		</BrowserRouter>

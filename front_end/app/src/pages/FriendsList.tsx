@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import PopUp from './popUp';
-import { Friend } from './global/friend.dto';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import PopUp from '../components/popUp';
+import Menu from '../components/menu';
+import { Friend } from './global/friend.dto';
 import { userId } from './global/userId';
 import { socket } from './global/websocket';
 
@@ -65,6 +66,7 @@ const FriendList: React.FC = () => {
 
 	return (
 		<div className="friendList">
+			<Menu />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(friends).map((i) => (

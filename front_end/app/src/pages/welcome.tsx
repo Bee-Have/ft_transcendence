@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../css/welcome.css'
 
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ReadCookie } from './ReadCookie';
+import isTokenExpired from './global/isTokenExpired';
 
 // interface WelcomeProps
 // {
@@ -17,12 +20,56 @@ const Welcome: React.FC = () => {
 //   this is a temporary variable until the back is linked to the front
   const [authenticated, setAuthenticated] = React.useState(false);
   const [guest, setGuest] = React.useState(false);
+  const aToken = ReadCookie('access_token')
+  const rToken = ReadCookie('refresh_token')
 
+	// const login = () => {
+  // }
+  
   const authenticateUser = () => {
-	// this is temporary
-	// here call the 42 portal to authenticate the user
-	setAuthenticated(true);
+    // this is temporary
+    // here call the 42 portal to authenticate the user
+    axios.get('http://localhost:3001/auth')
+    .then((res: any) => {
+      window.location.replace(res.data)
+    })
+    .catch(e => console.log(e))
+	// login()
+    // setAuthenticated(true);
   }
+
+  useEffect(() => {
+		if (!aToken)
+		{
+			console.log('login')
+			// login()
+			setAuthenticated(false)
+		}
+		else if ( isTokenExpired(aToken) )
+		{
+			console.log('Atoken Expired')
+			if ( !rToken || isTokenExpired(rToken) )
+			{
+				console.log('No Rt or expired')
+				setAuthenticated(false)
+			// login()
+			}
+			else
+			{
+				console.log('posting')
+				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
+				.then(() => {
+					window.location.reload()
+				})
+				.catch((e) => console.log(e))
+			}
+
+		}
+		else
+			setAuthenticated(true)
+  }, [])
+
+
 
   const guestUser = () => {
 	setGuest(true);

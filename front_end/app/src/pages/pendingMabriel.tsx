@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { FriendRequest } from './global/friend.dto';
 import { userId } from './global/userId';
 
+import Menu from '../components/menu';
 
 const Card = ({ request }: any) => {
 
@@ -73,6 +74,7 @@ const Pending: React.FC = () => {
 
 	return (
 		<div className="pending">
+			<Menu />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(friendsReq).map((i) => (

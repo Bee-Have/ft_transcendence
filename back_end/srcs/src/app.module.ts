@@ -16,7 +16,7 @@ import { UserModule } from './user/user.module';
 		ConfigModule.forRoot({ expandVariables: true }),
 		HttpModule,
 		AuthModule,
-		PrismaModule,
+		PrismaModule, 
 		UserModule,
 		PrivateMessageModule,
 		ThrottlerModule.forRoot([{ttl: 30000, limit: 3}])

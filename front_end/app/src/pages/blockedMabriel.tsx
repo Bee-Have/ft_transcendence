@@ -4,6 +4,8 @@ import { userId } from './global/userId';
 import axios from 'axios';
 //import test from '../asset/default.jpg'
 
+import Menu from '../components/menu';
+
 const Card = ({ prop }: any) => {
 
 	const [message, setMessage] = useState<string | null>(null)
@@ -44,6 +46,7 @@ const Bloqued: React.FC = () => {
 
 	return (
 		<div className="bloqued">
+			<Menu />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(blockedUser).map((i) => (

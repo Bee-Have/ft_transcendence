@@ -2,6 +2,8 @@ import React from 'react';
 import Button from '@mui/material/Button';
 //import test from '../asset/default.jpg'
 
+import Menu from '../components/menu';
+
 interface CardProps {
   text: string;
 }
@@ -21,9 +23,10 @@ const Card: React.FC<CardProps> = ({text}) => { return (
   );
 };
 
-const Bloqued: React.FC = () => {
+const Blocked: React.FC = () => {
   return (
-    <div className="bloqued">
+    <div className="blocked">
+      <Menu/>
       <div className="content">
         <div className="printCard">
           <Card text={'test1'} />
@@ -36,4 +39,4 @@ const Bloqued: React.FC = () => {
   );
 };
 
-export default Bloqued;
+export default Blocked;

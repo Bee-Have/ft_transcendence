@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import PopUp from '../files/popUp';
+import PopUp from '../components/popUp';
+
+import Menu from '../components/menu';
 
 interface CardProps {
   photo: string;
@@ -40,6 +42,7 @@ const FriendList: React.FC = () => {
 
   return (
     <div className="friendList">
+      <Menu/>
       <div className="content">
         <div className="printCard">
           <Card photo={'./asset/default.jpg'} name={'test1'} onClick={handleCardClick}/>

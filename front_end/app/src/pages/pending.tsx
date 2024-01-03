@@ -3,6 +3,8 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import BlockIcon from '@mui/icons-material/Block';
 import LockIcon from '@mui/icons-material/Lock';
 
+import Menu from '../components/menu';
+
 interface CardProps {
   photo: string;
   text: string;
@@ -34,6 +36,7 @@ const Card: React.FC<CardProps> = ({ photo, text }) => {
 const Pending: React.FC = () => {
   return (
     <div className="pending">
+      <Menu/>
       <div className="content">
         <div className="printCard">
           <Card photo={'./asset/default.jpg'} text={'test1'} />

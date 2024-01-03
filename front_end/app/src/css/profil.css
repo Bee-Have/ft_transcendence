@@ -119,18 +119,18 @@
 
 
 
-/* bloqued */
-.bloqued .card{
+/* blocked */
+.blocked .card{
   width: 55%;
   margin-left: 10%;
 }
 
-.bloqued .PP{
+.blocked .PP{
   margin-left: 10%;
   width: 10%;
 }
 
-.bloqued .name{
+.blocked .name{
   width: 40%;
 }
 

@@ -1,4 +1,4 @@
-/* Member list */
+/* private message */
 .privMsg{
 	/* height: 50px;
 	width: 96%; */
@@ -10,13 +10,19 @@
 	background-color: grey;
 	color: white;
 	text-align: center;
-	font-size: 200%;
+	font-size: 150%;
 }
 
 .friend{
-	width: '100%';
-	max-width: 360px;
-	margin-bottom: 10px;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+}
+
+.popup .avatar{
+	width: 20px;
+	height: 20px;
+	margin-right: 20px;
 }
 
 .unread{
@@ -24,14 +30,18 @@
 }
 
 .avatar{
-	width: 40px;
-	height: 40px;
-	margin-right: 20px;
+	margin-right:20px;
 }
 
 .channelPeople .name{
 	font-size: 200%;
-	text-align: center;
+}
+
+.channelPeople .title{
+	position: fixed;
+	top: 12px;
+	left: 25%;
+	color: white;
 }
 
 /* Channel list */
@@ -66,7 +76,6 @@
 .add{
 	color: white;
 }
-
 
 /* messages area */
 

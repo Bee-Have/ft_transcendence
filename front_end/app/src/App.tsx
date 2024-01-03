@@ -1,57 +1,54 @@
-import  React, { useState, useEffect} from 'react';
+// import  React, { useState, useEffect} from 'react';
+import  React, { useEffect } from 'react';
 
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending						from './files/pendingMabriel';
-import  Welcome     				from './files/welcome';
-import  Menu        				from './files/menu';
-import  Profil      				from './files/profil';
-import  Header      				from './files/header';
-import  FriendList  				from './files/FriendsList';
-import	Bloqued						from './files/blockedMabriel';
-import	MatchHistory				from './files/matchHistory';
-import	{sendBackPost}	from './files/sendBack';
-import	Chat						from	'./files/chat';
-import { ReadCookie } from './files/ReadCookie';
-import axios from 'axios';
-import isTokenExpired from './files/global/isTokenExpired';
+import  Pending				from './pages/pending';
+import  Welcome     	from './pages/welcome';
+// import  Menu        	from './components/menu';
+import  Profil      	from './pages/profil';
+// import  Header      	from './components/header';
+import  FriendList  	from './pages/friendList';
+import	Blocked				from './pages/blocked';
+import	MatchHistory	from './pages/matchHistory';
+import	Chat 					from	'./pages/chat';
+//import sendBack from './files/sendBack';
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
 
-	const [showMenu, setMenu]					= useState(false);
-	const [showChat, setChat]					= useState(false);
-	const [isLogged, setLogStatus]				= useState(false);
-	const [showWelcome, setWelcome] 			= useState(true);
-	const [showProfil, setViewProfil] 			= useState(false);
-	// const [showOverlay, setShowOverlay] 		= useState(false);
-	const [showFriendList, setFriendList] 		= useState(false);
-	const [showPendingList, setPendingList] 	= useState(false);
-	const [showBloquedList, setBloquedList]		= useState(false);
-	const [showHistoryMatch, setHistoryMatch]	= useState(false);
+	// const [showMenu, setMenu]									= useState(false);
+	// const [showChat, setChat]									= useState(true);
+	// const [isLogged, setLogStatus]						= useState(true);
+	// const [showWelcome, setWelcome] 					= useState(false);
+	// const [showProfil, setViewProfil] 				= useState(false);
+	// const [showOverlay, setShowOverlay] 			= useState(false);
+	// const [showFriendList, setFriendList] 		= useState(false);
+	// const [showPendingList, setPendingList] 	= useState(false);
+	// const [showBlockedList, setBlockedList] 	= useState(false);
+	// const [showHistoryMatch, setHistoryMatch] = useState(false);
 
-	// let pairs = {};
-
-	const updateBooleanStates = (statesToUpdate: {
-		showChat?: boolean;
-		showMenu?: boolean;
-		showProfil?: boolean;
-		showWelcome?: boolean;
-		showFriendList?: boolean;
-		showPendingList?: boolean;
-		showBloquedList?: boolean;
-		showHistoryMatch?: boolean;
-	}): void => {
-		setChat(statesToUpdate.showChat || false);
-		setMenu(statesToUpdate.showMenu || false);
-		setWelcome(statesToUpdate.showWelcome || false);
-		setViewProfil(statesToUpdate.showProfil || false);
-		setFriendList(statesToUpdate.showFriendList || false);
-		setPendingList(statesToUpdate.showPendingList || false);
-		setBloquedList(statesToUpdate.showBloquedList || false);
-		setHistoryMatch(statesToUpdate.showHistoryMatch || false);
-	};
+	// const updateBooleanStates = (statesToUpdate: {
+	// 	showChat?: boolean;
+	// 	showMenu?: boolean;
+	// 	showProfil?: boolean;
+	// 	showWelcome?: boolean;
+	// 	showFriendList?: boolean;
+	// 	showPendingList?: boolean;
+	// 	showBlockedList?: boolean;
+	// 	showHistoryMatch?: boolean;
+	// }): void => {
+	// 	setChat(statesToUpdate.showChat || false);
+	// 	setMenu(statesToUpdate.showMenu || false);
+	// 	setWelcome(statesToUpdate.showWelcome || false);
+	// 	setViewProfil(statesToUpdate.showProfil || false);
+	// 	setFriendList(statesToUpdate.showFriendList || false);
+	// 	setPendingList(statesToUpdate.showPendingList || false);
+	// 	setBlockedList(statesToUpdate.showBlockedList || false);
+	// 	setHistoryMatch(statesToUpdate.showHistoryMatch || false);
+	// };
 
 	// function update_cookie()
 	// {
@@ -73,10 +70,6 @@ const App: React.FC = () => {
 	// 		}
 	// 	}
 	// }
-
-	const acceptConnection = (): void => {
-		setLogStatus(true);
-	};
 
 	// const openLoginWindow = (): void => {
 	// 	setShowOverlay(true);
@@ -100,64 +93,64 @@ const App: React.FC = () => {
 	// 	})
 	// };
 
-	const login = () => {
-		axios.get('http://localhost:3001/auth')
-		.then((res: any) => {
-			window.location.replace(res.data)
-		})
-		.catch(e => console.log(e))
-	}
+	// const login = () => {
+	// 	axios.get('http://localhost:3001/auth')
+	// 	.then((res: any) => {
+	// 		window.location.replace(res.data)
+	// 	})
+	// 	.catch(e => console.log(e))
+	// }
 	
-	const logout = (): void => {
-		alert("add here question <did you want to disconnected ?>");
-		sendBackPost('http://localhost:3001/auth/logout').then(function () {
-			updateBooleanStates({showWelcome: true});
+	// const logout = (): void => {
+	// 	alert("add here question <did you want to disconnected ?>");
+	// 	sendBackPost('http://localhost:3001/auth/logout').then(function () {
+	// 		updateBooleanStates({showWelcome: true});
 			
 //			setLogStatus(false);
 //			document.cookie = "payload_cookie=logged%3Dfalse%3BsameSite%3DStrict%3B";
 			
 //			alert("You are now disconnected !");
-		})
+	// 	})
 
-	};
+	// };
 
-	useEffect(() => {
-		// const handleMessage = (event: MessageEvent): void => {
-		// 	if (event.data === "OK")
-		// 		setLogStatus(true);
-		// };
-		// window.addEventListener('message', handleMessage);
+	// useEffect(() => {
+	// 	// const handleMessage = (event: MessageEvent): void => {
+	// 	// 	if (event.data === "OK")
+	// 	// 		setLogStatus(true);
+	// 	// };
+	// 	// window.addEventListener('message', handleMessage);
 		
-		const aToken = ReadCookie('access_token')
-		const rToken = ReadCookie('refresh_token')
-		if (!aToken)
-		{
-			console.log('login')
-			// login()
-			setLogStatus(false)
-		}
-		else if ( isTokenExpired(aToken) )
-		{
-			console.log('Atoken Expired')
-			if ( !rToken || isTokenExpired(rToken) )
-			{
-				console.log('No Rt or expired')
-				setLogStatus(false)
-			// login()
-			}
-			else
-			{
-				console.log('posting')
-				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
-				.then(() => {
-					window.location.reload()
-				})
-				.catch((e) => console.log(e))
-			}
+	// 	const aToken = ReadCookie('access_token')
+	// 	const rToken = ReadCookie('refresh_token')
+	// 	if (!aToken)
+	// 	{
+	// 		console.log('login')
+	// 		// login()
+	// 		setLogStatus(false)
+	// 	}
+	// 	else if ( isTokenExpired(aToken) )
+	// 	{
+	// 		console.log('Atoken Expired')
+	// 		if ( !rToken || isTokenExpired(rToken) )
+	// 		{
+	// 			console.log('No Rt or expired')
+	// 			setLogStatus(false)
+	// 		// login()
+	// 		}
+	// 		else
+	// 		{
+	// 			console.log('posting')
+	// 			axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
+	// 			.then(() => {
+	// 				window.location.reload()
+	// 			})
+	// 			.catch((e) => console.log(e))
+	// 		}
 
-		}
-		else
-			setLogStatus(true)
+	// 	}
+	// 	else
+	// 		setLogStatus(true)
 
 		// update_cookie();
 		// if (pairs["logged"] === "true")
@@ -166,23 +159,71 @@ const App: React.FC = () => {
 		// return () => {
 		// 	window.removeEventListener('message', handleMessage);
 		// };
-	});
+	// });
 	
+	// const acceptConnection = (): void => {
+	// 	setLogStatus(true);
+	// };
 
+	// const openLoginWindow = (): void => {
+	// 	// setShowOverlay(true);
+	// 	const newWindow = window.open('', '_blank', 'width=400,height=200');
+
+	// 	if (newWindow) {
+	// 		newWindow.addEventListener('beforeunload', () => {
+	// 			alert('Fenêtre fermée');
+	// 			// setShowOverlay(false);
+	// 		});
+	// 	}
+	// };
+
+	// const logout = (): void => {
+		// alert("add here question <did you want to disconnected ?>");
+		// here set navigate query to show walcome not logged
+		// updateBooleanStates({showWelcome: true});
+		// setLogStatus(false);
+		// alert("You are now disconnected !");
+	// };
+
+	// useEffect(() => {
+	// 	const handleMessage = (event: MessageEvent): void => {
+	// 		// if (event.data === "OK")
+	// 			// setLogStatus(true);
+	// 	};
+	// 	window.addEventListener('message', handleMessage);
+	// 	return () => {
+	// 		window.removeEventListener('message', handleMessage);
+	// 	};
+	// }, []);
+
+	// return (
+	// 	<div className="App">
+	// 		<Header isLogged={isLogged} showProfil={showProfil} showChat={showChat} updateBooleanStates={updateBooleanStates} logout={logout} />
+	// 		{showOverlay && <div className="overlay"></div>}
+	// 		{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={openLoginWindow} 
+	// 												acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
+	// 		{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
+	// 		{showProfil && <Profil/>}
+	// 		{showFriendList && <FriendList/>}
+	// 		{showPendingList && <Pending/>}
+	// 		{showBlockedList && <Blocked/>}
+	// 		{showHistoryMatch && <MatchHistory/>}
+	// 		{showChat && <Chat/>}
+	// 	</div>
+	// );
 	return (
-		<div className="App">
-			<Header isLogged={isLogged} showProfil={showProfil} showChat={showChat} updateBooleanStates={updateBooleanStates} logout={logout} />
-			{/* {showOverlay && <div className="overlay"></div>} */}
-			{showWelcome && (<Welcome isLogged={isLogged} openLoginWindow={login} 
-													acceptConnection={acceptConnection} updateBooleanStates={updateBooleanStates} />)}
-			{showMenu && <Menu updateBooleanStates={updateBooleanStates} />}
-			{showProfil && <Profil/>}
-			{showFriendList && <FriendList/>}
-			{showPendingList && <Pending/>}
-			{showBloquedList && <Bloqued/>}
-			{showHistoryMatch && <MatchHistory/>}
-			{showChat && <Chat/>}
-		</div>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<Welcome />} />
+				<Route path="/profil" element={<Profil />} />
+				<Route path="/profil/friend-list" element={<FriendList />} />
+				<Route path="/profil/pending-friend-request" element={<Pending />} />
+				<Route path="/profil/blocked" element={<Blocked />} />
+				<Route path="/profil/match-history" element={<MatchHistory />} />
+				<Route path="/chat" element={<Chat />} />
+				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
+			</Routes>
+		</BrowserRouter>
 	);
 };
 

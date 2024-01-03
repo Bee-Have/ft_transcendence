@@ -52,7 +52,6 @@ const FriendList: React.FC = () => {
 
 	useEffect(() => {
 		const listenNewStatus = (status: any) => {
-			console.log(status)
 			const updatedFriends = friends.map(friend => friend.id === status.userId ? {...friend, status: status.status} : friend)
 			setFriends(updatedFriends)
 		}
@@ -70,6 +69,7 @@ const FriendList: React.FC = () => {
 				<div className="printCard">
 					{Object.keys(friends).map((i) => (
 						<Card 
+							key={i}
 							photo={'http://localhost:3001/user/image/' + friends[i].id}
 							name={friends[i].username}
 							onClick={handleCardClick}

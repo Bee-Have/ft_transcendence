@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { IncomingDirectMessage, OutgoingDirectMessage } from './dto/direct-message.dto';
 import { Conversation, ConversationProps } from './dto/conversation.dto';
-import { UserInfo } from 'src/user/gateway/dto/userStatus.dto';
+import { UserInfo, UserStatus } from 'src/user/gateway/dto/userStatus.dto';
 import { Conversation as ConversationPrisma, DirectMessage} from '@prisma/client';
 import { FriendshipService } from 'src/friendship/friendship.service';
 
@@ -240,6 +240,19 @@ export class PrivateMessageService {
 		return this.getFriendId(userId, conv)
 	}
 
+	async getStatus(userId: number, receiverId: number) {
+		const friendsId = await this.userService.getUserFriendsId(userId)
+
+		if (!friendsId.includes(receiverId))
+			return null
+		
+		const friend = this.userService.connected_user_map.get(receiverId)
+
+		if (!friend)
+			return UserStatus.offline
+		return friend.status
+	}
+
 	async buildConversationObject(userId: number, conversationId: number): Promise<ConversationProps> {
 		const conversation: ConversationPrisma = await this.prisma.conversation.findUnique({
 			where: {
@@ -267,7 +280,8 @@ export class PrivateMessageService {
 		const obj: ConversationProps = {
 			conversation: conv,
 			lastMessage,
-			convIsUnRead: lastMessage ? (lastMessage.senderId != userId && !lastMessage.isRead) : false
+			convIsUnRead: lastMessage ? (lastMessage.senderId != userId && !lastMessage.isRead) : false,
+			status: await this.getStatus(userId, friendId)
 		}
 
 		return obj

@@ -193,6 +193,7 @@
 	border-radius: 10px;
 	border: lightslategray solid 2px;
 	box-sizing: border-box;
+	font-family: sans-serif;
 }
 
 .private-message-message-wrapper{

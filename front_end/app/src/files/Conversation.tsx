@@ -1,13 +1,14 @@
 import Avatar from '@mui/material/Avatar';
 import List from '@mui/material/List';
 // import ListItem from '@mui/material/ListItem';
+import { Badge } from '@mui/material';
+import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import PrivateTextArea from './private-message.text-area';
-import { userId } from './global/userId';
-import ListItemButton from '@mui/material/ListItemButton';
 import TextInputWithEnterCallback from './global/TextInput';
+import { userId } from './global/userId';
 import { socket } from './global/websocket';
+import PrivateTextArea from './private-message.text-area';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -37,11 +38,38 @@ interface ConversationProps {
 	}
 	lastMessage: object
 	convIsUnRead: boolean
+	status: string | null
 }
 
 console.log(userId)
 
-const Conversation = ({onClick, conv}: any) => {
+const getColorFromStatus = (status: string): string => {
+	if (status === "Online")
+		return "green"
+	else if (status === "Offline")
+		return "grey"
+	else if (status === "In game")
+		return "red"
+	return "blue"
+}
+
+const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
+
+	return (
+		<Badge
+			overlap="circular"
+			variant="dot"
+			anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+			sx={{ "& .MuiBadge-badge": { backgroundColor: getColorFromStatus(conv.status) } }} >
+			<Avatar
+				className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
+				alt={friendUsername}
+				src={'http://localhost:3001/user/image/' + friendId} />
+		</Badge>
+	)
+}
+
+const Conversation = ({ onClick, conv }: any) => {
 
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
@@ -50,10 +78,14 @@ const Conversation = ({onClick, conv}: any) => {
 	return (
 		<div className="friend" >
 			<ListItemButton key={id} onClick={onClick}>
-				<Avatar
-					className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
-					alt={friendUsername} 
-					src={'http://localhost:3001/user/image/' + friendId} />
+				{
+					conv.status ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
+						<Avatar
+							className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
+							alt={friendUsername}
+							src={'http://localhost:3001/user/image/' + friendId} />
+				}
+
 				<div className="name">{friendUsername}</div>
 			</ListItemButton>
 		</div>
@@ -122,7 +154,7 @@ const Conversations: React.FC = () => {
 	}
 
 	const convUpdateUnReadStatus = (conversationId: number, readStatus: boolean) => {
-		const updated =	convs.map(conv => conv.conversation.id === conversationId ? {...conv, convIsUnRead: readStatus}: conv)
+		const updated = convs.map(conv => conv.conversation.id === conversationId ? { ...conv, convIsUnRead: readStatus } : conv)
 
 		setConvs(updated)
 	}
@@ -134,10 +166,20 @@ const Conversations: React.FC = () => {
 				convUpdateUnReadStatus(message.conversationId, true)
 		}
 
+		const listenNewStatus = (status: any) => {
+			console.log(status)
+			const updatedConvs = convs.map(conv =>
+				conv.conversation.memberOneId === status.userId || conv.conversation.memberTwoId === status.userId
+					? { ...conv, status: status.status } : conv)
+			setConvs(updatedConvs)
+		}
+
 		socket?.on('new-message', listenNewMessage)
+		socket?.on('user-status', listenNewStatus)
 
 		return () => {
 			socket?.off('new-message', listenNewMessage)
+			socket?.off('user-status', listenNewStatus)
 		}
 	}, [currentChat, convs])
 
@@ -148,13 +190,13 @@ const Conversations: React.FC = () => {
 				{createConvBool && <TextInputWithEnterCallback onEnterPress={createConvCallBack} hideInput={hideInput} />}
 			</div>
 			<List component="nav" aria-label="mailbox folders">
-				{ convs ? (
+				{convs ? (
 					<div>
 						{Object.keys(convs).map((i) => (
-							<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]}/>
+							<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]} />
 						))}
 					</div>
-				) : null }
+				) : null}
 			</List>
 			{showTextArea === 0 ? false : <PrivateTextArea currentChat={currentChat} userId={userId} />}
 		</div>

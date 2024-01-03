@@ -33,7 +33,7 @@ export class UserGateway {
 
 		const userId: number = Number(client.handshake?.headers?.id)
 
-		console.log(userId)
+		console.log(userId, 'connect')
 
 		if (Number.isNaN(userId))
 		{
@@ -231,6 +231,8 @@ export class UserGateway {
 		const userId: number = Number(client.handshake.headers.id)
 
 		const user = this.userService.connected_user_map.get(userId)
+		
+		console.log(userId, 'disconnect')
 
 		if (!user)
 			return

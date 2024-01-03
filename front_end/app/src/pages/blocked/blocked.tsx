@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 //import test from '../asset/default.jpg'
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 interface CardProps {
   text: string;

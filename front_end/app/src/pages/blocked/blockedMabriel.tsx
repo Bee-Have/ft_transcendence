@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import { userId } from './global/userId';
+import { userId } from '../global/userId';
 import axios from 'axios';
 //import test from '../asset/default.jpg'
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 const Card = ({ prop }: any) => {
 

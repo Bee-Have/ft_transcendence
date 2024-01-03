@@ -3,10 +3,10 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import LockIcon from '@mui/icons-material/Lock';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { FriendRequest } from './global/friend.dto';
-import { userId } from './global/userId';
+import { FriendRequest } from '../global/friend.dto';
+import { userId } from '../global/userId';
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 const Card = ({ request }: any) => {
 

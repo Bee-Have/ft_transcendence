@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
-import { socket } from './global/websocket';
+import { socket } from '../pages/global/websocket';
 
 interface MessageProps {
 	id: number,

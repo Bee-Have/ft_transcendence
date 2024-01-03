@@ -4,15 +4,15 @@ import  React from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending				from './pages/pendingMabriel';
-import  Welcome     	from './pages/welcome';
+import  Pending				from './pages/pending/pendingMabriel';
+import  Welcome     	from './pages/Welcome/welcome';
 // import  Menu        	from './components/menu';
-import  Profil      	from './pages/profil';
+import  Profil      	from './pages/profil/profil';
 // import  Header      	from './components/header';
-import  FriendList  	from './pages/FriendsList';
-import	Blocked				from './pages/blockedMabriel';
-import	MatchHistory	from './pages/matchHistory';
-import	Chat 					from	'./pages/chat';
+import  FriendList  	from './pages/friend-list/FriendsList';
+import	Blocked				from './pages/blocked/blockedMabriel';
+import	MatchHistory	from './pages/match-history/matchHistory';
+import	Chat 					from	'./pages/chat/chat';
 //import sendBack from './files/sendBack';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';

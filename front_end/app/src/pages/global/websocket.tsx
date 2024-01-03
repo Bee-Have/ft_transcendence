@@ -1,5 +1,5 @@
 import { io } from "socket.io-client"
-import { ReadCookie } from "../ReadCookie"
+import { ReadCookie } from "../../components/ReadCookie"
 
 const userID: string | null  = ReadCookie('userId')
 

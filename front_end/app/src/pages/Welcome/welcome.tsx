@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import '../css/welcome.css'
+import '../../css/welcome.css'
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ReadCookie } from './ReadCookie';
-import isTokenExpired from './global/isTokenExpired';
+import { ReadCookie } from '../../components/ReadCookie';
+import isTokenExpired from '../global/isTokenExpired';
 
 // interface WelcomeProps
 // {

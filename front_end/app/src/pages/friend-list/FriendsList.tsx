@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import PopUp from '../components/popUp';
-import Menu from '../components/menu';
-import { Friend } from './global/friend.dto';
-import { userId } from './global/userId';
-import { socket } from './global/websocket';
+import PopUp from '../../components/popUp';
+import Menu from '../../components/menu';
+import { Friend } from '../global/friend.dto';
+import { userId } from '../global/userId';
+import { socket } from '../global/websocket';
 
 interface CardProps {
 	photo: string;

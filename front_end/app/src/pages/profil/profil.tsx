@@ -1,6 +1,6 @@
 import React from 'react';
-import Menu from '../components/menu';
-import '../css/profil.css';
+import Menu from '../../components/menu';
+import '../../css/profil.css';
 
 const Profil: React.FC = () => {
 
@@ -13,7 +13,7 @@ const Profil: React.FC = () => {
 			<div className='profil'>
 				<center>
 					<div className="PP">
-						<img src={require('../asset/default.jpg')} alt="test" className="person-image" />
+						<img src={require('../../asset/default.jpg')} alt="test" className="person-image" />
 					</div>
 				</center>
 				<div className='information'>

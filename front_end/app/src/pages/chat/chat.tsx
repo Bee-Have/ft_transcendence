@@ -1,7 +1,7 @@
 import	React from 'react';
 // import	ChannelPeople from './ChannelPeople';
 // import	TextArea from './textArea';
-import Conversations from './Conversation';
+import Conversations from '../../components/Conversation';
 import ChannelList from 'src/components/channelList';
 
 const Chat: React.FC = () => {

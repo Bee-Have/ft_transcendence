@@ -5,9 +5,9 @@ import { Badge } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import TextInputWithEnterCallback from './global/TextInput';
-import { userId } from './global/userId';
-import { socket } from './global/websocket';
+import TextInputWithEnterCallback from '../pages/global/TextInput';
+import { userId } from '../pages/global/userId';
+import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';

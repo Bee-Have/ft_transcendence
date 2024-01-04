@@ -14,6 +14,7 @@ model User {
   id       Int    @id
   email    String @unique
   username String @unique
+  nickname String? @unique
 
   hashedRt String?
 

@@ -1,7 +1,13 @@
 import React from 'react';
 import '../css/profil.css';
+import sendBack from './sendBack';
 
 const Profil: React.FC = () => {
+
+	const info_promise = sendBack("localhost:3001/user/profile/106520");
+	const info = async () => await info_promise;
+	console.log(info);
+	
 
 	const realName = "real Name";
 	const nickName = "current Nickname";

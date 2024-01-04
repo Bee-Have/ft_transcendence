@@ -1,18 +1,43 @@
-.log_window {
-    text-align: center;
-    margin: 25vh 0vh 0vh 30%;
-    width: 40%;
-    height: 30%;
+.log-window {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	background-color: #B4B4B4;
+}
+
+.profile-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	border-radius: 13px;
 }
 
 .welcome {
-    height: 5%;
+	margin: 25vh 0vh 0vh 30%;
+	width: 40%;
+	height: 30%;
+	text-align: center;
+    font-style: normal;
+	font-weight: 400;
+	height: 5%;
 }
 
 .login-choice {
-    margin: 40% 0% 0% 5%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    background-color: darkgray;
+	position: absolute;
+	flex-direction: row;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 5px;
+	align-items: center;
+	justify-content: center;
+	width: fit-content;
+	padding: 10px;
+	bottom: 30%;
+	left: 50%;
+	transform: translateX(-50%);
+    background-color: #D9D9D9;
+	border-radius: 13px;
 }

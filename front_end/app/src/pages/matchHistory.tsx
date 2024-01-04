@@ -56,7 +56,7 @@ const MatchHistory: React.FC = () => {
 
   return (
     <div className="matchHistory">
-      <Menu/>
+      <Menu checker={5}/>
       <div className="content">
         <div className="printCard">
           <Match winner='tie' photo={require('../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>

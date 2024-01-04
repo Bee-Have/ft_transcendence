@@ -9,7 +9,7 @@ const Profil: React.FC = () => {
 
 	return (
 		<div className='content'>
-			<Menu/>
+			<Menu checker={1}/>
 			<div className='profil'>
 				<center>
 					<div className="PP">

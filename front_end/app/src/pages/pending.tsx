@@ -36,7 +36,7 @@ const Card: React.FC<CardProps> = ({ photo, text }) => {
 const Pending: React.FC = () => {
   return (
     <div className="pending">
-      <Menu/>
+      <Menu checker={3}/>
       <div className="content">
         <div className="printCard">
           <Card photo={'./asset/default.jpg'} text={'test1'} />

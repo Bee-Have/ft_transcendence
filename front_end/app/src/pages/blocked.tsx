@@ -26,7 +26,7 @@ const Card: React.FC<CardProps> = ({text}) => { return (
 const Blocked: React.FC = () => {
   return (
     <div className="blocked">
-      <Menu/>
+      <Menu checker={4}/>
       <div className="content">
         <div className="printCard">
           <Card text={'test1'} />

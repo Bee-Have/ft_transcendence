@@ -42,7 +42,7 @@ const FriendList: React.FC = () => {
 
   return (
     <div className="friendList">
-      <Menu/>
+      <Menu checker={2}/>
       <div className="content">
         <div className="printCard">
           <Card photo={'./asset/default.jpg'} name={'test1'} onClick={handleCardClick}/>

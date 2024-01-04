@@ -66,13 +66,6 @@ const App: React.FC = () => {
 	// 	}
 	// };
 
-	// const logout = (): void => {
-		// alert("add here question <did you want to disconnected ?>");
-		// here set navigate query to show walcome not logged
-		// updateBooleanStates({showWelcome: true});
-		// setLogStatus(false);
-		// alert("You are now disconnected !");
-	// };
 
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent): void => {

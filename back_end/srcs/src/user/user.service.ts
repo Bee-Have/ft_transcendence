@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { Response } from "express";
 import * as fs from 'fs';
@@ -150,7 +150,7 @@ export class UserService {
 		const bool = authenticator.verify({ token: code , secret: user.twoFASecret})
 
 		if (!bool)
-			throw new UnauthorizedException('Wrong code, try again')
+			throw new UnprocessableEntityException('Wrong code, try again')
 		else
 		{
 			await this.prisma.user.updateMany({

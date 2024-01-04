@@ -1,10 +1,10 @@
-import { Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Post, UnauthorizedException } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { MessageBody } from '@nestjs/websockets';
 import { Public } from 'src/common/decorators';
 import { UserService } from 'src/user/user.service';
+import { ConversationProps } from './dto/conversation.dto';
 import { IncomingDirectMessage, OutgoingDirectMessage } from './dto/direct-message.dto';
 import { PrivateMessageService } from './privatemessage.service';
-import { ConversationProps } from './dto/conversation.dto';
 
 @Public()
 @Controller('privatemessage')
@@ -31,7 +31,7 @@ export class PrivateMessageController {
 	// 	const userHaveRights = await this.privateMessageService.userCanAccessMessages(userId, conversationId)
 
 	// 	if (!userHaveRights)
-	// 		throw new UnauthorizedException('You cannot access these messages')
+	// 		throw new ForbiddenException('You cannot access these messages')
 
 	// 	return this.privateMessageService.getAllMessages(conversationId)
 	// }
@@ -43,7 +43,7 @@ export class PrivateMessageController {
 	// 	const userHaveRights = await this.privateMessageService.userCanAccessMessages(userId, message.conversationId)
 
 	// 	if (!userHaveRights)
-	// 		throw new UnauthorizedException('You cannot access these messages')
+	// 		throw new ForbiddenException('You cannot access these messages')
 
 	// 	return await this.privateMessageService.createDirectMessage(
 	// 		userId,
@@ -74,7 +74,7 @@ export class PrivateMessageController {
 		const userHaveRights = await this.privateMessageService.userCanAccessMessages(userId, conversationId)
 
 		if (!userHaveRights)
-			throw new UnauthorizedException('You cannot access these messages')
+			throw new ForbiddenException('You cannot access these messages')
 
 		await this.privateMessageService.setMessagesAreRead(userId, conversationId)
 
@@ -90,7 +90,7 @@ export class PrivateMessageController {
 		const userHaveRights = await this.privateMessageService.userCanAccessMessages(userId, message.conversationId)
 
 		if (!userHaveRights)
-			throw new UnauthorizedException('You cannot access these messages')
+			throw new ForbiddenException('You cannot access these messages')
 
 		return await this.privateMessageService.createNewMessage(userId, message)
 

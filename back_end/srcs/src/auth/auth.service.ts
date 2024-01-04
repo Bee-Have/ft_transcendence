@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Interval } from '@nestjs/schedule';
 import { hash, verify } from 'argon2';
@@ -79,7 +79,7 @@ export class AuthService {
 		const bool = authenticator.verify({ token: code, secret: user.twoFASecret })
 
 		if (!bool)
-			throw new UnauthorizedException('Wrong code, try again')
+			throw new UnprocessableEntityException('Wrong code, try again')
 
 		return await this.getTokens(userId, user.email)
 	}
@@ -110,7 +110,7 @@ export class AuthService {
 			throw new NotFoundException('No user found')
 	
 		if (!user.hashedRt || !(await verify(user.hashedRt, rt)))
-			throw new ForbiddenException('Invalid refresh token')
+			throw new UnauthorizedException('Invalid refresh token')
 
 		const tokens = await this.getTokens(user.id, user.email)
 	

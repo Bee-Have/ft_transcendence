@@ -21,7 +21,7 @@
   flex-direction: row;
   align-items: center;
   background-color: white;
-  border-radius: 2em 25em 2em 25em;
+  border-radius: 8px;
   margin-bottom: 35px;
   margin-right: 3%;
   object-fit: cover;

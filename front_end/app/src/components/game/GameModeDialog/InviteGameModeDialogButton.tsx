@@ -8,7 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 
 import { useNavigate } from "react-router-dom";
-import { DialogContent } from "@mui/material";
+import { DialogContent, Box, Avatar } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
 
@@ -22,10 +22,11 @@ export interface GameModeDialogProps {
   selectedMode: string;
   onClose: (value: string) => void;
   updateGameMode: (value: string) => void;
+  username: string;
 }
 
 function GameModeDialog(props: GameModeDialogProps) {
-  const { onClose, selectedMode, open, updateGameMode } = props;
+  const { onClose, selectedMode, open, updateGameMode, username } = props;
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -48,7 +49,10 @@ function GameModeDialog(props: GameModeDialogProps) {
         </DialogTitle>
         <Divider />
         <br />
-			NICKNAME HERE
+        <Box className={styles.Box}>
+          <Avatar className={styles.Avatar}/>
+          {username}
+        </Box>
         <br />
         <Divider />
         {/* The list should be two row and three columns */}
@@ -93,7 +97,12 @@ function GameModeDialog(props: GameModeDialogProps) {
   );
 }
 
-function InviteGameModeDialogButton() {
+interface InviteGameModeDialogButtonProps {
+	username: string;
+	// image user icon
+}
+
+function InviteGameModeDialogButton({ username /*TODO: , user icon here */ }: InviteGameModeDialogButtonProps) {
   const [open, setOpen] = React.useState(false);
   const [selectedMode, setSelectedMode] = React.useState(modes[0]);
 
@@ -119,6 +128,7 @@ function InviteGameModeDialogButton() {
         open={open}
         onClose={handleClose}
         updateGameMode={updateGameMode}
+        username={username}
       />
     </div>
   );

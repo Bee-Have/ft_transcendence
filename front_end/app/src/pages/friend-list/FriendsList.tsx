@@ -6,6 +6,8 @@ import { Friend } from '../global/friend.dto';
 // import { userId } from '../global/userId';
 import { socket } from '../global/websocket';
 
+import { Avatar } from "@mui/material";
+
 interface CardProps {
 	photo: string;
 	name: string;
@@ -17,7 +19,8 @@ const Card: React.FC<CardProps> = ({ photo, name, onClick, status }) => {
 	return (
 		<div className="card" onClick={(event) => onClick(name, event)}>
 			<div className="PP">
-				<img src={photo} alt={'test'} className="person-image" />
+				{/* <img src={photo} alt={'test'} className="person-image" /> */}
+				<Avatar src={photo} sx={{ width: 60, height: 60 }} />
 			</div>
 			<div className='name'>
 				<h1>{name}<br/>{status}</h1>
@@ -55,10 +58,10 @@ const FriendList: React.FC = () => {
 		// .catch(err => console.log(err))
 		setFriends(
 			[
-				{id : 1, username: 'test1', status: 'online'},
-				{id : 2, username: 'test2', status: 'offline'},
-				{id : 3, username: 'test3', status: 'online'},
-				{id : 4, username: 'test4', status: 'offline'},
+				{id : 1, username: 't', status: 'online'},
+				{id : 2, username: '123456789', status: 'offline'},
+				{id : 3, username: '123456789abcdef', status: 'online'},
+				{id : 4, username: 'pasteque', status: 'offline'},
 				{id : 5, username: 'test5', status: 'online'}
 			]
 		);

@@ -69,7 +69,7 @@ function PopUp( {user, anchorEl, setAnchorEl}: PopUpProps) {
         profile
       </MenuItem>
 
-      <InviteSpectateButton />
+      <InviteSpectateButton username={user}/>
       
       <MenuItem
         className={styles.ButtonDialogOpen}

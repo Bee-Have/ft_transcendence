@@ -1,0 +1,64 @@
+version: '3.8'
+
+#    user: "${UID}:${GID}"
+services:
+  postgres:
+    container_name: postgres
+    volumes:
+      - database_vol:/var/lib/postgresql
+    networks:
+      - transc_netw
+    ports:
+      - ${PORT_POSTGRES}:${PORT_POSTGRES}
+    build: ./postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+
+
+  front_end:
+    depends_on:
+      - back_end
+    container_name: front_end
+    volumes:
+      - ./front_end/app:/usr/src/app/frontend
+#     TODO : Remove previous line and keep next one when project is finished
+#     - html_vol:/usr/src/app/frontend
+    networks:
+      - transc_netw
+    build: ./front_end
+    environment:
+      - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+    ports:
+      - ${PORT_FRONT}:${PORT_FRONT}
+    restart: always
+
+
+  back_end:
+    depends_on:
+      - postgres
+    container_name: back_end
+    volumes:
+      - ./back_end/srcs:/usr/src/app/backend
+#     TODO : Remove previous line and keep next one when project is finished
+      # - html_vol:/usr/src/app/backend
+    networks:
+      - transc_netw
+    ports:
+      - ${PORT_BACK}:${PORT_BACK}
+      - "5555:5555"
+    build: ./back_end
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  database_vol:
+  html_vol:
+
+networks:
+  transc_netw:
+    driver: bridge

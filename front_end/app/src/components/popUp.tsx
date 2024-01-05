@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import InviteSpectateButton from './DynamicInviteSpectateButton';
 import Menu from '@mui/material/Menu';
@@ -14,7 +14,7 @@ interface PopUpProps {
     setAnchorEl: (event: HTMLElement | null) => void;
   }
 
-function PopUp({user, anchorEl, setAnchorEl}: PopUpProps) {
+function PopUp( {user, anchorEl, setAnchorEl}: PopUpProps) {
   // const navigate = useNavigate();
   // const squareStyle: React.CSSProperties = {
   //   position: 'absolute',
@@ -34,6 +34,7 @@ function PopUp({user, anchorEl, setAnchorEl}: PopUpProps) {
   //   </div>
   // )
 
+  const navigate = useNavigate();
 
   const open = Boolean(anchorEl);
   const handleClose = () => {
@@ -63,25 +64,25 @@ function PopUp({user, anchorEl, setAnchorEl}: PopUpProps) {
     >
       <MenuItem
         className={styles.ButtonDialogOpen}
-        onClick={handleClose}
+        onClick={() => navigate("/profil")}
       >
-        Profile
+        profile
       </MenuItem>
 
       <InviteSpectateButton />
       
       <MenuItem
         className={styles.ButtonDialogOpen}
-        onClick={handleClose}
+        onClick={() => navigate("/chat")}
       >
-        My account
+        chat
       </MenuItem>
       
       <MenuItem
         className={styles.ButtonDialogOpen}
         onClick={handleClose}
       >
-        Logout
+        add friend
       </MenuItem>
     </Menu>
   )

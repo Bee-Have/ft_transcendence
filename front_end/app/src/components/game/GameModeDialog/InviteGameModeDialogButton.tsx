@@ -12,7 +12,7 @@ import { DialogContent } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
 
-import styles from "./PlayGameModeDialogButton.module.css";
+import styles from "./InviteGameModeDialogButton.module.css";
 
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
@@ -111,7 +111,7 @@ function InviteGameModeDialogButton() {
 
   return (
     <div>
-      <Button className={styles.ButtonDialogOpen} variant="outlined" onClick={handleClickOpen}>
+      <Button className={styles.ButtonDialogOpen} onClick={handleClickOpen}>
         invite to game
       </Button>
       <GameModeDialog

@@ -37,20 +37,24 @@ const Match: React.FC<CardProps> = ({winner, photo, text, mode, onClick}) => {
 };
 
 const MatchHistory: React.FC = () => {
-  const [showPopUp, setPopUp] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [popupContent, setPopupContent] = useState('');
+	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [popupContent, setPopupContent] = useState('');
+	
+	// const [showPopUp, setPopUp] = useState(false);
+	// const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-    const boundingBox = event.currentTarget.getBoundingClientRect();
-    if (boundingBox) {
-      const x = event.pageX;
-      const y = event.pageY;
+		setPopupContent(name);
+		setAnchorEl(event.currentTarget);
+		// const boundingBox = event.currentTarget.getBoundingClientRect();
+		// if (boundingBox) {
+		// 	const x = event.pageX;
+		// 	const y = event.pageY;
 
-      setMousePosition({ x, y });
-      setPopupContent(name);
-      setPopUp(true);
-    }
+		// 	setMousePosition({ x, y });
+		// 	setPopupContent(name);
+		// 	setPopUp(true);
+		// }
   };
 
 
@@ -68,7 +72,12 @@ const MatchHistory: React.FC = () => {
           <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
         </div>
       </div>
-      {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}
+			{<PopUp
+				user={popupContent}
+				anchorEl={anchorEl}
+				setAnchorEl={setAnchorEl}
+			/>}
+      {/* {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>} */}
     </div>
   );
 };

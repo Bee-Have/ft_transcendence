@@ -1,9 +1,9 @@
-import axios from 'axios';
+// import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import PopUp from '../../components/popUp';
 import Menu from '../../components/menu';
 import { Friend } from '../global/friend.dto';
-import { userId } from '../global/userId';
+// import { userId } from '../global/userId';
 import { socket } from '../global/websocket';
 
 interface CardProps {
@@ -27,28 +27,41 @@ const Card: React.FC<CardProps> = ({ photo, name, onClick, status }) => {
 };
 
 const FriendList: React.FC = () => {
-	const [showPopUp, setPopUp] = useState(false);
-	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const [popupContent, setPopupContent] = useState('');
+	
+	// const [showPopUp, setPopUp] = useState(false);
+	// const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [friends, setFriends] = useState<Friend[]>([]) 
 
 
 	const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-		const boundingBox = event.currentTarget.getBoundingClientRect();
-		if (boundingBox) {
-			const x = event.pageX;
-			const y = event.pageY;
+		setPopupContent(name);
+		setAnchorEl(event.currentTarget);
+		// const boundingBox = event.currentTarget.getBoundingClientRect();
+		// if (boundingBox) {
+		// 	const x = event.pageX;
+		// 	const y = event.pageY;
 
-			setMousePosition({ x, y });
-			setPopupContent(name);
-			setPopUp(true);
-		}
+		// 	setMousePosition({ x, y });
+		// 	setPopupContent(name);
+		// 	setPopUp(true);
+		// }
 	};
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
-		.then(res => setFriends(res.data))
-		.catch(err => console.log(err))
+		// axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
+		// .then(res => setFriends(res.data))
+		// .catch(err => console.log(err))
+		setFriends(
+			[
+				{id : 1, username: 'test1', status: 'online'},
+				{id : 2, username: 'test2', status: 'offline'},
+				{id : 3, username: 'test3', status: 'online'},
+				{id : 4, username: 'test4', status: 'offline'},
+				{id : 5, username: 'test5', status: 'online'}
+			]
+		);
 	}, [])
 
 	useEffect(() => {
@@ -79,7 +92,11 @@ const FriendList: React.FC = () => {
 					))}
 				</div>
 			</div>
-			{showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent} />}
+			{<PopUp
+				user={popupContent}
+				anchorEl={anchorEl}
+				setAnchorEl={setAnchorEl}
+			/>}
 		</div>
 	);
 };

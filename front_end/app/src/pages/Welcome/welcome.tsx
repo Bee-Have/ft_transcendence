@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import '../../css/welcome.css'
 
-import PlayGameModeDialogButton from '../components/game/GameModeDialog/PlayGameModeDialogButton';
+import PlayGameModeDialogButton from '../../components/game/GameModeDialog/PlayGameModeDialogButton';
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';

@@ -18,7 +18,7 @@ const PopUp: React.FC<PopUpProps> = ({ x, y, user}) => {
     left: `${x}px`,
     top: `${y}px`,
   };
-  
+
   return(
   <div style={squareStyle} className='popUp'>
   {/* make a query string for other users profiles when they are implemented */}

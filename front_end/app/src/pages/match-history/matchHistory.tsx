@@ -5,7 +5,10 @@ import Menu from "../../components/menu";
 
 import { Friend } from "../global/friend.dto";
 
-import { Avatar, Box } from "@mui/material";
+import { Box } from "@mui/material";
+
+import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
+import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
@@ -16,9 +19,9 @@ interface CardProps {
   onClick: (user: Friend, event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const Match: React.FC<CardProps> = ({ winner, user, mode, onClick }) => {
+const Match: React.FC<CardProps> = ({ winner, user, mode/*, onClick */}) => {
   return (
-    <div className="match" onClick={(event) => onClick(user, event)}>
+    <div className="match"/* onClick={(event) => onClick(user, event)}*/>
       <div className={winner}>
         <h1>{winner}</h1>
       </div>
@@ -34,9 +37,9 @@ const Match: React.FC<CardProps> = ({ winner, user, mode, onClick }) => {
           gap: "10px",
         }}
       >
-        <Avatar sx={{ width: 60, height: 60 }} src={user.photo} />
+		<InteractiveAvatar user={user} />
         {/* <img src={user.photo} alt={"test"} className="person-image" /> */}
-        <h1>{user.username}</h1>
+		<InteractiveUsername user={user} />
       </Box>
       <div className="score">
         <h1>score</h1>

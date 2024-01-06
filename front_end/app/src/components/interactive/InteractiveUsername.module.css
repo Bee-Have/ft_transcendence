@@ -1,0 +1,8 @@
+.InteractiveUsername {
+}
+
+.InteractiveUsername:hover {
+	cursor: pointer;
+
+	text-decoration: underline
+}

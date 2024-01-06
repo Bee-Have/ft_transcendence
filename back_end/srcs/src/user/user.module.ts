@@ -6,12 +6,13 @@ import { PrismaModule } from "src/prisma/prisma.module";
 import { UserGateway } from "src/user/gateway/user.gateway";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
+import { PrivateMessageService } from "src/privatemessage/privatemessage.service";
 
 
 @Module({
 	imports: [PrismaModule, JwtModule, AuthModule], 
 controllers: [UserController],
-	providers: [UserService, JwtService, FriendshipService, UserGateway],
+	providers: [UserService, JwtService, FriendshipService, UserGateway, PrivateMessageService],
 	exports: [UserService]
 })
 export class UserModule {}

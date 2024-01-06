@@ -1,8 +1,7 @@
 import { IsNumber } from "class-validator";
 
-
-export class FriendRequestDto {
+export class BlockedUserDto {
 
 	@IsNumber()
-	receiverId: number
+	blockedUserId: number
 }

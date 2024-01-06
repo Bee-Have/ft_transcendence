@@ -59,6 +59,7 @@ export class AuthService {
 			response.cookie('TfaEnable', 'false', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
 		}
 		response.redirect(process.env.FRONT_END_URL)
 	}
@@ -69,6 +70,9 @@ export class AuthService {
 				id: userId
 			}
 		})
+
+		if (!user.isTwoFAEnable || !user.twoFASecret)
+			throw new BadRequestException('TFA is not enabled')
 		
 		const bool = authenticator.verify({ token: code, secret: user.twoFASecret })
 
@@ -171,7 +175,7 @@ export class AuthService {
 		const [at, rt] = await Promise.all([
 			this.jwtService.signAsync(userData, {
 				secret: process.env.JWT_AT_SECRET,
-				expiresIn: '1h'
+				expiresIn: '2h'
 			})
 			.catch((error) => {
 				console.log(error)

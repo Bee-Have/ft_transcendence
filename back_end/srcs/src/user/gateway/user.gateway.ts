@@ -3,19 +3,23 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Namespace, Socket } from 'socket.io';
 import { FriendshipService } from 'src/friendship/friendship.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { OutgoingDirectMessage } from 'src/privatemessage/dto/direct-message.dto';
 import { UserInfo, UserStatus, UserStatusEventDto } from 'src/user/gateway/dto/userStatus.dto';
 import { UserService } from 'src/user/user.service';
+import { PrivateMessageService } from '../../privatemessage/privatemessage.service';
+import { BlockedUserDto } from './dto/blocked-user.dto';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
 
-@WebSocketGateway({ namespace: 'user' })
+@WebSocketGateway({ namespace: 'user', cors: true })
 @UseFilters(new WsExceptionFilter())
 @UsePipes(new ValidationPipe())
 export class UserGateway {
 
 	constructor(private prisma: PrismaService, 
 				private userService: UserService,
-				private friendService: FriendshipService) {}
+				private friendService: FriendshipService,
+				private privmessage: PrivateMessageService) {}
 
 	@WebSocketServer()
 	server: Namespace
@@ -26,39 +30,38 @@ export class UserGateway {
 	// }
 
 	async handleConnection(@ConnectedSocket() client: Socket) {
-		console.log(process.env.SERVER_UPDATE_USER_STATUS)				
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: Number(client.handshake.headers.id)
-			},
-			select: {
-				id: true,
-				friends: {
-					select: {
-						id: true
-					}
-				}
-			}
-		})
 
-		if(!user)
+		const userId: number = Number(client.handshake?.headers?.id)
+
+		console.log(userId, 'connect')
+
+		if (Number.isNaN(userId))
 		{
-			client.emit('error', {msg: 'User Not Found'})
 			client.disconnect()
-			return 
+			return
 		}
 
-		this.userService.connected_user_map.set(user.id, new UserInfo(user.id, client, UserStatus.online))
+		// if (this.userService.connected_user_map.get(userId))
+		// {
+		// 	console.log('UserId: ' + userId, 'tried to connect to websocket while already being connected')
+		// 	client.disconnect()
+		// 	return
+		// }
 
-		const user_in_map = this.userService.connected_user_map.get(user.id)
 
-		for (const friend of user.friends) {
-			const friend_in_map = this.userService.connected_user_map.get(friend.id)
+		const friendsIds = await this.userService.getUserFriendsId(userId)
+
+		this.userService.connected_user_map.set(userId, new UserInfo(userId, client, UserStatus.online))
+
+		const user_in_map = this.userService.connected_user_map.get(userId)
+
+		for (const friendId of friendsIds) {
+			const friend_in_map = this.userService.connected_user_map.get(friendId)
 
 			if (friend_in_map)
 			{
-				friend_in_map.socket.join(user.id.toString())
-				client.join(friend.id.toString())
+				friend_in_map.socket.join(userId.toString())
+				client.join(friendId.toString())
 
 				client.emit('user-status', new UserStatusEventDto(friend_in_map))
 				friend_in_map.socket.emit('user-status', new UserStatusEventDto(user_in_map))
@@ -84,15 +87,13 @@ export class UserGateway {
 			if (data === key)
 				user.updateStatus(UserStatus[key])
 		}
-		this.server.in(user.id.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 
 
 	@SubscribeMessage(process.env.SERVER_CREATE_FRIEND_REQUEST)
 	async handleCreateFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
 		
-		console.log('ehejwfef')
-
 		const senderId: number = Number(client.handshake.headers.id)
 		const receiverId: number = data.receiverId
 		
@@ -101,13 +102,10 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_CREATED, receiverId)
 
 		const receiver = this.userService.connected_user_map.get(receiverId)
-		const receiv = await this.prisma.user.findUnique({where: {id: receiverId}})
 	
-		if (receiver && 
-			receiver.status != UserStatus.ingame && 
-			receiver.status != UserStatus.offline)
+		if (receiver)
 		{
-			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId, username: receiv.username} })
+			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId} })
 		}
 	}
 
@@ -131,8 +129,21 @@ export class UserGateway {
 		const receiverId: number = data.receiverId
 
 		await this.friendService.acceptFriendRequest(acceptorId, receiverId)
-		
+
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_ACCEPTED, receiverId)
+
+		const newFriend = this.userService.connected_user_map.get(receiverId)
+
+		if (newFriend)
+		{
+			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).status
+			
+			newFriend.socket.join(acceptorId.toString())
+			client.join(receiverId.toString())
+
+			newFriend.socket.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: acceptorId, status: acceptorStatus })
+			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.status})
+		}
 	}
 
 
@@ -147,18 +158,91 @@ export class UserGateway {
 		client.emit(process.env.CLIENT_FRIEND_REQUEST_REJECTED, receiverId)
 	}
 
+	@SubscribeMessage(process.env.SERVER_BLOCK_USER)
+	async handleBlockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
+
+		const userId: number = Number(client.handshake.headers.id)
+		const blockedUserId = data.blockedUserId
+
+		await this.friendService.blockUser(userId, blockedUserId)
+
+		client.emit(process.env.CLIENT_BLOCK_USER_SUCCESS)
+	}
+
+	@SubscribeMessage(process.env.SERVER_UNBLOCK_USER)
+	async handleUnblockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
+		
+		const userId: number = Number(client.handshake.headers.id)
+		const blockedUserId = data.blockedUserId
+	
+		await this.friendService.unblockUser(userId, blockedUserId)
+
+		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
+	}
+
+	// @SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
+	// async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
+
+	// 	const senderId: number = Number(client.handshake.headers.id)
+	// 	const receiverId: number = data.receiverId
+	// 	const content: string = data.content
+
+	// 	const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
+
+	// 	if (senderBlockedReceiver){
+	// 		throw new WsException("You can't send message to this user")
+	// 	}
+
+	// 	const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
+	// 	const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
+	// 	// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
+	// 	const message = 'weif'
+	// 	const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
+
+	// 	client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
+
+	// 	if (!receiverBlockedSender)
+	// 	{
+	// 		const receiver = this.userService.connected_user_map.get(receiverId)
+			
+	// 		if (receiver)
+	// 		{
+	// 			receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
+	// 		}
+	// 	}
+
+	// }
+
+	@SubscribeMessage('message')
+	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
+	{
+		const friendId = await this.privmessage.getFriendIdByConvId(body.senderId, body.conversationId)
+	
+		const friend = this.userService.connected_user_map.get(friendId)
+
+		if (friend)
+			friend.socket.emit('new-message', body)
+
+	}
+
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 
 		const userId: number = Number(client.handshake.headers.id)
-		
+
 		const user = this.userService.connected_user_map.get(userId)
+		
+		console.log(userId, 'disconnect')
+
+		if (!user)
+			return
 
 		user.updateStatus(UserStatus.offline)
 
-		this.server.in(user.id.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.adapter.rooms.delete(userId.toString())
 
-		this.userService.connected_user_map.delete(user.id)
+		this.userService.connected_user_map.delete(userId)
 	}
 
 }

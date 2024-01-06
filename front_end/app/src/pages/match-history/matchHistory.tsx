@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import PopUp from '../components/popUp';
+import PopUp from '../../components/popUp';
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 interface CardProps {
   winner: string;
@@ -59,13 +59,13 @@ const MatchHistory: React.FC = () => {
       <Menu/>
       <div className="content">
         <div className="printCard">
-          <Match winner='tie' photo={require('../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='tie' photo={require('../../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
           <div className="separator"></div>
-          <Match winner='victory' photo={require('../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
           <div className="separator"></div>
-          <Match winner='defeat' photo={require('../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='defeat' photo={require('../../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={handleCardClick}/>
           <div className="separator"></div>
-          <Match winner='victory' photo={require('../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
         </div>
       </div>
       {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}

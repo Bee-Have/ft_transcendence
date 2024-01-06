@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import PopUp from '../components/popUp';
+import PopUp from '../../components/popUp';
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 interface CardProps {
   photo: string;

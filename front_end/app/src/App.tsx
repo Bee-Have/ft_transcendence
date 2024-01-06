@@ -1,20 +1,19 @@
 // import  React, { useState, useEffect} from 'react';
-import  React, { useEffect } from 'react';
+import  React from 'react';
 
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending				from './pages/pending';
-import  Welcome     	from './pages/welcome';
+import  Pending				from './pages/pending/pendingMabriel';
+import  Welcome     	from './pages/Welcome/welcome';
 // import  Menu        	from './components/menu';
-import  Profil      	from './pages/profil';
+import  Profil      	from './pages/profil/profil';
 // import  Header      	from './components/header';
-import  FriendList  	from './pages/friendList';
-import	Blocked				from './pages/blocked';
-import	MatchHistory	from './pages/matchHistory';
-import	Chat 					from	'./pages/chat';
-//import sendBack from './files/sendBack';
-import {deleteCookie, getCookieValue} from './cookies_managment';
+import  FriendList  	from './pages/friend-list/FriendsList';
+import	Blocked				from './pages/blocked/blockedMabriel';
+import	MatchHistory	from './pages/match-history/matchHistory';
+import	Chat 					from	'./pages/chat/chat';
+//import sendBack, {sendBackPost} from './files/sendBack';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
@@ -50,58 +49,50 @@ const App: React.FC = () => {
 	// 	setHistoryMatch(statesToUpdate.showHistoryMatch || false);
 	// };
 
+//	const openLoginWindow = (): void => {
+//		setShowOverlay(true);
+//
+//		sendBack('http://localhost:3001/auth').then(function (data)
+//		{
+//			let url = data ? data.data : ""
+//			
+//			const newWindow = window.open(url, '_blank', 'width=400,height=200');
+//
+//			if (newWindow) {
+//				newWindow.addEventListener('beforeunload', () => {
+//					setShowOverlay(false);
+//				});
+//			}
+//			
+//		})
+//	};
+	
 	// const acceptConnection = (): void => {
 	// 	setLogStatus(true);
 	// };
 
-	// const openLoginWindow = (): void => {
-	// 	// setShowOverlay(true);
-	// 	const newWindow = window.open('', '_blank', 'width=400,height=200');
 
-	// 	if (newWindow) {
-	// 		newWindow.addEventListener('beforeunload', () => {
-	// 			alert('Fenêtre fermée');
-	// 			// setShowOverlay(false);
-	// 		});
-	// 	}
+	// const logout = (): void => {
+		// alert("add here question <did you want to disconnected ?>");
+		// here set navigate query to show walcome not logged
+		// updateBooleanStates({showWelcome: true});
+		// setLogStatus(false);
+		// alert("You are now disconnected !");
 	// };
 
-//	const logout = (): void => {
-//		alert("add here question <did you want to disconnected ?>");
-//		sendBackPost('http://localhost:3001/auth/logout').then(function () {
-//			updateBooleanStates({showWelcome: true});
+
+//	useEffect(() => {
+//		const handleMessage = (event: MessageEvent): void => {
+//			// if (event.data === "OK")
+//				// setLogStatus(true);
+//		};
+//		window.addEventListener('message', handleMessage);
 //
-//			deleteCookie("access_token");
-//			deleteCookie("refresh_token");
-//			deleteCookie("TfaEnable");
-//			setLogStatus(false);
-//		})
-//
-//	};
-
-	/**
-	 * useEffect(() => {
-	 *   // Your code here
-	 * }, []);
-	 * is similar to componentDidMount in class based component and let code run when a component finished mounting.
-	 */
-	useEffect(() => {
-
-		if (getCookieValue("access_token") !== null)
-		{
-			// TODO : Change this so it send a ping to the backend to know if user is still logged or not
-//			setLogStatus(true);
-		}
-		const handleMessage = (event: MessageEvent): void => {
-			// if (event.data === "OK")
-				// setLogStatus(true);
-		};
-		window.addEventListener('message', handleMessage);
-
-		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, []);
+//		return () => {
+//			window.removeEventListener('message', handleMessage);
+//		};
+//	}, []);
+	
 
 	// return (
 	// 	<div className="App">
@@ -128,6 +119,7 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/chat" element={<Chat />} />
+				<Route path="*" element={<p>404 Not found</p> } />
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>
 		</BrowserRouter>

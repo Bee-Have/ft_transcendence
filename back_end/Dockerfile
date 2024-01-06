@@ -9,9 +9,9 @@ RUN npm install
 
 COPY ./srcs .
 
-RUN npm run build
-
 RUN npx prisma generate
+
+RUN npm run build
 
 EXPOSE 3001 5555
 

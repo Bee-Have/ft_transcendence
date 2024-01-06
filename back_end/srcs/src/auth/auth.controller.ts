@@ -1,8 +1,9 @@
 import { Controller, Get, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { AuthDto } from 'src/auth/dto/auth.dto';
-import { Tokens, TokensDto } from 'src/auth/types/tokens.type';
+import { TokensDto } from 'src/auth/types/tokens.type';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { RtGuard } from 'src/common/guards';
 import { TfaGuard } from 'src/common/guards/tfa.guard';
@@ -43,10 +44,11 @@ export class AuthController {
 	})
 	@Public()
 	@UseGuards(TfaGuard)
+	@UseGuards(ThrottlerGuard)
 	@Get("tfa")
 	async tfa(@Query() query: TfaDto, @GetCurrentUser('sub') userId: number) {
 		return this.authService.verifyTfa(query.code, userId) 
-	}
+	} 
 
 	@ApiOperation({ description: 'Call this route if for any reason you no longer want your refresh token to be usable' })
 	@ApiOkResponse({ description: 'The refresh token is no longer usable' })
@@ -65,8 +67,15 @@ export class AuthController {
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
   	async refreshTokens(	@GetCurrentUser('sub') userId: number, 
-  					@GetCurrentUser('refreshToken') rt: string): Promise<Tokens> {
-		return await this.authService.refreshTokens(userId, rt);
+  					@GetCurrentUser('refreshToken') rt: string,
+					@Res() res: Response): Promise<void> {
+		const tokens = await this.authService.refreshTokens(userId, rt);
+
+		res.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+		res.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+		res.cookie('userId', userId, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
+
+		res.send()
 	}
 }
 

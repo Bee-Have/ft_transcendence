@@ -2,6 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
+
+const cookieExtractor = (req) => {
+
+	if (req.cookies)
+		return req.cookies['TfaToken']
+
+	return null
+}
+
 @Injectable()
 export class TfaStrategy extends PassportStrategy(Strategy, 'tfa')
 {

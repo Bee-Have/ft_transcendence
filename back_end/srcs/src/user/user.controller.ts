@@ -1,25 +1,33 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { Response } from "express";
 import { TfaDto } from "src/auth/dto/tfa.dto";
 import { Public } from "src/common/decorators";
-import { PrismaService } from "src/prisma/prisma.service";
+import { FriendshipService } from "src/friendship/friendship.service";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
+import { Friend } from "./dto/friend.dto";
 import { updateUsernameDto } from "./dto/updateUsername.dto";
+import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
 import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { UserService } from './user.service';
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiBearerAuth()
 @Controller('user')
-export class UserController {
+export class UserController { 
 	
 	constructor(private userService: UserService,
-				private prisma: PrismaService) {}
+				private friendService: FriendshipService) {}
 
 	// @Get('profile/:username')
 	// getProfile(@Param('username') username: string) : Promise<any> {
 	// 	return this.userService.getUserProfil(username)
 	// }
+
+	@Get('idbyname/:username')
+	async getuserIdbyName(@Param('username') username: string) {
+		return await this.userService.getUserIdByName(username)
+	}
 
 	// @Public()
 	// @Get('image/:username')
@@ -30,6 +38,76 @@ export class UserController {
 	@Get('profile/:id')
 	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
 		return this.userService.getUserProfil(userId)
+	}
+
+
+
+
+
+
+	@Get('friends')
+	async getFriends (@GetCurrentUser('sub') userId: number): Promise<Friend[]>{
+		return await this.userService.getUserFriends(userId)
+	}
+
+
+	@Public()
+	@Get('test/friend/:id')
+	async wehbnfowie(@Param('id', ParseIntPipe) userId: number) {
+		return await this.userService.getUserFriends(userId)
+	}
+
+	@Public()
+	@Get('pending/:id')
+	async wjebfiewf(@Param('id', ParseIntPipe) userId: number) {
+		return await this.userService.getUserPendingInvite(userId)
+	}
+
+//////////////// TODO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
+
+
+	@Public()
+	@HttpCode(HttpStatus.OK)
+	@Post('friend/accept/:id/:rec')
+	async wroeufghow(@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
+		return await this.friendService.acceptFriendRequest(userId, receiverId)
+	}
+
+
+	@Public()
+	@HttpCode(HttpStatus.OK)
+	@Post('friend/reject/:id/:rec')
+	async woefoef (@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
+		return await this.friendService.rejectFriendRequest(userId, receiverId)
+	}
+
+	@Public()
+	@HttpCode(HttpStatus.OK)
+	@Post('friend/block/:id')
+	async wfgwei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
+		return await this.friendService.blockUser(userId, body.blockedUserId)
+	}
+
+	@Public()
+	@HttpCode(HttpStatus.OK)
+	@Post('friend/unblock/:id')
+	async wfgwewei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
+		return await this.friendService.unblockUser(userId, body.blockedUserId)
+	}
+
+	@Public()
+	@HttpCode(HttpStatus.OK)
+	@Get('blocked/:id')
+	async wiefgiwef(@Param('id', ParseIntPipe) userId: number) {
+		return await this.userService.getBlockedUser(userId)
+	}
+//////////////// TODO TEST TO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
+
+
+	@Public()
+	@Get('username/:id')
+	async getUsername(@Param('id', ParseIntPipe) userId: number): Promise<string> {
+		return await this.userService.getUsername(userId)
 	}
 
 	@Public()
@@ -94,6 +172,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'A valid code has been given and the TFA is now enabled'})
 	@ApiUnauthorizedResponse({ description: 'A wrong code has been given, you can try again'})
 	@Get('tfa/enable/callback')
+	@UseGuards(ThrottlerGuard)
 	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
 						@Query() query: TfaDto) {
 		return this.userService.enableTFACallback(userId, query.code)
@@ -103,6 +182,14 @@ export class UserController {
 	@Get('tfa/disable')
 	disableTFA(@GetCurrentUser('sub') userId: number) {
 		return this.userService.disableTFA(userId)
+	}
+
+
+	@Public()
+	@Get('test')
+	async weif(){
+		console.log(await this.userService.doMemberOneBlockedMemberTwo(1,2))
+		console.log(await this.userService.isMemberOneBlockedByMemberTwo(1,2))
 	}
 
 }

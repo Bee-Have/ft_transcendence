@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io'
 
 export enum UserStatus {
-	online = "online",
-	offline = "offline",
-	ingame = "ingame",
-	inchat = "inchat"
+	online = "Online",
+	offline = "Offline",
+	ingame = "In game",
+	inchat = "In chat"
 }
 
 export class UserInfo {
@@ -24,7 +24,12 @@ export class UserInfo {
 	}
 }
 
-export function UserStatusEventDto(user: UserInfo) {
-	this.userId = user.id
-	this.status = user.status
+export class UserStatusEventDto {
+	userId: number
+	status: UserStatus
+
+	constructor(user: UserInfo) {	
+		this.userId = user.id	
+		this.status = user.status
+	}
 }

@@ -3,7 +3,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import BlockIcon from '@mui/icons-material/Block';
 import LockIcon from '@mui/icons-material/Lock';
 
-import Menu from '../components/menu';
+import Menu from '../../components/menu';
 
 interface CardProps {
   photo: string;

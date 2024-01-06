@@ -14,6 +14,8 @@ import Divider from "@mui/material/Divider";
 
 import styles from "./InviteGameModeDialogButton.module.css";
 
+import { Friend } from "../../../pages/global/friend.dto";
+
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
 
@@ -22,11 +24,11 @@ export interface GameModeDialogProps {
   selectedMode: string;
   onClose: (value: string) => void;
   updateGameMode: (value: string) => void;
-  username: string;
+  user: Friend;
 }
 
 function GameModeDialog(props: GameModeDialogProps) {
-  const { onClose, selectedMode, open, updateGameMode, username } = props;
+  const { onClose, selectedMode, open, updateGameMode, user } = props;
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -50,8 +52,8 @@ function GameModeDialog(props: GameModeDialogProps) {
         <Divider />
         <br />
         <Box className={styles.Box}>
-          <Avatar className={styles.Avatar}/>
-          {username}
+          <Avatar className={styles.Avatar} />
+          {user.username}
         </Box>
         <br />
         <Divider />
@@ -98,11 +100,10 @@ function GameModeDialog(props: GameModeDialogProps) {
 }
 
 interface InviteGameModeDialogButtonProps {
-	username: string;
-	// image user icon
+  user: Friend;
 }
 
-function InviteGameModeDialogButton({ username /*TODO: , user icon here */ }: InviteGameModeDialogButtonProps) {
+function InviteGameModeDialogButton({ user }: InviteGameModeDialogButtonProps) {
   const [open, setOpen] = React.useState(false);
   const [selectedMode, setSelectedMode] = React.useState(modes[0]);
 
@@ -119,7 +120,7 @@ function InviteGameModeDialogButton({ username /*TODO: , user icon here */ }: In
   };
 
   return (
-    <div>
+    <>
       <Button className={styles.ButtonDialogOpen} onClick={handleClickOpen}>
         invite to game
       </Button>
@@ -128,9 +129,9 @@ function InviteGameModeDialogButton({ username /*TODO: , user icon here */ }: In
         open={open}
         onClose={handleClose}
         updateGameMode={updateGameMode}
-        username={username}
+        user={user}
       />
-    </div>
+    </>
   );
 }
 

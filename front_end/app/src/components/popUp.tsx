@@ -1,20 +1,22 @@
-import React from 'react';
+import React from "react";
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-import InviteSpectateButton from './DynamicInviteSpectateButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Button from "@mui/material/Button";
+import InviteSpectateButton from "./DynamicInviteSpectateButton";
+import Menu from "@mui/material/Menu";
+
+import { Friend } from "../pages/global/friend.dto";
 
 import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css";
 
 interface PopUpProps {
-    user: string;
-    anchorEl: HTMLElement | null;
-    setAnchorEl: (event: HTMLElement | null) => void;
-  }
+  user: Friend;
+  anchorEl: HTMLElement | null;
+  setAnchorEl: (event: HTMLElement | null) => void;
+}
 
-function PopUp( {user, anchorEl, setAnchorEl}: PopUpProps) {
+function PopUp({ user, anchorEl, setAnchorEl }: PopUpProps) {
   // const navigate = useNavigate();
   // const squareStyle: React.CSSProperties = {
   //   position: 'absolute',
@@ -42,50 +44,44 @@ function PopUp( {user, anchorEl, setAnchorEl}: PopUpProps) {
   };
 
   return (
-
     <Menu
       id="basic-menu"
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
       MenuListProps={{
-        'aria-labelledby': 'basic-button',
+        "aria-labelledby": "basic-button",
       }}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
+        vertical: "bottom",
+        horizontal: "center",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
+        vertical: "top",
+        horizontal: "center",
       }}
-      autoFocus={false}
-      disableAutoFocusItem={true}
     >
-      <MenuItem
+      <Button
         className={styles.ButtonDialogOpen}
         onClick={() => navigate("/profil")}
       >
         profile
-      </MenuItem>
+      </Button>
 
-      <InviteSpectateButton username={user}/>
-      
-      <MenuItem
+      <InviteSpectateButton user={user} />
+
+      <Button
         className={styles.ButtonDialogOpen}
         onClick={() => navigate("/chat")}
       >
         chat
-      </MenuItem>
-      
-      <MenuItem
-        className={styles.ButtonDialogOpen}
-        onClick={handleClose}
-      >
+      </Button>
+
+      <Button className={styles.ButtonDialogOpen} onClick={handleClose}>
         add friend
-      </MenuItem>
+      </Button>
     </Menu>
-  )
-};
+  );
+}
 
 export default PopUp;

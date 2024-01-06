@@ -3,6 +3,8 @@ import PopUp from '../../components/popUp';
 
 import Menu from '../../components/menu';
 
+import { Friend } from '../global/friend.dto';
+
 interface CardProps {
   winner: string;
   photo: string;
@@ -38,13 +40,13 @@ const Match: React.FC<CardProps> = ({winner, photo, text, mode, onClick}) => {
 
 const MatchHistory: React.FC = () => {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-	const [popupContent, setPopupContent] = useState('');
+	const [popupContent, setPopupContent] = useState<Friend>({id: 0, username: '', status: ''});
 	
 	// const [showPopUp, setPopUp] = useState(false);
 	// const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-		setPopupContent(name);
+  const handleCardClick = (user: Friend, event: React.MouseEvent<HTMLDivElement>) => {
+		setPopupContent(user);
 		setAnchorEl(event.currentTarget);
 		// const boundingBox = event.currentTarget.getBoundingClientRect();
 		// if (boundingBox) {
@@ -63,13 +65,13 @@ const MatchHistory: React.FC = () => {
       <Menu/>
       <div className="content">
         <div className="printCard">
-          <Match winner='tie' photo={require('../../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='tie' photo={require('../../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
           <div className="separator"></div>
-          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
           <div className="separator"></div>
-          <Match winner='defeat' photo={require('../../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='defeat' photo={require('../../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
           <div className="separator"></div>
-          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
+          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
         </div>
       </div>
 			{<PopUp

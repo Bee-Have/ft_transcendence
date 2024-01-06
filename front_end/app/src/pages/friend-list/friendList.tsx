@@ -3,6 +3,8 @@ import PopUp from '../../components/popUp';
 
 import Menu from '../../components/menu';
 
+import { Friend } from '../global/friend.dto';
+
 interface CardProps {
   photo: string;
   name: string;
@@ -24,14 +26,14 @@ const Card: React.FC<CardProps> = ({ photo, name, onClick }) => {
 
 const FriendList: React.FC = () => {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-	const [popupContent, setPopupContent] = useState('');
+	const [popupContent, setPopupContent] = useState<Friend>({id: 0, username: '', status: ''});
 
   // const [showPopUp, setPopUp] = useState(false);
   // const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
 
-  const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-		setPopupContent(name);
+  const handleCardClick = (user: Friend, event: React.MouseEvent<HTMLDivElement>) => {
+		setPopupContent(user);
 		setAnchorEl(event.currentTarget);
 		// const boundingBox = event.currentTarget.getBoundingClientRect();
 		// if (boundingBox) {
@@ -49,10 +51,10 @@ const FriendList: React.FC = () => {
       <Menu/>
       <div className="content">
         <div className="printCard">
-          <Card photo={'./asset/default.jpg'} name={'test1'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test2'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test3'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test4'} onClick={handleCardClick}/>
+          <Card photo={'./asset/default.jpg'} name={'test1'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
+          <Card photo={'./asset/default.jpg'} name={'test2'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
+          <Card photo={'./asset/default.jpg'} name={'test3'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
+          <Card photo={'./asset/default.jpg'} name={'test4'} onClick={(name, event) => {handleCardClick(popupContent, event)}}/>
         </div>
       </div>
 			{<PopUp

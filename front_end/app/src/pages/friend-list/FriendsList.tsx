@@ -31,15 +31,15 @@ const Card: React.FC<CardProps> = ({ photo, name, onClick, status }) => {
 
 const FriendList: React.FC = () => {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-	const [popupContent, setPopupContent] = useState('');
+	const [popupContent, setPopupContent] = useState<Friend>({id: 0, username: '', status: ''});
 	
 	// const [showPopUp, setPopUp] = useState(false);
 	// const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [friends, setFriends] = useState<Friend[]>([]) 
 
 
-	const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-		setPopupContent(name);
+	const handleCardClick = (user: Friend, event: React.MouseEvent<HTMLDivElement>) => {
+		setPopupContent(user);
 		setAnchorEl(event.currentTarget);
 		// const boundingBox = event.currentTarget.getBoundingClientRect();
 		// if (boundingBox) {
@@ -62,7 +62,7 @@ const FriendList: React.FC = () => {
 				{id : 2, username: '123456789', status: 'offline'},
 				{id : 3, username: '123456789abcdef', status: 'online'},
 				{id : 4, username: 'pasteque', status: 'offline'},
-				{id : 5, username: 'test5', status: 'online'}
+				{id : 5, username: 'test5', status: 'playing'}
 			]
 		);
 	}, [])
@@ -90,7 +90,7 @@ const FriendList: React.FC = () => {
 							key={i}
 							photo={'http://localhost:3001/user/image/' + friends[i].id}
 							name={friends[i].username}
-							onClick={handleCardClick}
+							onClick={(name, event) => handleCardClick(friends[i], event)}
 							status={friends[i].status}/>
 					))}
 				</div>

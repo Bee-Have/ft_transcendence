@@ -75,9 +75,14 @@ const Conversation = ({ onClick, conv }: any) => {
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
+	const showMenu = (e: any) => {
+		//TODO: Add the popup menu for conversations
+		e.preventDefault()
+	}
+
 	return (
 		<div className="friend" >
-			<ListItemButton key={id} onClick={onClick}>
+			<ListItemButton key={id} onClick={onClick} onContextMenu={showMenu}>
 				{
 					conv.status ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar

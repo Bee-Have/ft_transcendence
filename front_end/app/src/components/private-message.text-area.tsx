@@ -36,7 +36,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest", behavior: 'smooth' });
+		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
 	}, [messages]);
 
 	useEffect(() => {

@@ -16,6 +16,7 @@ import	Chat 					from	'./pages/chat/chat';
 //import sendBack from './files/sendBack';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Channel from './pages/channel/chat';
 
 const App: React.FC = () => {
 
@@ -221,6 +222,7 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/chat" element={<Chat />} />
+				<Route path="/channel/:id" Component={Channel} />
 				<Route path="*" element={<p>404 Not found</p> } />
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>

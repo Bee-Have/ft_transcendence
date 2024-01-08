@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import PopUp from "../../components/popUp";
 
 import Menu from "../../components/menu";
@@ -19,9 +21,9 @@ interface CardProps {
   onClick: (user: Friend, event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const Match: React.FC<CardProps> = ({ winner, user, mode/*, onClick */}) => {
+const Match: React.FC<CardProps> = ({ winner, user, mode /*, onClick */ }) => {
   return (
-    <div className="match"/* onClick={(event) => onClick(user, event)}*/>
+    <div className="match" /* onClick={(event) => onClick(user, event)}*/>
       <div className={winner}>
         <h1>{winner}</h1>
       </div>
@@ -37,9 +39,9 @@ const Match: React.FC<CardProps> = ({ winner, user, mode/*, onClick */}) => {
           gap: "10px",
         }}
       >
-		<InteractiveAvatar user={user} />
+        <InteractiveAvatar user={user} />
         {/* <img src={user.photo} alt={"test"} className="person-image" /> */}
-		<InteractiveUsername user={user} />
+        <InteractiveUsername user={user} />
       </Box>
       <div className="score">
         <h1>score</h1>
@@ -52,6 +54,8 @@ const Match: React.FC<CardProps> = ({ winner, user, mode/*, onClick */}) => {
 };
 
 const MatchHistory: React.FC = () => {
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [popupContent, setPopupContent] = useState<Friend>({
     id: 0,
@@ -82,6 +86,11 @@ const MatchHistory: React.FC = () => {
 
   return (
     <div className="matchHistory">
+      <div className="header">
+        <button className="btn btn-light" onClick={() => navigate("/")}>
+          home
+        </button>
+      </div>
       <Menu />
       <div className="content">
         <div className="printCard">

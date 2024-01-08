@@ -22,3 +22,5 @@ RUN npm install
 
 # run container
 CMD [ "npm", "start" ]
+
+STOPSIGNAL SIGKILL

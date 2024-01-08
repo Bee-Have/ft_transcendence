@@ -1,0 +1,14 @@
+.dockerignore   # Ignore the ig
+node_modules    # Ignore local node_modules fo
+dist
+npm-debug.log   # Debug f
+Dockerfile      # The docker
+.git            # The git his
+.gitignore   
+.npmrc         
+.env-*          # Any other environment that we don't want to inc
+.gitlab-*       # Deploying with gitl
+.github         # Using github actio
+*.md            # 
+srcs/dist
+srcs/node_modules

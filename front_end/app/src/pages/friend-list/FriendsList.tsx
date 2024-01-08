@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Menu from "../../components/menu";
-import { Friend } from "../global/friend.dto";
+import { Friend, UserStatusEventDto } from "../global/friend.dto";
 import { userId } from "../global/userId";
 import { socket } from "../global/websocket";
 
@@ -24,7 +24,7 @@ function Card({ user }: CardProps) {
       </div>
       <div className="name">
         <InteractiveUsername user={user} />
-        <h1>{user.status}</h1>
+        <h1>{user.userstatus}</h1>
       </div>
     </div>
   );
@@ -53,10 +53,10 @@ const FriendList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const listenNewStatus = (status: any) => {
+    const listenNewStatus = (eventProps: UserStatusEventDto) => {
       const updatedFriends = friends.map((friend) =>
-        friend.id === status.userId
-          ? { ...friend, status: status.status }
+        friend.id === eventProps.userId
+          ? { ...friend, userstatus: eventProps.userstatus }
           : friend
       );
       setFriends(updatedFriends);

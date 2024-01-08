@@ -76,7 +76,7 @@ const MatchHistory: React.FC = () => {
         user: {
           id: 1,
           username: "test1",
-          status: UserStatus.online,
+          userstatus: UserStatus.online,
           photo: PHOTO_FETCH_URL + 1,
         },
         mode: "speed",
@@ -87,7 +87,7 @@ const MatchHistory: React.FC = () => {
         user: {
           id: 2,
           username: "test2",
-          status: UserStatus.online,
+          userstatus: UserStatus.online,
           photo: PHOTO_FETCH_URL + 2,
         },
         mode: "retro",
@@ -98,7 +98,7 @@ const MatchHistory: React.FC = () => {
         user: {
           id: 3,
           username: "test3",
-          status: UserStatus.offline,
+          userstatus: UserStatus.offline,
           photo: PHOTO_FETCH_URL + 3,
         },
         mode: "time",
@@ -109,7 +109,7 @@ const MatchHistory: React.FC = () => {
         user: {
           id: 4,
           username: "test4",
-          status: UserStatus.ingame,
+          userstatus: UserStatus.ingame,
           photo: PHOTO_FETCH_URL + 4,
         },
         mode: "classic",

@@ -52,7 +52,7 @@ function GameModeDialog(props: GameModeDialogProps) {
         <Divider />
         <br />
         <Box className={styles.Box}>
-          <Avatar className={styles.Avatar} />
+          <Avatar className={styles.Avatar} src={user.photo}/>
           {user.username}
         </Box>
         <br />

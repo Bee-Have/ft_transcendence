@@ -2,10 +2,11 @@
 export class Friend {
 	id: number
 	username: string
-	status: string
+	userstatus: string
 }
 
 export class FriendRequest {
 	id: number
+	userstatus: string
 	username: string
 }

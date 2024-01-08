@@ -14,11 +14,17 @@ export enum UserStatus {
 export class Friend {
 	id: number
 	username: string
-	status: UserStatus
+	userstatus: UserStatus
 	photo: string
 }
 
 export class FriendRequest {
 	id: number
+	userstatus: UserStatus
 	username: string
+}
+
+export class UserStatusEventDto {
+	userId: number
+	userstatus: UserStatus
 }

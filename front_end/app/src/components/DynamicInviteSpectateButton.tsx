@@ -19,13 +19,13 @@ function InviteSpectateButton({ user }: InviteSpectateButtonProps) {
     navigate("/game/" + user.username);
   };
 
-  if (user.status === UserStatus.ingame) {
+  if (user.userstatus === UserStatus.ingame) {
     return (
       <Button className={styles.ButtonDialogOpen} onClick={handleSpectate}>
         spectate
       </Button>
     );
-  } else if (user.status !== UserStatus.offline) {
+  } else if (user.userstatus !== UserStatus.offline) {
     return <InviteGameModeDialogButton user={user} />;
   } else {
     return null;

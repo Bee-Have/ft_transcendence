@@ -4,7 +4,7 @@ import  React, { useEffect } from 'react';
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-import  Pending			from './pages/pending/pending';
+import  Pending			from './pages/pending/pendingMabriel';
 import  Welcome     	from './pages/Welcome/welcome';
 import  Profil      	from './pages/profil/profil';
 import  FriendList  	from './pages/friend-list/FriendsList';

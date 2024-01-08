@@ -250,7 +250,7 @@ export class PrivateMessageService {
 
 		if (!friend)
 			return UserStatus.offline
-		return friend.status
+		return friend.userstatus
 	}
 
 	async buildConversationObject(userId: number, conversationId: number): Promise<ConversationProps> {

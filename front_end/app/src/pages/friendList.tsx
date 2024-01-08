@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import PopUp from '../components/popUp';
+import { useNavigate } from 'react-router-dom';
 
+import PopUp from '../components/popUp';
 import Menu from '../components/menu';
 
 interface CardProps {
@@ -11,14 +12,14 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ photo, name, onClick }) => {
   return (
-    <div className="card" onClick={(event) => onClick(name, event)}>
-      <div className="PP">
-        <img src={require('../asset/default.jpg')} alt={'test'} className="person-image" />
-      </div>
-      <div className='name'>
-        <h1>{name}</h1>
-      </div>
-    </div>
+	<div className="card" onClick={(event) => onClick(name, event)}>
+	  <div className="PP">
+		<img src={require('../asset/default.jpg')} alt={'test'} className="person-image" />
+	  </div>
+	  <div className='name'>
+		<h1>{name}</h1>
+	  </div>
+	</div>
   );
 };
 
@@ -27,32 +28,35 @@ const FriendList: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [popupContent, setPopupContent] = useState('');
 
-
+  const navigate = useNavigate();
   const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-    const boundingBox = event.currentTarget.getBoundingClientRect();
-    if (boundingBox) {
-      const x = event.pageX;
-      const y = event.pageY;
+	const boundingBox = event.currentTarget.getBoundingClientRect();
+	if (boundingBox) {
+	  const x = event.pageX;
+	  const y = event.pageY;
 
-      setMousePosition({ x, y });
-      setPopupContent(name);
-      setPopUp(true);
-    }
+	  setMousePosition({ x, y });
+	  setPopupContent(name);
+	  setPopUp(true);
+	}
   };
 
   return (
-    <div className="friendList">
-      <Menu checker={2}/>
-      <div className="content">
-        <div className="printCard">
-          <Card photo={'./asset/default.jpg'} name={'test1'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test2'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test3'} onClick={handleCardClick}/>
-          <Card photo={'./asset/default.jpg'} name={'test4'} onClick={handleCardClick}/>
-        </div>
-      </div>
-      {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}
-    </div>
+	<div className="friendList">
+		<div className="header">
+			<button className="btn btn-light" onClick={() => navigate("/")}>home</button>
+		</div>
+	  <Menu checker={2}/>
+	  <div className="content">
+		<div className="printCard">
+		  <Card photo={'./asset/default.jpg'} name={'test1'} onClick={handleCardClick}/>
+		  <Card photo={'./asset/default.jpg'} name={'test2'} onClick={handleCardClick}/>
+		  <Card photo={'./asset/default.jpg'} name={'test3'} onClick={handleCardClick}/>
+		  <Card photo={'./asset/default.jpg'} name={'test4'} onClick={handleCardClick}/>
+		</div>
+	  </div>
+	  {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}
+	</div>
   );
 };
 

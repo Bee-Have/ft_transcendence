@@ -1,20 +1,30 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import Menu from '../components/menu';
+import Avatar from '@mui/material/Avatar';
 import '../css/profil.css';
 
-const Profil: React.FC = () => {
 
+
+const Profil: React.FC = () => {
+	const navigate = useNavigate();
 	const realName = "real Name";
 	const nickName = "current Nickname";
 
 	return (
 		<div className='content'>
+			<div className="header">
+				<button className="btn btn-light">invit to game</button>
+				<button className="btn btn-light">add friend</button>
+				<button className="btn btn-light" onClick={() => navigate("/profil/edit-Profil")}>edit profil</button>
+				<button className="btn btn-light" onClick={() => navigate("/")}>Logout</button>
+				<button className="btn btn-light" onClick={() => navigate("/")}>home</button>
+			</div>
 			<Menu checker={1}/>
 			<div className='profil'>
 				<center>
-					<div className="PP">
-						<img src={require('../asset/default.jpg')} alt="test" className="person-image" />
-					</div>
+					<Avatar className='avatar' src={require("../asset/default.jpg")} style={{width:'100px', height:'100px'}}/><br/>
 				</center>
 				<div className='information'>
 					<div className='fs-2'>

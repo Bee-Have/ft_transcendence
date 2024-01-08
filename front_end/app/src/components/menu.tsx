@@ -17,7 +17,7 @@ const Menu: React.FC<MenuProps> = ({checker}) => {
         <label className="btn btn-outline-primary fs-1 text-start" htmlFor="vbtn-radio1">Profile</label>
 
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio2" autoComplete="off" onClick={() => navigate("/profil/friend-list")}/>
-        <label className="btn btn-outline-primary fs-1 text-start">Friend list</label>
+        <label className="btn btn-outline-primary fs-1 text-start" htmlFor="vbtn-radio3">Friend list</label>
 
         <input type="radio" className="btn-check" name="vbtn-radio" id="vbtn-radio3" autoComplete="off" onClick={() => navigate("/profil/friend-list")} defaultChecked={isDefaultChecked(2)} />
         <label className="btn btn-outline-primary fs-6" htmlFor="vbtn-radio3">all friends</label>

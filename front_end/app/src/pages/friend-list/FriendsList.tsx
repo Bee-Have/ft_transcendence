@@ -66,7 +66,7 @@ const FriendList: React.FC = () => {
 
 	return (
 		<div className="friendList">
-			<Menu />
+			<Menu checker={0} />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(friends).map((i) => (

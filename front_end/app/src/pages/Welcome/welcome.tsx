@@ -1,11 +1,5 @@
-<<<<<<< HEAD:front_end/app/src/pages/welcome.tsx
-import React from 'react';
-import '../css/welcome.css'
-import '../css/header.css'
-=======
 import React, { useEffect } from 'react';
 import '../../css/welcome.css'
->>>>>>> origin/channel:front_end/app/src/pages/Welcome/welcome.tsx
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -32,9 +26,6 @@ const Welcome: React.FC = () => {
   // }
   
   const authenticateUser = () => {
-<<<<<<< HEAD:front_end/app/src/pages/welcome.tsx
-	setAuthenticated(true);
-=======
     // this is temporary
     // here call the 42 portal to authenticate the user
     axios.get('http://localhost:3001/auth')
@@ -44,7 +35,6 @@ const Welcome: React.FC = () => {
     .catch(e => console.log(e))
 	// login()
     // setAuthenticated(true);
->>>>>>> origin/channel:front_end/app/src/pages/Welcome/welcome.tsx
   }
 
   useEffect(() => {

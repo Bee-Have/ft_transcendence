@@ -74,7 +74,7 @@ const Pending: React.FC = () => {
 
 	return (
 		<div className="pending">
-			<Menu />
+			<Menu checker={0} />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(friendsReq).map((i) => (

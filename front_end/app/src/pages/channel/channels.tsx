@@ -14,7 +14,7 @@ const Channel = ({ photo, text }: any) => {
 const Channels: React.FC = () => {
   return (
     <div className="pending">
-      <Menu/>
+      <Menu checker={0}/>
       <div className="content">
         <div className="printCard">
           <Channel photo={'http://localhost:3001/user/image/94555'} text={'test1'} />

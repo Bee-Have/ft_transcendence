@@ -1,35 +1,9 @@
-<<<<<<< HEAD
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import  React, { useEffect } from 'react';
-=======
 // import  React, { useState, useEffect} from 'react';
 import  React from 'react';
->>>>>>> origin/channel
 
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
 
-<<<<<<< HEAD
-import  Pending			from './pages/pending';
-import  Welcome     	from './pages/welcome';
-import  Profil      	from './pages/profil';
-import  FriendList  	from './pages/friendList';
-import	Blocked			from './pages/blocked';
-import	MatchHistory	from './pages/matchHistory';
-import	Chat 			from './pages/chat';
-import	EditProfil		from './pages/editProfil';
-
-
-const App: React.FC = () => {
-	useEffect(() => {
-		const handleMessage = (event: MessageEvent): void => {
-		};
-		window.addEventListener('message', handleMessage);
-		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, []);
-=======
 import  Pending				from './pages/pending/pendingMabriel';
 import  Welcome     	from './pages/Welcome/welcome';
 // import  Menu        	from './components/menu';
@@ -44,6 +18,7 @@ import	Chat 					from	'./pages/chat/chat';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Channel from './pages/channel/channel';
 import Channels from './pages/channel/channels';
+import EditProfil from './pages/editProfil';
 
 const App: React.FC = () => {
 
@@ -239,7 +214,6 @@ const App: React.FC = () => {
 	// 		{showChat && <Chat/>}
 	// 	</div>
 	// );
->>>>>>> origin/channel
 	return (
 		<BrowserRouter>
 			<Routes>

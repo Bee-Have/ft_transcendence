@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD:front_end/app/src/pages/friendList.tsx
 import { useNavigate } from 'react-router-dom';
 
-import PopUp from '../components/popUp';
-import Menu from '../components/menu';
-=======
 import PopUp from '../../components/popUp';
-
 import Menu from '../../components/menu';
->>>>>>> origin/channel:front_end/app/src/pages/friend-list/friendList.tsx
 
 interface CardProps {
   photo: string;

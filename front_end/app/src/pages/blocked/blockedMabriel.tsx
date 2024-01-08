@@ -46,7 +46,7 @@ const Bloqued: React.FC = () => {
 
 	return (
 		<div className="bloqued">
-			<Menu />
+			<Menu checker={0} />
 			<div className="content">
 				<div className="printCard">
 					{Object.keys(blockedUser).map((i) => (

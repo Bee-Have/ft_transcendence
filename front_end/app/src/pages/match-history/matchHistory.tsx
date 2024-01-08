@@ -1,18 +1,12 @@
 import React, {useState} from 'react';
-<<<<<<< HEAD:front_end/app/src/pages/matchHistory.tsx
 
 import Avatar from '@mui/material/Avatar';
 
-import PopUp from '../components/popUp';
-import Menu from '../components/menu';
+import PopUp from '../../components/popUp';
+import Menu from '../../components/menu';
 import { useNavigate } from 'react-router-dom';
 
 
-=======
-import PopUp from '../../components/popUp';
-
-import Menu from '../../components/menu';
->>>>>>> origin/channel:front_end/app/src/pages/match-history/matchHistory.tsx
 
 interface CardProps {
 	winner: string;
@@ -33,7 +27,7 @@ const Match: React.FC<CardProps> = ({winner, photo, text, mode, onClick}) => {
 			</div>
 			<div className='avatar'>
 				<center>
-					<Avatar id="matchHistoryAvatar" src={require('../asset/default.jpg')}/>
+					<Avatar id="matchHistoryAvatar" src={require('../../asset/default.jpg')}/>
 				</center>
 			</div>
 			<div className="opposantName">
@@ -56,7 +50,6 @@ const MatchHistory: React.FC = () => {
 	const navigate = useNavigate();
 
 
-<<<<<<< HEAD:front_end/app/src/pages/matchHistory.tsx
 	const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
 		const boundingBox = event.currentTarget.getBoundingClientRect();
 		if (boundingBox) {
@@ -78,37 +71,18 @@ const MatchHistory: React.FC = () => {
 			<Menu checker={5}/>
 			<div className="content">
 				<div className="printCard">
-					<Match winner='tie' photo={require('../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
+					<Match winner='tie' photo={require('../../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
 					<div className="separator"></div>
-					<Match winner='victory' photo={require('../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
+					<Match winner='victory' photo={require('../../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
 					<div className="separator"></div>
-					<Match winner='defeat' photo={require('../asset/default.jpg')} text={'test3====='} mode={'infinity'} onClick={handleCardClick}/>
+					<Match winner='defeat' photo={require('../../asset/default.jpg')} text={'test3====='} mode={'infinity'} onClick={handleCardClick}/>
 					<div className="separator"></div>
-					<Match winner='victory' photo={require('../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
+					<Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
 				</div>
 			</div>
 			{showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}
 		</div>
 	);
-=======
-  return (
-    <div className="matchHistory">
-      <Menu/>
-      <div className="content">
-        <div className="printCard">
-          <Match winner='tie' photo={require('../../asset/default.jpg')} text={'test1'} mode={'infinity'} onClick={handleCardClick}/>
-          <div className="separator"></div>
-          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
-          <div className="separator"></div>
-          <Match winner='defeat' photo={require('../../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={handleCardClick}/>
-          <div className="separator"></div>
-          <Match winner='victory' photo={require('../../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
-        </div>
-      </div>
-      {showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent}/>}
-    </div>
-  );
->>>>>>> origin/channel:front_end/app/src/pages/match-history/matchHistory.tsx
 };
 
 export default MatchHistory;

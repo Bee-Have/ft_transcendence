@@ -1,14 +1,9 @@
 import React from 'react';
-<<<<<<< HEAD:front_end/app/src/pages/profil.tsx
 import { useNavigate } from 'react-router-dom';
 
-import Menu from '../components/menu';
-import Avatar from '@mui/material/Avatar';
-import '../css/profil.css';
-=======
 import Menu from '../../components/menu';
+import Avatar from '@mui/material/Avatar';
 import '../../css/profil.css';
->>>>>>> origin/channel:front_end/app/src/pages/profil/profil.tsx
 
 
 
@@ -29,13 +24,7 @@ const Profil: React.FC = () => {
 			<Menu checker={1}/>
 			<div className='profil'>
 				<center>
-<<<<<<< HEAD:front_end/app/src/pages/profil.tsx
-					<Avatar className='avatar' src={require("../asset/default.jpg")} style={{width:'100px', height:'100px'}}/><br/>
-=======
-					<div className="PP">
-						<img src={require('../../asset/default.jpg')} alt="test" className="person-image" />
-					</div>
->>>>>>> origin/channel:front_end/app/src/pages/profil/profil.tsx
+					<Avatar className='avatar' src={require("../../asset/default.jpg")} style={{width:'100px', height:'100px'}}/><br/>
 				</center>
 				<div className='information'>
 					<div className='fs-2'>

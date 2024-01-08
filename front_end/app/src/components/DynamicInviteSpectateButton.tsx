@@ -6,7 +6,7 @@ import InviteGameModeDialogButton from "./game/GameModeDialog/InviteGameModeDial
 
 import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css";
 
-import { Friend } from "../pages/global/friend.dto";
+import { Friend, UserStatus } from "../pages/global/friend.dto";
 
 interface InviteSpectateButtonProps {
   user: Friend;
@@ -19,13 +19,13 @@ function InviteSpectateButton({ user }: InviteSpectateButtonProps) {
     navigate("/game/" + user.username);
   };
 
-  if (user.status === "playing") {
+  if (user.status === UserStatus.ingame) {
     return (
       <Button className={styles.ButtonDialogOpen} onClick={handleSpectate}>
         spectate
       </Button>
     );
-  } else if (user.status === "online") {
+  } else if (user.status !== UserStatus.offline) {
     return <InviteGameModeDialogButton user={user} />;
   } else {
     return null;

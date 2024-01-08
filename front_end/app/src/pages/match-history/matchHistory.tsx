@@ -3,7 +3,7 @@ import PopUp from "../../components/popUp";
 
 import Menu from "../../components/menu";
 
-import { Friend } from "../global/friend.dto";
+import { Friend, UserStatus } from "../global/friend.dto";
 
 import { Box } from "@mui/material";
 
@@ -56,7 +56,7 @@ const MatchHistory: React.FC = () => {
   const [popupContent, setPopupContent] = useState<Friend>({
     id: 0,
     username: "",
-    status: "",
+    status: UserStatus.offline,
     photo: PHOTO_FETCH_URL + 0,
   });
 
@@ -90,7 +90,7 @@ const MatchHistory: React.FC = () => {
             user={{
               id: 1,
               username: "test1",
-              status: "online",
+              status: UserStatus.online,
               photo: PHOTO_FETCH_URL + 1,
             }}
             mode="infinity"
@@ -102,7 +102,7 @@ const MatchHistory: React.FC = () => {
             user={{
               id: 2,
               username: "test2",
-              status: "online",
+              status: UserStatus.online,
               photo: PHOTO_FETCH_URL + 2,
             }}
             mode="infinity"
@@ -114,7 +114,7 @@ const MatchHistory: React.FC = () => {
             user={{
               id: 3,
               username: "test3",
-              status: "offline",
+              status: UserStatus.offline,
               photo: PHOTO_FETCH_URL + 3,
             }}
             mode="infinity"
@@ -126,7 +126,7 @@ const MatchHistory: React.FC = () => {
             user={{
               id: 4,
               username: "test4",
-              status: "playing",
+              status: UserStatus.ingame,
               photo: PHOTO_FETCH_URL + 4,
             }}
             mode="infinity"

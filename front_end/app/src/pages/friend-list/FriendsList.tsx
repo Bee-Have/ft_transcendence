@@ -16,17 +16,15 @@ interface CardProps {
   user: Friend;
 }
 
-function Card({ user /*, onClick*/ }: CardProps) {
+function Card({ user }: CardProps) {
   return (
     <div className="card">
       <div className="PP">
         <InteractiveAvatar user={user} />
       </div>
       <div className="name">
-        <h1>
-          <InteractiveUsername user={user} />
-          {user.status}
-        </h1>
+        <InteractiveUsername user={user} />
+        <h1>{user.status}</h1>
       </div>
     </div>
   );

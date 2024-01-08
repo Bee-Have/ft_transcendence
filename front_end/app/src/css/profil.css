@@ -15,6 +15,12 @@
   margin-bottom: 35px;
   margin-right: 3%;
   object-fit: cover;
+  padding: 10px;
+}
+
+.card .name {
+  display: flex;
+  flex-direction: column;
 }
 
 .content {

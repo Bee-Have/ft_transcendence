@@ -1,9 +1,9 @@
-// import axios from 'axios';
+import axios from 'axios';
 import React, { useEffect, useState } from "react";
 // import PopUp from "../../components/popUp";
 import Menu from "../../components/menu";
 import { Friend } from "../global/friend.dto";
-// import { userId } from '../global/userId';
+import { userId } from '../global/userId';
 import { socket } from "../global/websocket";
 
 // import { Avatar } from "@mui/material";
@@ -65,36 +65,36 @@ const FriendList: React.FC = () => {
   //   };
 
   useEffect(() => {
-    // axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
-    // .then(res => setFriends(res.data))
-    // .catch(err => console.log(err))
-    setFriends([
-      { id: 1, username: "t", status: "online", photo: PHOTO_FETCH_URL + 1 },
-      {
-        id: 2,
-        username: "123456789",
-        status: "offline",
-        photo: PHOTO_FETCH_URL + 2,
-      },
-      {
-        id: 3,
-        username: "123456789abcdef",
-        status: "online",
-        photo: PHOTO_FETCH_URL + 3,
-      },
-      {
-        id: 4,
-        username: "pasteque",
-        status: "offline",
-        photo: PHOTO_FETCH_URL + 4,
-      },
-      {
-        id: 5,
-        username: "test5",
-        status: "playing",
-        photo: PHOTO_FETCH_URL + 5,
-      },
-    ]);
+    axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
+    .then(res => setFriends({ ...res.data, photo: PHOTO_FETCH_URL + res.data.id}))
+    .catch(err => console.log(err))
+    // setFriends([
+    //   { id: 1, username: "t", status: "online", photo: PHOTO_FETCH_URL + 1 },
+    //   {
+    //     id: 2,
+    //     username: "123456789",
+    //     status: "offline",
+    //     photo: PHOTO_FETCH_URL + 2,
+    //   },
+    //   {
+    //     id: 3,
+    //     username: "123456789abcdef",
+    //     status: "online",
+    //     photo: PHOTO_FETCH_URL + 3,
+    //   },
+    //   {
+    //     id: 4,
+    //     username: "pasteque",
+    //     status: "offline",
+    //     photo: PHOTO_FETCH_URL + 4,
+    //   },
+    //   {
+    //     id: 5,
+    //     username: "test5",
+    //     status: "playing",
+    //     photo: PHOTO_FETCH_URL + 5,
+    //   },
+    // ]);
   }, []);
 
   useEffect(() => {

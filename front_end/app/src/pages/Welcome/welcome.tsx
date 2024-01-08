@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ReadCookie } from '../../components/ReadCookie';
 import isTokenExpired from '../global/isTokenExpired';
-import sendBack from '../../components/sendBack'
 
 // interface WelcomeProps
 // {
@@ -21,8 +20,8 @@ const Welcome: React.FC = () => {
 //   this is a temporary variable until the back is linked to the front
   const [authenticated, setAuthenticated] = React.useState(false);
   const [guest, setGuest] = React.useState(false);
-  const aToken = ReadCookie('access_token')
-  const rToken = ReadCookie('refresh_token')
+  const aToken = ReadCookie('access_token');
+  const rToken = ReadCookie('refresh_token');
 
 	// const login = () => {
   // }
@@ -31,16 +30,11 @@ const Welcome: React.FC = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
     
-    /*axios.get('http://localhost:3001/auth')
+    axios.get('http://localhost:3001/auth')
     .then((res: any) => {
-      window.location.replace(res.data)
+      window.location.replace(res.data);
     })
-    .catch(e => console.log(e))*/
-    sendBack("http://localhost:3001/auth").then( function (data:any)
-      {
-        window.location.replace(data.data);
-      }
-    )
+    .catch(e => console.log(e));
 	// login()
     // setAuthenticated(true);
   }
@@ -48,17 +42,17 @@ const Welcome: React.FC = () => {
   useEffect(() => {
 		if (!aToken)
 		{
-			console.log('login')
+			console.log('login');
 			// login()
-			setAuthenticated(false)
+			setAuthenticated(false);
 		}
 		else if ( isTokenExpired(aToken) )
 		{
 			console.log('Atoken Expired')
 			if ( !rToken || isTokenExpired(rToken) )
 			{
-				console.log('No Rt or expired')
-				setAuthenticated(false)
+				console.log('No Rt or expired');
+				setAuthenticated(false);
 			// login()
 			}
 			else
@@ -66,9 +60,9 @@ const Welcome: React.FC = () => {
 				console.log('posting')
 				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
 				.then(() => {
-					window.location.reload()
+					window.location.reload();
 				})
-				.catch((e) => console.log(e))
+				.catch((e) => console.log(e));
 			}
 
 		}
@@ -85,7 +79,7 @@ const Welcome: React.FC = () => {
   return (
     <div className="log_window">
 		{/* add querry here to check if authentification token was filled */}
-		{authenticated && <button className="btn btn-light profile-btn" onClick={() => navigate("/profil")}>profile</button>}
+		{authenticated && <button className="btn btn-light profile-btn" onClick={() => navigate("/profile")}>profile</button>}
         <h1 className="display-1 welcome">welcome</h1>
       <div className="login-choice">
           <div className="col-md-4">

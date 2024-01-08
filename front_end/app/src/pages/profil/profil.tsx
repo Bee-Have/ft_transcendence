@@ -1,19 +1,55 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Menu from '../../components/menu';
 import '../../css/profil.css';
-import sendBack from 'src/components/sendBack';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
 
 const Profil: React.FC = () => {
 
-	const info_promise = sendBack("localhost:3001/user/profile/106520");
-	const info = async () => await info_promise;
-	console.log(info);
+	var realName: string = "real Name";
+	var nickName: string = "current Nickname";
+	const navigate = useNavigate();
 
-	const realName = "real Name";
-	const nickName = "current Nickname";
+
+	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
+	.then( function (response)
+	{
+		console.log(response.data);
+		realName = response.data.username;
+		if (response.data.nickname == null)
+			nickName = response.data.username;
+		else
+			nickName = response.data.nickname;
+		console.log("realName : " + realName)
+	})
+	.catch(err => {
+		console.log(err);
+		//throw err;
+	});
+
+	useEffect(() => {
+		console.log("realName = " + realName)
+	}, [realName, nickName])
 
 	return (
 		<div className='content'>
+			<div className="header">
+                <button className="btn btn-light">invit to game</button>
+                <button className="btn btn-light">add friend</button>
+                <button className="btn btn-light" onClick={() => navigate("/profil/edit-Profil")}>edit profil</button>
+                <button className="btn btn-light" onClick={() => {
+					axios.post("http://localhost:3001/auth/logout", {}, {headers: {Authorization: `Bearer ${ReadCookie("access_token")}`}, withCredentials: true}).then( () =>
+					{
+						deleteCookie("access_token");
+						deleteCookie("refresh_token");
+						deleteCookie("TfaEnable");
+						deleteCookie("userId");
+						navigate("/")
+					})
+				}}>Logout</button>
+                <button className="btn btn-light" onClick={() => navigate("/")}>home</button>
+            </div>
 			<Menu/>
 			<div className='profil'>
 				<center>

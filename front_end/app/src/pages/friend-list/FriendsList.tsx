@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import Menu from "../../components/menu";
 import { Friend } from "../global/friend.dto";
@@ -42,7 +42,14 @@ const FriendList: React.FC = () => {
         withCredentials: true,
       })
       .then((res) =>
-        setFriends({ ...res.data, photo: PHOTO_FETCH_URL + res.data.id })
+        setFriends(
+          res.data.map((friend: Friend) => {
+            if (friend.id === userId) return null;
+
+            friend.photo = PHOTO_FETCH_URL + friend.id;
+            return friend;
+          })
+        )
       )
       .catch((err) => console.log(err));
   }, []);

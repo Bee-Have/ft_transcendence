@@ -8,8 +8,9 @@ interface ChannelMessageProps {
 	id: number,
 	createdAt: number,
 	content: string,
-	senderId: number,
-	username: string
+	senderUserId: number,
+	senderMemberId: number,
+	username: string,
 	channelId: number,
 }
 
@@ -19,7 +20,7 @@ const Message = ({ message, isSame }: any) => {
 		<div className="message">
 			{ isSame ? "" :
 			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.username} src={'http://localhost:3001/user/image/' + message.senderId} />
+				<Avatar className="private-message-avatar" alt={message.username} src={'http://localhost:3001/user/image/' + message.senderUserId} />
 				<div className='private-message-name'>{message.username}</div>
 			</div>}
 
@@ -30,7 +31,7 @@ const Message = ({ message, isSame }: any) => {
 	)
 }
 
-const ChannelTextArea = ({ currentChannelId, userId }: any) => {
+const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number, userId: number}) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: any) => {
 		axios.get('http://localhost:3001/channel/messages/' + userId + '/' + currentChannelId)
 			.then((res) => {
 				setMessages(res.data)
+				console.log(res.data)
 			})
 			.catch((e) => {
 				console.log(e)
@@ -51,6 +53,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: any) => {
 
 	useEffect(() => {
 		const listenMessage = (message: ChannelMessageProps) => {
+			console.log(message, currentChannelId)
 			if (currentChannelId === message.channelId)
 			{
 				setMessages((prev) => [...prev, message]);
@@ -79,7 +82,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: any) => {
 			}
 			axios.post('http://localhost:3001/channel/messages/' + userId, { channelId: currentChannelId, content: inputValue })
 				.then((res): any => {
-					setMessages([...messages, res.data]);
+					// setMessages([...messages, res.data]);
 					setInputValue('');
 				})
 				.catch((err) => {
@@ -92,7 +95,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: any) => {
 	const isLastMessageSameSender = (index: number) => {
 		if (index === 0)
 			return false
-		if (messages[index].senderId === messages[index - 1].senderId)
+		if (messages[index].senderUserId === messages[index - 1].senderUserId)
 			return true
 		return false
 	}

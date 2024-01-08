@@ -146,6 +146,8 @@ export class UserService {
 
 	async enableTFACallback(userId:number, code: string) {
 		const user = await this.getUser(userId)
+
+		console.log(code, user.twoFASecret)
 		
 		const bool = authenticator.verify({ token: code , secret: user.twoFASecret})
 

@@ -11,7 +11,7 @@ import  FriendList  	from './pages/friend-list/FriendsList';
 import	Blocked			from './pages/blocked/blocked';
 import	MatchHistory	from './pages/match-history/matchHistory';
 import	Chat 			from './pages/chat/chat';
-import	EditProfil		from './pages/editProfil';
+import	EditProfil		from './pages/profil/editProfil';
 
 import ClassicGame from "./pages/game/Classic";
 import TimedGame from "./pages/game/Timed";

@@ -68,7 +68,7 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 				<center>
 					<Avatar
 						className='avatar'
-						src={selectedImage || require("../asset/default.jpg")}
+						src={selectedImage || require("src/asset/default.jpg")}
 						style={{width:'100px',height: '100px' }}
 					/>
 					<br />

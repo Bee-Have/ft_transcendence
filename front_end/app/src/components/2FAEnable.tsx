@@ -26,7 +26,7 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 			<div className='content'>
 				<div className='QRCode'>
 				<h1>Two factor authentification :</h1>
-				<QRCode value="https://www.google.com" /><br/>
+				<QRCode value="https://www.google.com"/><br/>
 				<Input placeholder="ENTER CODE HERE"/><br/>
 				<button onClick={() => {popUp(false); btn(true)}}>Validate</button>
 				</div>

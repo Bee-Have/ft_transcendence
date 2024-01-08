@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
 
+import Avatar from '@mui/material/Avatar';
+
 import PopUp from '../components/popUp';
 import Menu from '../components/menu';
 import { useNavigate } from 'react-router-dom';
+
 
 
 interface CardProps {
@@ -22,8 +25,10 @@ const Match: React.FC<CardProps> = ({winner, photo, text, mode, onClick}) => {
 			<div className="VS">
 				<h1>VS</h1>
 			</div>
-			<div className="PP">
-				<img src={photo} alt={'test'} className="person-image"/>
+			<div className='avatar'>
+				<center>
+					<Avatar id="matchHistoryAvatar" src={require('../asset/default.jpg')}/>
+				</center>
 			</div>
 			<div className="opposantName">
 				<h1>{text}</h1>
@@ -70,7 +75,7 @@ const MatchHistory: React.FC = () => {
 					<div className="separator"></div>
 					<Match winner='victory' photo={require('../asset/default.jpg')} text={'test2'} mode={'infinity'} onClick={handleCardClick}/>
 					<div className="separator"></div>
-					<Match winner='defeat' photo={require('../asset/default.jpg')} text={'test3'} mode={'infinity'} onClick={handleCardClick}/>
+					<Match winner='defeat' photo={require('../asset/default.jpg')} text={'test3====='} mode={'infinity'} onClick={handleCardClick}/>
 					<div className="separator"></div>
 					<Match winner='victory' photo={require('../asset/default.jpg')} text={'test4'} mode={'infinity'} onClick={handleCardClick}/>
 				</div>

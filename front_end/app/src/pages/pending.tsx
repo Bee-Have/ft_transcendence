@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import BlockIcon from '@mui/icons-material/Block';
 import LockIcon from '@mui/icons-material/Lock';
-import { useNavigate } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
 
 import Menu from '../components/menu';
 
@@ -14,8 +16,10 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ photo, text }) => {
 	return (
 		<div className="card">
-			<div className="PP">
-				<img src={require('../asset/default.jpg')} alt={'test'} className="person-image" />
+			<div className="avatar">
+				<center>
+					<Avatar id="matchHistoryAvatar" src={require('../asset/default.jpg')}/>
+				</center>
 			</div>
 			<div className='name'>
 				<h1>{text}</h1>

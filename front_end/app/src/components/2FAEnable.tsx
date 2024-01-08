@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect} from 'react';
-import QRCode from 'qrcode.react';
+import React, {useCallback, useEffect, useState} from 'react';
+import axios from 'axios';
 
 import Input from '@mui/material/Input';
 
@@ -9,9 +9,38 @@ interface FAEnableProps {
 }
 
 const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
+	const [qrCode, setQrCode] = useState('')
+	const [code, setCode] = useState('')
+
+	const click= () => {
+		console.log('http://localhost:3001/user/tfa/enable/callback?code=' + code)
+		axios.get('http://localhost:3001/user/tfa/enable/callback?code=' + code, { withCredentials: true })
+		.then((res) => console.log(res))
+		.catch(e => console.log(e))
+
+		//popUp(false);
+		//btn(true);
+	}
+
+	const updateCode = (e: any) => {
+		setCode(e.target.value)
+		console.log(code)
+	}
+
+	const getQrCode = () => {
+		axios.get('http://localhost:3001/user/tfa/enable', { withCredentials: true })
+		.then((res: any) => {
+			setQrCode(res.data);
+			console.log(res.data);
+		})
+		.catch(e => console.log(e))
+	}
+
+	
+
 	const handleKeyPress = useCallback((event: KeyboardEvent) => {
 	if (event.key === 'Escape')
-	popUp(false);
+		{}
 	}, []);
 	
 	useEffect(() => {
@@ -21,14 +50,19 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 		};
 	  }, [handleKeyPress]);
 
+
+	useEffect(() => {
+		getQrCode();
+	}, [])
+
 	return (
 		<div className='overlay'>
 			<div className='content'>
 				<div className='QRCode'>
 				<h1>Two factor authentification :</h1>
-				<QRCode value="https://www.google.com"/><br/>
-				<Input placeholder="ENTER CODE HERE"/><br/>
-				<button onClick={() => {popUp(false); btn(true)}}>Validate</button>
+				<img src={qrCode}></img>
+				<Input onChange={(e) => updateCode(e)} placeholder="ENTER CODE HERE"/><br/>
+				<button onClick={() => click()}>Validate</button>
 				</div>
 			</div>
 		</div>

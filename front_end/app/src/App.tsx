@@ -8,7 +8,7 @@ import  Pending			from './pages/pending/pendingMabriel';
 import  Welcome     	from './pages/Welcome/welcome';
 import  Profil      	from './pages/profil/profil';
 import  FriendList  	from './pages/friend-list/FriendsList';
-import	Blocked			from './pages/blocked/blocked';
+import	Blocked			from './pages/blocked/blockedMabriel';
 import	MatchHistory	from './pages/match-history/matchHistory';
 import	Chat 			from './pages/chat/chat';
 import	EditProfil		from './pages/profil/editProfil';

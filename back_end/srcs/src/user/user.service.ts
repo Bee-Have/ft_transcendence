@@ -349,9 +349,12 @@ export class UserService {
 		const blockedUser = new Array<BlockedUser>()
 
 		for (const blocked of user.blocked) {
+			const userstatus = this.connected_user_map.get(blocked.blockedUserId)?.userstatus
+
 			blockedUser.push({
 				id: blocked.blockedUserId,
-				username: await this.getUsername(blocked.blockedUserId)
+				username: await this.getUsername(blocked.blockedUserId),
+				userstatus: userstatus ? userstatus : UserStatus.offline
 			})
 		}
 

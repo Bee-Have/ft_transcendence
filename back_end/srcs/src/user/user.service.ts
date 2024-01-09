@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { Response } from "express";
 import * as fs from 'fs';
@@ -10,6 +10,7 @@ import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
 const qrcode =  require('qrcode')
+var sizeOf = require('buffer-image-size');
 
 @Injectable()
 export class UserService {
@@ -353,6 +354,26 @@ export class UserService {
 		}
 
 		return blockedUser
+	}
+
+	uploadAvatar(userId: number, file: Express.Multer.File) {
+		if (!file)
+		throw new BadRequestException("No file provided")
+
+		const dimensions = sizeOf(file.buffer)
+		
+		if (file.mimetype !== 'image/jpeg' || dimensions.type !== 'jpg')
+			throw new BadRequestException("Wrong mime type")
+		if (file.size > 100000)
+			throw new BadRequestException("File too large")
+		
+		if (dimensions.height > 700  || dimensions.height < 50 ||
+			dimensions.width > 700 || dimensions.width < 50)
+			throw new BadRequestException('Image dimensions are not valid')
+		
+		const filename = process.env.AVATAR_DIRECTORY + '/' + userId.toString() + '.jpeg'
+		
+		fs.writeFileSync(filename, file.buffer)
 	}
 
 }

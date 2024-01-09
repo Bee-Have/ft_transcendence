@@ -1,5 +1,7 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { Response } from "express";
 import { TfaDto } from "src/auth/dto/tfa.dto";
 import { Public } from "src/common/decorators";
@@ -8,9 +10,7 @@ import { GetCurrentUser } from '../common/decorators/get-current-user.decorator'
 import { Friend } from "./dto/friend.dto";
 import { updateUsernameDto } from "./dto/updateUsername.dto";
 import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
-import { ImageInterceptor } from "./interceptor/image.interceptor";
 import { UserService } from './user.service';
-import { ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiBearerAuth()
 @Controller('user')
@@ -154,8 +154,11 @@ export class UserController {
 	@ApiBadRequestResponse({ description: 'The request is malformed' })
 	@ApiCreatedResponse({ description: 'The avatar have been uploaded successfully'})
 	@Post('upload/avatar')
-	@UseInterceptors(ImageInterceptor)
-	uploadAvatar() {}
+	@UseInterceptors(FileInterceptor('avatar'))
+	uploadAvatar(@UploadedFile() file: Express.Multer.File, @GetCurrentUser('sub') userId: number) {
+		this.userService.uploadAvatar(userId, file)
+	}
+
 
 
 	@ApiOperation({ description: 'A secret is generated on the server, this secret is then returned as a QRCode, the client need to scan it on Google Authenticator and send back the code to the /tfa/enable/callback' })

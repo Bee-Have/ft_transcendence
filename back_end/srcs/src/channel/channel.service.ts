@@ -1,11 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ChannelMember } from '@prisma/client';
-import { hash } from 'argon2';
+import { hash, verify } from 'argon2';
 import { authenticator } from 'otplib';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { CreateChannelDto, RespectPasswordPolicy } from './dto/CreateChannel.dto';
 import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
+import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 
 @Injectable()
@@ -35,20 +36,20 @@ export class ChannelService {
 
 		for (const message of messages.messages) {
 			const messageUserId = await this.getUserIdByMemberId(message.senderId)
-			trim.push({
-				...message,
-				senderMemberId: message.senderId,
-				senderUserId: messageUserId,
-				username: await this.userService.getUsername(messageUserId)
-			})
+
+			if (! await this.userService.doMemberOneBlockedMemberTwo(userId, messageUserId))
+				trim.push({
+					...message,
+					senderMemberId: message.senderId,
+					senderUserId: messageUserId,
+					username: await this.userService.getUsername(messageUserId)
+				})
 		}
 
 		return trim
 	}
 
 	async createChannel(userId: number, body: CreateChannelDto) {
-		if (await this.channelNameExist(body.name))
-			throw new BadRequestException('Channel name already exist')
 
 		let password: string | null = null
 
@@ -91,6 +92,40 @@ export class ChannelService {
 
 	}
 
+	async updateChannel(userId: number, channelId: number, body: CreateChannelDto) {
+		const channel = await this.getChannel(channelId)
+		const member = await this.getChannelMember(userId, channelId)
+
+		if (member.role !== "OWNER")
+			throw new ForbiddenException('You have no rigths for this channel')
+		
+		let password: string | null = null
+
+		if (body.mode === "PROTECTED") {
+			if (!body.password || !body.passwordConfirm)
+				throw new BadRequestException('Password must be defined')
+			if (body.password !== body.passwordConfirm)
+				throw new BadRequestException('Passwords does not match')
+			if (!RespectPasswordPolicy(body.password))
+				throw new BadRequestException('Password does not respest password policy')
+
+			password = await hash(body.password)
+		}
+		else if (body.mode === "PRIVATE")
+			password = authenticator.generateSecret(60)
+
+		await this.prisma.channel.update({
+			where: {
+				id: channelId
+			},
+			data: {
+				password,
+				channelName: body.name,
+				mode: body.mode
+			}
+		})
+	}
+
 	async getAllChannels(userId: number) {
 		const channelMembers = await this.prisma.channelMember.findMany({
 			where: {
@@ -115,10 +150,115 @@ export class ChannelService {
 		return channels
 	}
 
+	async joinProtectedChannel(userId: number, body: JoinProtectedChannelDto) {
+		const channel = await this.getChannel(body.channelId)
+		const member = await this.getChannelMemberNotThrow(userId, body.channelId)
+
+		if (channel.mode !== "PROTECTED")
+			throw new BadRequestException('Wrong channel')
+		if (member?.state === "BANNED")
+			throw new ForbiddenException('You are Banned from this channel')
+		if (member)
+			throw new BadRequestException('You already are a member of this channel')
+
+		const bool = await verify(channel.password, body.password)
+
+		if (bool) {
+			await this.prisma.channelMember.create({
+				data: {
+					channelId: channel.id,
+					userId,
+					role: "NONADMIN",
+					state: "REGULAR"
+				}
+			})
+		}
+		else
+			throw new ForbiddenException("Wrong password")
+	}
+
+	async joinPublicChannel(userId: number, body: JoinPublicChannelDto) {
+		const channel = await this.getChannel(body.channelId)
+		const member = await this.getChannelMemberNotThrow(userId, body.channelId)
+
+		if (channel.mode !== "PUBLIC")
+			throw new BadRequestException('Wrong channel')
+		if (member?.state === "BANNED")
+			throw new ForbiddenException('You are Banned from this channel')
+		if (member)
+			throw new BadRequestException('You already are a member of this channel')
+
+		await this.prisma.channelMember.create({
+			data: {
+				channelId: channel.id,
+				userId,
+				role: "NONADMIN",
+				state: "REGULAR"
+			}
+		})
+	}
+
+	async JoinPrivateChannel(userId: number, body: JoinPrivateChannelDto) {
+		const channel = await this.prisma.channel.findFirst({
+			where: {
+				mode: "PRIVATE",
+				password: body.secret
+			}
+		})
+
+		if (channel) {
+			await this.prisma.channelMember.create({
+				data: {
+					userId,
+					state: "REGULAR",
+					role: "NONADMIN",
+					channelId: channel.id
+				}
+			})
+		}
+		else {
+			throw new BadRequestException("Wrong channel")
+		}
+	}
+
+	async changePrivateChannelSecret(userId: number, channelId: number) {
+		const channel = await this.getChannel(channelId)
+		const member = await this.getChannelMember(userId, channelId)
+
+		if (member.role === "NONADMIN")
+			throw new ForbiddenException('You have not the rights to update this channel')
+		if (channel.mode !== "PRIVATE")
+			throw new BadRequestException("Wrong Channel")
+
+		const secret = authenticator.generateSecret(60)
+
+		await this.prisma.channel.update({
+			where: {
+				id: channel.id
+			},
+			data: {
+				password: secret
+			}
+		})
+		return secret
+	}
+
+	async getChannelSecret(userId: number, channelId: number) {
+		const channel = await this.getChannel(channelId)
+		const member = await this.getChannelMember(userId, channelId)
+
+		if (member.role !== "OWNER")
+			throw new ForbiddenException('You have not the rights for this channel')
+		if (channel.mode !== "PRIVATE")
+			throw new BadRequestException("Wrong channel mode")
+
+		return channel.password
+	}
+
 	async createNewMessage(userId: number, message: IncomingChannelMessage) {
 		const senderMember = await this.getChannelMember(userId, message.channelId)
 
-		if (senderMember.state !== "REGULAR")
+		if (senderMember.state !== "REGULAR" || this.isMuted(senderMember))
 			throw new ForbiddenException('You can not send messages to this Channel')
 
 		try {
@@ -134,6 +274,9 @@ export class ChannelService {
 
 			for (const member of members) {
 				if (member.state === "BANNED")
+					continue
+
+				if (await this.userService.doMemberOneBlockedMemberTwo(member.userId, userId))
 					continue
 
 				const member_in_map = this.userService.connected_user_map.get(member.userId)
@@ -185,7 +328,6 @@ export class ChannelService {
 			await this.kickUser(userId, body.restrictedUserId, body.channelId)
 	}
 
-
 	async muteUser(userId: number, mutedUserId: number, channelId: number) {
 		const restrictedUser = await this.userCanRestrictUser(userId, mutedUserId, channelId)
 
@@ -227,8 +369,14 @@ export class ChannelService {
 		const user = await this.getChannelMember(userId, channelId)
 		const restrictUser = await this.getChannelMember(restrictedUserId, channelId)
 
+		if (user.state === "BANNED")
+			throw new ForbiddenException('You are banned from this channel')
+
 		if (restrictUser.role === "OWNER")
 			throw new ForbiddenException('Cannot restrict the Owner of the channel')
+
+		if (user.role === "ADMIN" && restrictUser.role === "ADMIN")
+			throw new ForbiddenException('Admin can not restrict an other admin')
 
 		if (user.role === "NONADMIN")
 			throw new ForbiddenException('Only Admin or Owner can restrict a channel member')
@@ -249,31 +397,19 @@ export class ChannelService {
 		return members
 	}
 
-	async channelNameExist(channelName: string) {
-		const channel = await this.prisma.channel.count({
-			where: {
-				channelName
-			}
-		})
-
-		if (channel)
-			return true
-		return false
-	}
-
 	async isUserChannelMember(userId: number, channelId: number): Promise<Boolean> {
 		if (!await this.channelExist(channelId))
 			throw new NotFoundException('Channel not found')
 
-		const member = await this.prisma.channelMember.count({
+		const member = await this.prisma.channelMember.findFirst({
 			where: {
 				userId,
 				channelId
 			}
 		})
 
-		if (member)
-			return true
+		if (!member || member.state === "BANNED")
+			return false
 		return false
 	}
 
@@ -289,7 +425,21 @@ export class ChannelService {
 		})
 
 		if (!member)
-			throw new ForbiddenException('User is not in this Channel')
+			throw new BadRequestException('You are not a member of this channel')
+
+		return member
+	}
+
+	async getChannelMemberNotThrow(userId: number, channelId: number) {
+		if (!await this.channelExist(channelId))
+			throw new NotFoundException('Channel not found')
+
+		const member = await this.prisma.channelMember.findFirst({
+			where: {
+				userId,
+				channelId
+			}
+		})
 
 		return member
 	}
@@ -351,7 +501,7 @@ export class ChannelService {
 				id: memberId
 			}
 		})
-		return member.userId
+		return member?.userId
 	}
 
 	async getChannelOwnerId(channelId: number) {
@@ -363,5 +513,11 @@ export class ChannelService {
 		}
 
 		throw new NotFoundException("Channel Not Found")
+	}
+
+	isMuted(channelMember: ChannelMember) {
+		if (!channelMember.muteDate)
+			return false
+		return channelMember.muteDate.getTime() > new Date().getTime()
 	}
 }

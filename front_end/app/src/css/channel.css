@@ -1,6 +1,6 @@
 
 .channel-box {
-	width: 300px;
+	width: 90%;
 	height: 150px;
 	background-color: #f0f0f0;
 	border: 5px solid #ccc;
@@ -11,10 +11,18 @@
 	text-overflow: ellipsis;
 }
 
+.channel-box:hover {
+	background-color: rgba(0, 0, 0, 0.4);
+	color: aliceblue;
+	cursor: pointer;
+}
+
+
 .channel-box .owner {
 	margin: 5px;
-	width: 35%;
+	width: 15%;
 	height: 100%;
+	text-align: center;
 }
 
 .channel-box  .owner .ownerUsername {
@@ -30,18 +38,19 @@
 
 
 .channel-box .channelInfo {
-	width: 65%;
+	width: 90%;
 	height: 100%;
 }
 
 .channel-box .channelInfo .channelName {
-	color: black;
+	width: 89%;
 	text-align: center;
 	height: 40%;
 	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .channel-box .channelInfo .channelMode {
 	text-align: center;
-	color: black;
 }

@@ -6,7 +6,7 @@ import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
 
-@Public()
+// @Public()
 @Controller('channel')
 export class ChannelController {
 
@@ -25,10 +25,10 @@ export class ChannelController {
 	@Post('join/public')
 	@HttpCode(HttpStatus.OK)
 	async JoinPublicChannel(
-		@GetCurrentUser('sub') userId: number,
+		@GetCurrentUser('sub') userId: number, 
 		@Body() body: JoinPublicChannelDto,
 	) {
-		await this.JoinPublicChannel(userId, body)
+		await this.channelService.joinPublicChannel(userId, body)
 	}
 
 	@Post('join/protected')
@@ -37,7 +37,7 @@ export class ChannelController {
 		@GetCurrentUser('sub') userId: number,
 		@Body() body: JoinProtectedChannelDto,
 	) {
-		await this.JoinProtectedChannel(userId, body)
+		await this.channelService.joinProtectedChannel(userId, body)
 	}
 
 	@Post('join/private')
@@ -46,7 +46,7 @@ export class ChannelController {
 		@GetCurrentUser('sub') userId: number,
 		@Body() body: JoinPrivateChannelDto,
 	) {
-		await this.JoinPrivateChannel(userId, body)
+		await this.channelService.JoinPrivateChannel(userId, body)
 	}
 
 	@Get('secret/update/:channelId')
@@ -111,8 +111,10 @@ export class ChannelController {
 	}
 
 	@Get('list')
-	async getListOfChannels() {
-		return await this.channelService.getChannelsList()
+	async getListOfChannels(
+		@GetCurrentUser('sub') userId: number,
+	) {
+		return await this.channelService.getChannelsList(userId)
 	}
 
 }

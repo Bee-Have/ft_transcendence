@@ -23,7 +23,7 @@ const ChannelMembers = ({ channelId }: { channelId: number }) => {
 	const [channelMembers, setChannelMembers] = useState<MemberProps[]>([])
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/members/' + userId + "/" + channelId)
+		axios.get('http://localhost:3001/channel/members/' + channelId, {withCredentials: true})
 			.then((res): any => {
 				setChannelMembers(res.data)
 			})

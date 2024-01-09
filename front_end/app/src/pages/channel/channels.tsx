@@ -7,17 +7,30 @@ import '../../css/channel.css';
 
 const Channel = ({ channel }: any) => {
 
-	console.log(channel.mode)
+	const joinPublic = () => {
+		axios.post('http://localhost:3001/channel/join/public', {channelId: channel.id}, { withCredentials: true })
+		.then(() => console.log('success'))
+		.catch((e) => console.log(e.response.data))
+	}
+
+	const somefunc = () => {
+		if (channel.mode === "PUBLIC")
+			joinPublic()
+		// if(channel.mode ==="PROTECTED")
+		// 	joinProtected()
+
+	}
 
 	return (
-		<div className="channel-box">
+		<div className="channel-box" onClick={somefunc}>
 			<div className="owner">
 				<img className="ownerimg" src={"http://localhost:3001/user/image/" + channel.ownerId} />
 				<p className='ownerUsername'>{channel.ownerUsername}</p>
 			</div>
 			<div className='channelInfo'>
 				<p className='channelName'>{channel.channelName}</p>
-				<p className='channelMode'>{channel.mode}</p>
+				<p className='channelMode'>mode: {channel.mode}</p>
+				<p className='channelMode'>member: {channel.members}</p>
 			</div>
 		</div>
 	);
@@ -28,7 +41,7 @@ const Channels: React.FC = () => {
 	const [channelList, setChannelList] = useState([])
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/list')
+		axios.get('http://localhost:3001/channel/list', { withCredentials: true })
 			.then((res): any => {
 				setChannelList(res.data)
 			})

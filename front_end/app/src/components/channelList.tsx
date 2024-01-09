@@ -55,7 +55,7 @@ const ChannelList: React.FC = () => {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/' + userId)
+		axios.get('http://localhost:3001/channel', {withCredentials: true})
 			.then((res: any) => {
 				setChannels(res.data)
 				console.log(res.data)
@@ -71,7 +71,7 @@ const ChannelList: React.FC = () => {
 				<div className="separator"></div>
 				{
 					Object.keys(channels).map((index) => (
-						<Channel channel={channels[index]} />
+						<Channel key={index} channel={channels[index]} />
 					))
 				}
 				<Button onClick={() => navigate('/channel')}> <AddCircleOutlineIcon style={{ fontSize: '4em' }} className='add' /> </Button>

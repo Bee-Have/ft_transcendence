@@ -41,7 +41,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 	}, [messages]);
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/messages/' + userId + '/' + currentChannelId)
+		axios.get('http://localhost:3001/channel/messages/' + currentChannelId, {withCredentials: true})
 			.then((res) => {
 				setMessages(res.data)
 				console.log(res.data)
@@ -80,7 +80,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
-			axios.post('http://localhost:3001/channel/messages/' + userId, { channelId: currentChannelId, content: inputValue })
+			axios.post('http://localhost:3001/channel/messages', { channelId: currentChannelId, content: inputValue }, {withCredentials: true})
 				.then((res): any => {
 					// setMessages([...messages, res.data]);
 					setInputValue('');

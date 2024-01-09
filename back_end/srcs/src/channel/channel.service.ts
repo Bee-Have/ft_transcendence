@@ -16,12 +16,12 @@ export class ChannelService {
 		private prisma: PrismaService,
 		private userService: UserService) { }
 
-	async getChannelsList() {
+	async getChannelsList(userId: number) {
 		const channels = await this.prisma.channel.findMany({
 			where: {
 				NOT: {
 					mode: "PRIVATE"
-				}
+				},
 			},
 			select:{
 				id: true,
@@ -33,12 +33,16 @@ export class ChannelService {
 		const trim = new Array()
 
 		for (const channel of channels) {
-			const ownerId = await this.getChannelOwnerId(channel.id)
-			trim.push({
-				...channel,
-				ownerId,
-				ownerUsername: await this.userService.getUsername(ownerId)
-			})
+			if (!await this.getChannelMemberNotThrow(userId, channel.id)) {
+				const ownerId = await this.getChannelOwnerId(channel.id)
+
+				trim.push({
+					...channel,
+					ownerId,
+					ownerUsername: await this.userService.getUsername(ownerId),
+					members: await this.countMemberOfChannels(channel.id)
+				})
+			}
 		}
 
 		return trim
@@ -437,7 +441,7 @@ export class ChannelService {
 
 		if (!member || member.state === "BANNED")
 			return false
-		return false
+		return true
 	}
 
 	async getChannelMember(userId: number, channelId: number) {
@@ -540,6 +544,17 @@ export class ChannelService {
 		}
 
 		throw new NotFoundException("Channel Not Found")
+	}
+
+	async countMemberOfChannels(channelId: number) {
+		return await this.prisma.channelMember.count({
+			where: {
+				channelId,
+				NOT: {
+					state: "BANNED"
+				}
+			}
+		})
 	}
 
 	isMuted(channelMember: ChannelMember) {

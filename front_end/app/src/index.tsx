@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { GamePopupProvider } from './context/GamePopupContext';
+
 import { StyledEngineProvider } from "@mui/material/styles";
 
 const root = ReactDOM.createRoot(
@@ -12,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <StyledEngineProvider injectFirst>
-    <App />
+	  <GamePopupProvider>
+		<App />
+	  </GamePopupProvider>
     </StyledEngineProvider>
   </React.StrictMode>
 );

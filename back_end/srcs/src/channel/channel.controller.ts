@@ -110,5 +110,9 @@ export class ChannelController {
 		return await this.channelService.getAllChannelMembers(userId, channelId)
 	}
 
+	@Get('list')
+	async getListOfChannels() {
+		return await this.channelService.getChannelsList()
+	}
 
 }

@@ -16,6 +16,33 @@ export class ChannelService {
 		private prisma: PrismaService,
 		private userService: UserService) { }
 
+	async getChannelsList() {
+		const channels = await this.prisma.channel.findMany({
+			where: {
+				NOT: {
+					mode: "PRIVATE"
+				}
+			},
+			select:{
+				id: true,
+				channelName: true,
+				mode: true
+			}
+		})
+
+		const trim = new Array()
+
+		for (const channel of channels) {
+			const ownerId = await this.getChannelOwnerId(channel.id)
+			trim.push({
+				...channel,
+				ownerId,
+				ownerUsername: await this.userService.getUsername(ownerId)
+			})
+		}
+
+		return trim
+	}
 
 	async getChannelMessages(userId: number, channelId: number) {
 		if (! await this.channelExist(channelId))

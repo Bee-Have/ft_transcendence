@@ -1,7 +1,47 @@
 
-.channelName {
-	width:100%;
-	height: 40px;
-	font-size:xx-large;
-	align-content: center;
+.channel-box {
+	width: 300px;
+	height: 150px;
+	background-color: #f0f0f0;
+	border: 5px solid #ccc;
+	margin: 10px;
+	display: flex;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.channel-box .owner {
+	margin: 5px;
+	width: 35%;
+	height: 100%;
+}
+
+.channel-box  .owner .ownerUsername {
+	text-align: center;
+}
+
+.channel-box .owner .ownerimg {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+
+.channel-box .channelInfo {
+	width: 65%;
+	height: 100%;
+}
+
+.channel-box .channelInfo .channelName {
+	color: black;
+	text-align: center;
+	height: 40%;
+	overflow: hidden;
+}
+
+.channel-box .channelInfo .channelMode {
+	text-align: center;
+	color: black;
 }

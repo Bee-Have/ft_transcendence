@@ -9,14 +9,14 @@ import { BlockedUser } from "./dto/blocked-user.dto";
 import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
-const qrcode =  require('qrcode')
+const qrcode = require('qrcode')
 var sizeOf = require('buffer-image-size');
 
 @Injectable()
 export class UserService {
 
 	constructor(private prisma: PrismaService,
-				private friendService: FriendshipService) {}
+		private friendService: FriendshipService) { }
 
 	public connected_user_map = new Map<number, UserInfo>()
 
@@ -58,13 +58,13 @@ export class UserService {
 	async getUserProfil(userId: number) {
 		const user = await this.getUser(userId)
 		//besoin de : achievement
-		
-		const trimuser = plainToInstance(userProfileDto, user, { excludeExtraneousValues:true })
+
+		const trimuser = plainToInstance(userProfileDto, user, { excludeExtraneousValues: true })
 
 		return trimuser
 	}
 
-	async getUserIdByName(username: string) { 
+	async getUserIdByName(username: string) {
 		const user = await this.prisma.user.findUnique({
 			where: {
 				username
@@ -89,15 +89,14 @@ export class UserService {
 				username: true
 			}
 		})
-		
+
 		if (!user)
 			throw new NotFoundException('User Not Found')
 
 		return user.username
 	}
 
-	getUserImage(res: Response, userId: number)
-	{
+	getUserImage(res: Response, userId: number) {
 		const imagePath = process.env.AVATAR_DIRECTORY + '/' + userId + '.jpeg'
 
 		if (!fs.existsSync(imagePath))
@@ -115,10 +114,8 @@ export class UserService {
 	// 	return trimuser
 	// }
 
-	async updateUsername(userId: number, newUsername: string)
-	{
-		console.log(userId, newUsername)
-		await this.prisma.user.updateMany({
+	async updateUsername(userId: number, newUsername: string) {
+		await this.prisma.user.update({
 			where: {
 				id: userId
 			},
@@ -126,12 +123,20 @@ export class UserService {
 				username: newUsername
 			}
 		})
-		.catch((error) => {
-			throw new InternalServerErrorException(error)
+	}
+
+	async updateDescription(userId: number, description: string) {
+		await this.prisma.user.update({
+			where: {
+				id: userId
+			},
+			data: {
+				description
+			}
 		})
 	}
 
-	async enableTFA (userId: number): Promise<string> {
+	async enableTFA(userId: number): Promise<string> {
 		const secret = authenticator.generateSecret(40)
 
 		await this.prisma.user.updateMany({
@@ -145,15 +150,14 @@ export class UserService {
 		return await this.generateQRCode(secret)
 	}
 
-	async enableTFACallback(userId:number, code: string) {
+	async enableTFACallback(userId: number, code: string) {
 		const user = await this.getUser(userId)
-		
-		const bool = authenticator.verify({ token: code , secret: user.twoFASecret})
+
+		const bool = authenticator.verify({ token: code, secret: user.twoFASecret })
 
 		if (!bool)
 			throw new UnprocessableEntityException('Wrong code, try again')
-		else
-		{
+		else {
 			await this.prisma.user.updateMany({
 				where: {
 					id: user.id,
@@ -165,7 +169,7 @@ export class UserService {
 		}
 	}
 
-	async disableTFA (userId: number) {
+	async disableTFA(userId: number) {
 		await this.prisma.user.updateMany({
 			where: {
 				id: userId
@@ -185,7 +189,7 @@ export class UserService {
 			return t
 		}
 		catch (err) {
-			console.log(err) 
+			console.log(err)
 			throw new InternalServerErrorException('Error while generating TFA QRCode');
 		}
 	}
@@ -222,7 +226,7 @@ export class UserService {
 			}
 		})
 
-		const friendsWithDuplicate = friends?.friends?.concat(friends.friendsRelation) 
+		const friendsWithDuplicate = friends?.friends?.concat(friends.friendsRelation)
 
 		const unique = new Array<number>()
 
@@ -231,7 +235,7 @@ export class UserService {
 				unique.push(obj.id)
 		})
 
-		return unique 
+		return unique
 	}
 
 	async getUserFriends(userId: number) {
@@ -243,7 +247,7 @@ export class UserService {
 			const friendStatus = this.connected_user_map.get(friendId)?.status
 
 			friends.push({
-				id: friendId, 
+				id: friendId,
 				username: await this.getUsername(friendId),
 				status: friendStatus ? friendStatus : UserStatus.offline
 			})
@@ -274,7 +278,7 @@ export class UserService {
 		})
 	}
 
-	async getUserPendingInvite(userId: number) : Promise<FriendRequest[]> {
+	async getUserPendingInvite(userId: number): Promise<FriendRequest[]> {
 		const user = await this.prisma.user.findUnique({
 			where: {
 				id: userId,
@@ -287,21 +291,22 @@ export class UserService {
 
 		if (!user)
 			throw new NotFoundException('User Not found')
-		
+
 		const friendsRequest = new Array<FriendRequest>()
-		
+
 		for (const friendReq of user.receivedFriendRequests) {
 			if (friendReq.status === 'pending') {
-			friendsRequest.push({ 
-				id: friendReq.senderId,
-				username: await this.getUsername(friendReq.senderId)})
+				friendsRequest.push({
+					id: friendReq.senderId,
+					username: await this.getUsername(friendReq.senderId)
+				})
 			}
 		}
 
-		return  friendsRequest
+		return friendsRequest
 	}
 
-	async doMemberOneBlockedMemberTwo (memberOneId: number, memberTwoId: number) {
+	async doMemberOneBlockedMemberTwo(memberOneId: number, memberTwoId: number) {
 		const User = await this.prisma.user.findUnique({
 			where: {
 				id: memberOneId
@@ -318,7 +323,7 @@ export class UserService {
 
 		if (!blockedUsers)
 			return false
-	
+
 		for (const blockedUser of blockedUsers) {
 			if (blockedUser.blockedUserId === memberTwoId)
 				return true
@@ -358,21 +363,21 @@ export class UserService {
 
 	uploadAvatar(userId: number, file: Express.Multer.File) {
 		if (!file)
-		throw new BadRequestException("No file provided")
+			throw new BadRequestException("No file provided")
 
 		const dimensions = sizeOf(file.buffer)
-		
+
 		if (file.mimetype !== 'image/jpeg' || dimensions.type !== 'jpg')
 			throw new BadRequestException("Wrong mime type")
 		if (file.size > 100000)
 			throw new BadRequestException("File too large")
-		
-		if (dimensions.height > 700  || dimensions.height < 50 ||
+
+		if (dimensions.height > 700 || dimensions.height < 50 ||
 			dimensions.width > 700 || dimensions.width < 50)
 			throw new BadRequestException('Image dimensions are not valid')
-		
+
 		const filename = process.env.AVATAR_DIRECTORY + '/' + userId.toString() + '.jpeg'
-		
+
 		fs.writeFileSync(filename, file.buffer)
 	}
 

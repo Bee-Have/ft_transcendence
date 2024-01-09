@@ -116,6 +116,7 @@ export class UserController {
 		return this.userService.getUserImage(res, userId)
 	}
 
+
 	// @Get('chat/:username')
 	// getProfileFromChat(@Param('username') username: string) : Promise<any>
 	// {
@@ -135,8 +136,14 @@ export class UserController {
 	@ApiCreatedResponse({ description: 'The username has been updated'})
 	@ApiBadRequestResponse({ description: 'The body is malformed'})
 	@Post('update/username')
-	updateUsername(@GetCurrentUser('sub') userId: number, @Body() body: updateUsernameDto) {
-		return this.userService.updateUsername(userId, body.username)
+	async UpdateUsername(@GetCurrentUser('sub') userId: number, @Body() body: updateUsernameDto) {
+		return await this.userService.updateUsername(userId, body.username)
+	}
+
+	@Post('update/description')
+	async UpdateDescription(@GetCurrentUser('sub') userId: number,
+		@Body() description: string) {
+		await this.userService.updateDescription(userId, description)
 	}
 
 
@@ -158,8 +165,6 @@ export class UserController {
 	uploadAvatar(@UploadedFile() file: Express.Multer.File, @GetCurrentUser('sub') userId: number) {
 		this.userService.uploadAvatar(userId, file)
 	}
-
-
 
 	@ApiOperation({ description: 'A secret is generated on the server, this secret is then returned as a QRCode, the client need to scan it on Google Authenticator and send back the code to the /tfa/enable/callback' })
 	@ApiOkResponse({ description: 'A string that represent the QRCode is returned and need to be displayed on the client' })

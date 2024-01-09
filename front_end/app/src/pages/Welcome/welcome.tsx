@@ -9,6 +9,10 @@ import axios from "axios";
 import { ReadCookie } from "../../components/ReadCookie";
 import isTokenExpired from "../global/isTokenExpired";
 
+import { useGamePopup } from "src/context/GamePopupContext";
+
+import MatchmakingPopup from "src/components/game/GamePopup/MatchmakingPopup";
+
 // interface WelcomeProps
 // {
 //   isLogged: boolean;
@@ -24,6 +28,8 @@ const Welcome: React.FC = () => {
   const [guest, setGuest] = React.useState(false);
   const aToken = ReadCookie("access_token");
   const rToken = ReadCookie("refresh_token");
+
+  const gamePopup = useGamePopup();
 
   // const login = () => {
   // }
@@ -74,6 +80,7 @@ const Welcome: React.FC = () => {
 
   return (
     <div className="log_window">
+      {gamePopup.isVisible && <MatchmakingPopup/>}
       {/* add querry here to check if authentification token was filled */}
       {authenticated && (
         <div className="header">
@@ -106,7 +113,7 @@ const Welcome: React.FC = () => {
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light">leaderboard</button>
+          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible)}} >leaderboard</button>
           {/* <button className="btn btn-light" onClick={() => navigate("/leaderboard")}>leaderboard</button> */}
         </div>
       </div>

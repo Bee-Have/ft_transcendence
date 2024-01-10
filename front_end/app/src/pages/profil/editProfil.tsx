@@ -1,5 +1,7 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import axios from 'axios';
 
 import Avatar from '@mui/material/Avatar';
 import Input from '@mui/material/Input';
@@ -12,12 +14,13 @@ import FAEnable from 'src/components/2FAEnable';
 import FADisable from 'src/components/2FADisable';
 import Menu from 'src/components/menu';
 import 'src/css/profil.css';
+import { ReadCookie } from 'src/components/ReadCookie';
 
 const EditProfil: React.FC = () => 
 {
 	const navigate = useNavigate();
-	const realName = "tlassara";
-	const nickName = "Echo";
+	const [realName, setRealName] = useState("Default");
+	const [nickName, setNickName] = useState("Default");
 	const description = "En mathématiques, on définit une notion à partir de notions antérieurement définies.\n\
 Les notions de bases étant les symboles non logiques du langage considéré, dont l'usage est défini par les axiomes de la théorie.\n\
 Se pose la question de la différence entre une définition et un axiome.\n\
@@ -49,6 +52,23 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 		setPopUp(true);
 	};
 
+	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
+	.then( function (response)
+	{
+		setRealName(response.data.username);
+		if (response.data.nickname == null)
+			setNickName(response.data.username);
+		else
+			setNickName(response.data.nickname);
+	})
+	.catch(err => {
+		console.log(err);
+		//throw err;
+	});
+
+	useEffect(() => {
+	}, [])
+
 	return (
 		<div className='content'>
 			<input
@@ -76,11 +96,11 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 				</center>
 				<div className='information'>
 					<InputLabel htmlFor="component-simple">Nickname</InputLabel>
-					<Input defaultValue={nickName}/>
+					<Input value={nickName}/>
 					<br/><br/>
 
 					<InputLabel htmlFor="component-simple">RealName</InputLabel>
-					<Input defaultValue={realName}/>
+					<Input value={realName}/>
 					<br/><br/>
 
 					<TextField

@@ -11,20 +11,18 @@ import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
 
 const Profil: React.FC = () => {
 
-	const [realName, setRealName] = useState(1);
-	const [nickName, setNickName] = useState(1);
+	const [realName, setRealName] = useState("Default");
+	const [nickName, setNickName] = useState("Default");
 	const navigate = useNavigate();
 
 	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
 	.then( function (response)
 	{
-		console.log(response.data);
 		setRealName(response.data.username);
 		if (response.data.nickname == null)
 			setNickName(response.data.username);
 		else
 			setNickName(response.data.nickname);
-		console.log("realName : " + realName)
 	})
 	.catch(err => {
 		console.log(err);
@@ -32,8 +30,7 @@ const Profil: React.FC = () => {
 	});
 
 	useEffect(() => {
-		console.log("realName = " + realName)
-	}, [realName, nickName])
+	}, [])
 
 	return (
 		<div className='content'>
@@ -60,8 +57,8 @@ const Profil: React.FC = () => {
 				</center>
 				<div className='information'>
 					<div className='fs-2'>
-						{nickName}<br /><br />
-						{realName}<br /><br />
+						Nickname : {nickName}<br /><br />
+						Real Name : {realName}<br /><br />
 						En mathématiques, on définit une notion à partir de notions antérieurement définies.<br />
 						Les notions de bases étant les symboles non logiques du langage considéré, dont l'usage est défini par les axiomes de la théorie.<br />
 						Se pose la question de la différence entre une définition et un axiome.<br />

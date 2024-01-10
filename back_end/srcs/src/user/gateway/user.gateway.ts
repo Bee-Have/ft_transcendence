@@ -89,6 +89,7 @@ export class UserGateway {
 		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 
+
 	@SubscribeMessage('message')
 	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
 	{

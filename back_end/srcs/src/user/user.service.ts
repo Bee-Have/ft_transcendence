@@ -244,12 +244,12 @@ export class UserService {
 		const friends: Friend[] = new Array<Friend>()
 
 		for (const friendId of friendsIds) {
-			const friendStatus = this.connected_user_map.get(friendId)?.status
+			const friendStatus = this.connected_user_map.get(friendId)?.userstatus
 
 			friends.push({
 				id: friendId,
 				username: await this.getUsername(friendId),
-				status: friendStatus ? friendStatus : UserStatus.offline
+				userstatus: friendStatus ? friendStatus : UserStatus.offline
 			})
 		}
 
@@ -295,11 +295,13 @@ export class UserService {
 		const friendsRequest = new Array<FriendRequest>()
 
 		for (const friendReq of user.receivedFriendRequests) {
+			const senderStatus = this.connected_user_map.get(friendReq.senderId)?.userstatus;
+
 			if (friendReq.status === 'pending') {
-				friendsRequest.push({
-					id: friendReq.senderId,
-					username: await this.getUsername(friendReq.senderId)
-				})
+			friendsRequest.push({ 
+				id: friendReq.senderId,
+				userstatus: senderStatus ? senderStatus : UserStatus.offline,
+				username: await this.getUsername(friendReq.senderId)})
 			}
 		}
 
@@ -352,9 +354,12 @@ export class UserService {
 		const blockedUser = new Array<BlockedUser>()
 
 		for (const blocked of user.blocked) {
+			const userstatus = this.connected_user_map.get(blocked.blockedUserId)?.userstatus
+
 			blockedUser.push({
 				id: blocked.blockedUserId,
-				username: await this.getUsername(blocked.blockedUserId)
+				username: await this.getUsername(blocked.blockedUserId),
+				userstatus: userstatus ? userstatus : UserStatus.offline
 			})
 		}
 

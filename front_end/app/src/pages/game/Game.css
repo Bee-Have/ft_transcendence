@@ -1,0 +1,37 @@
+.Pong-game {
+	/* make this div take all the screen */
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: auto;
+}
+
+.Pong-game > * {
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+}
+
+.Pong-game-left-bg {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 50vw;
+	bottom: 0px;
+	
+	background-color: #6D6D6D;
+	
+	z-index: -9999;
+}
+
+.Pong-game-right-bg {
+	position: absolute;
+	top: 0px;
+	width: 50vw;
+	right: 0px;
+	bottom: 0px;
+	
+	background-color: #B4B4B4;
+	z-index: -9999;
+}

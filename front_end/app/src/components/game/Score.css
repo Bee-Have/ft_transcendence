@@ -1,0 +1,23 @@
+.Score {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 10vh;
+}
+
+.Score > * {                    /*style for all .score children*/
+	flex-grow: 1;
+	flex-basis: 0;
+	padding: 2vh 2vh;
+	transition: opacity 1s ease-in-out;
+}
+
+.Score > .Player {
+	color: #B4B4B4;
+    text-align: center;
+}
+
+.Score > .Opponent {
+	color: #6D6D6D;
+    text-align: center;
+}

@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react';
-import Menu from '../../components/menu';
-import '../../css/profil.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+import Menu from 'src/components/menu';
+import Avatar from '@mui/material/Avatar';
+import 'src/css/profil.css';
+import axios from 'axios';
 import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
+
+
 
 const Profil: React.FC = () => {
 
@@ -53,9 +57,7 @@ const Profil: React.FC = () => {
 			<Menu/>
 			<div className='profil'>
 				<center>
-					<div className="PP">
-						<img src={require('../../asset/default.jpg')} alt="test" className="person-image" />
-					</div>
+					<Avatar className='avatar' src={require("src/asset/default.jpg")} style={{width:'100px', height:'100px'}}/><br/>
 				</center>
 				<div className='information'>
 					<div className='fs-2'>

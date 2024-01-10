@@ -1,87 +1,91 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import PopUp from '../../components/popUp';
-import Menu from '../../components/menu';
-import { Friend } from '../global/friend.dto';
-import { userId } from '../global/userId';
-import { socket } from '../global/websocket';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import Menu from "../../components/menu";
+import { Friend, UserStatusEventDto } from "../global/friend.dto";
+import { userId } from "../global/userId";
+import { socket } from "../global/websocket";
+
+import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
+import InteractiveUsername from "src/components/interactive/InteractiveUsername";
+
+const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
-	photo: string;
-	name: string;
-	onClick: (name: string, event: React.MouseEvent<HTMLDivElement>) => void;
-	status: string
+  user: Friend;
 }
 
-const Card: React.FC<CardProps> = ({ photo, name, onClick, status }) => {
-	return (
-		<div className="card" onClick={(event) => onClick(name, event)}>
-			<div className="PP">
-				<img src={photo} alt={'test'} className="person-image" />
-			</div>
-			<div className='name'>
-				<h1>{name}<br/>{status}</h1>
-			</div>
-		</div>
-	);
-};
+function Card({ user }: CardProps) {
+  return (
+    <div className="card">
+      <div className="PP">
+        <InteractiveAvatar user={user} />
+      </div>
+      <div className="name">
+        <InteractiveUsername user={user} />
+        <h1>{user.userstatus}</h1>
+      </div>
+    </div>
+  );
+}
 
 const FriendList: React.FC = () => {
-	const [showPopUp, setPopUp] = useState(false);
-	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-	const [popupContent, setPopupContent] = useState('');
-	const [friends, setFriends] = useState<Friend[]>([]) 
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/user/test/friend/" + userId, {
+        withCredentials: true,
+      })
+      .then((res) =>
+        setFriends(
+          res.data.map((friend: Friend) => {
+            if (friend.id === userId) return null;
 
-	const handleCardClick = (name: string, event: React.MouseEvent<HTMLDivElement>) => {
-		const boundingBox = event.currentTarget.getBoundingClientRect();
-		if (boundingBox) {
-			const x = event.pageX;
-			const y = event.pageY;
+            friend.photo = PHOTO_FETCH_URL + friend.id;
+            return friend;
+          })
+        )
+      )
+      .catch((err) => console.log(err));
+  }, []);
 
-			setMousePosition({ x, y });
-			setPopupContent(name);
-			setPopUp(true);
-		}
-	};
+  useEffect(() => {
+    const listenNewStatus = (eventProps: UserStatusEventDto) => {
+      const updatedFriends = friends.map((friend) =>
+        friend.id === eventProps.userId
+          ? { ...friend, userstatus: eventProps.userstatus }
+          : friend
+      );
+      setFriends(updatedFriends);
+    };
 
-	useEffect(() => {
-		axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
-		.then(res => setFriends(res.data))
-		.catch(err => console.log(err))
-	}, [])
+    socket?.on("user-status", listenNewStatus);
 
-	useEffect(() => {
-		const listenNewStatus = (status: any) => {
-			const updatedFriends = friends.map(friend => friend.id === status.userId ? {...friend, status: status.status} : friend)
-			setFriends(updatedFriends)
-		}
+    return () => {
+      socket?.off("user-status", listenNewStatus);
+    };
+  }, [friends]);
 
-		socket?.on('user-status', listenNewStatus)
-		
-		return () => {
-			socket?.off('user-status', listenNewStatus)
-		}
-	}, [friends])
-
-	return (
-		<div className="friendList">
-			<Menu />
-			<div className="content">
-				<div className="printCard">
-					{Object.keys(friends).map((i) => (
-						<Card 
-							key={i}
-							photo={'http://localhost:3001/user/image/' + friends[i].id}
-							name={friends[i].username}
-							onClick={handleCardClick}
-							status={friends[i].status}/>
-					))}
-				</div>
-			</div>
-			{showPopUp && <PopUp x={mousePosition.x} y={mousePosition.y} user={popupContent} />}
-		</div>
-	);
+  return (
+    <div className="friendList">
+      <div className="header">
+        <button className="btn btn-light" onClick={() => navigate("/")}>
+          home
+        </button>
+      </div>
+      <Menu />
+      <div className="content">
+        <div className="printCard">
+          {Object.keys(friends).map((i) => (
+            <Card key={i} user={friends[i]} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default FriendList;

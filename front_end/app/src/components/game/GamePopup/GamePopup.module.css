@@ -1,0 +1,43 @@
+
+.CardPopup {
+	position: absolute;
+	right: 0px;
+	width: 200px;
+	height: 110px;
+	border-radius: 10px 0px 0px 10px;
+	background-color: #D9D9D9;
+}
+
+.InteractiveContent {
+	display: flex;
+	flex-direction: row;
+	
+	justify-content: space-between;
+	align-items: center;
+	
+	gap: 10px;
+}
+
+.CircularProgress {
+}
+
+.CancelButton {
+	width: 50px;
+	height: 50px;
+	background-color: #FF0000;
+	border-radius: 100%;
+}
+
+.UserIcon {
+	width: 50px;
+	height: 50px;
+	color: #505050;
+	background-color: #C7C7C7;
+	border-radius: 100%;
+}
+
+.GameMode {
+	display: flex;
+	justify-content: center;
+	bottom: 0.5px;
+}

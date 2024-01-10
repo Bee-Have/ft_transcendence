@@ -60,7 +60,7 @@ function GamePopupList() {
     ]);
   }, []);
 
-  if (gamePopup.isVisible === false) return null;
+  if (gamePopup.isVisible === false || popupList.length === 0) return null;
 
   return (
     <div className={styles.PopupList}>

@@ -8,6 +8,8 @@ import { CreateChannelDto, RespectPasswordPolicy } from './dto/CreateChannel.dto
 import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
 import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
+var sizeOf = require('buffer-image-size');
+import * as fs from 'fs';
 
 @Injectable()
 export class ChannelService {
@@ -350,13 +352,38 @@ export class ChannelService {
 		return trim
 	}
 
-	async restrictChannelMember(userId: number, body: RestrictChannelMember) {
+	async restrictChannelMember(userId: number, body: RestrictChannelMember) { 
 		if (body.restriction === "MUTED")
 			await this.muteUser(userId, body.restrictedUserId, body.channelId)
 		if (body.restriction === "BANNED")
 			await this.banUser(userId, body.restrictedUserId, body.channelId)
 		if (body.restriction === "KICKED")
 			await this.kickUser(userId, body.restrictedUserId, body.channelId)
+	}
+
+	async uploadBadge(userId: number, channelId: number, file: Express.Multer.File) {
+		const ownerId = await this.getChannelOwnerId(channelId)
+	
+		if (userId !== ownerId)
+			throw new ForbiddenException('You can not upload a badge for this channel')
+	
+		if (!file)
+			throw new BadRequestException("No file provided")
+
+		const dimensions = sizeOf(file.buffer)
+
+		if (file.mimetype !== 'image/jpeg' || dimensions.type !== 'jpg')
+			throw new BadRequestException("Wrong mime type")
+		if (file.size > 100000)
+			throw new BadRequestException("File too large")
+
+		if (dimensions.height > 700 || dimensions.height < 50 ||
+			dimensions.width > 700 || dimensions.width < 50)
+			throw new BadRequestException('Image dimensions are not valid')
+
+		const filename = process.env.BADGE_DIRECTORY + '/' + channelId.toString() + '.jpeg'
+
+		fs.writeFileSync(filename, file.buffer)
 	}
 
 	async muteUser(userId: number, mutedUserId: number, channelId: number) {
@@ -422,8 +449,8 @@ export class ChannelService {
 			}
 		})
 
-		if (!members)
-			throw new InternalServerErrorException('Error while requesting members of channel')
+		if (!members || members.length === 0)
+			throw new NotFoundException("Channel Not Found")
 
 		return members
 	}

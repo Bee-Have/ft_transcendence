@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { CreateChannelDto } from './dto/CreateChannel.dto';
 import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 // @Public()
 @Controller('channel')
@@ -115,6 +116,15 @@ export class ChannelController {
 		@GetCurrentUser('sub') userId: number,
 	) {
 		return await this.channelService.getChannelsList(userId)
+	}
+
+	@Post('upload/badge/:channelId')
+	@UseInterceptors(FileInterceptor('badge'))
+	async uploadAvatar(
+		@UploadedFile() file: Express.Multer.File,
+		@GetCurrentUser('sub') userId: number,
+		@Param('channelId') channelId: number) {
+		await this.channelService.uploadBadge(userId, channelId, file)
 	}
 
 }

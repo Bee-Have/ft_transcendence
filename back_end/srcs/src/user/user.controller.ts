@@ -8,7 +8,7 @@ import { Public } from "src/common/decorators";
 import { FriendshipService } from "src/friendship/friendship.service";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { Friend } from "./dto/friend.dto";
-import { updateUsernameDto } from "./dto/updateUsername.dto";
+import { updateUserDescriptionDto, updateUsernameDto } from "./dto/updateUsername.dto";
 import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
 import { UserService } from './user.service';
 
@@ -142,8 +142,8 @@ export class UserController {
 
 	@Post('update/description')
 	async UpdateDescription(@GetCurrentUser('sub') userId: number,
-		@Body() description: string) {
-		await this.userService.updateDescription(userId, description)
+		@Body() description: updateUserDescriptionDto) {
+		await this.userService.updateDescription(userId, description.description)
 	}
 
 

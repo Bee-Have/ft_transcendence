@@ -5,3 +5,8 @@ export class updateUsernameDto {
 	@IsDefined()
 	username: string
 }
+
+export class updateUserDescriptionDto {
+	@IsDefined()
+	description: string
+}

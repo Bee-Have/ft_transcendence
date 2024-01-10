@@ -6,6 +6,7 @@ import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ManageChannelRole } from './dto/ManageChannelRole.dto';
 
 // @Public()
 @Controller('channel')
@@ -102,6 +103,15 @@ export class ChannelController {
 		@Body() body: RestrictChannelMember
 	) {
 		await this.channelService.restrictChannelMember(userId, body)
+	}
+
+	@Post('manage/role')
+	@HttpCode(HttpStatus.OK)
+	async ManageChannelAdmin (
+		@GetCurrentUser('sub') userId: number,
+		@Body() body: ManageChannelRole
+	) {
+		await this.channelService.manageRole(userId, body)
 	}
 
 	@Get('members/:channelId')

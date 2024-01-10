@@ -10,6 +10,7 @@ import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } 
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 var sizeOf = require('buffer-image-size');
 import * as fs from 'fs';
+import { ManageChannelRole } from './dto/ManageChannelRole.dto';
 
 @Injectable()
 export class ChannelService {
@@ -442,6 +443,30 @@ export class ChannelService {
 		return restrictUser
 	}
 
+	async manageRole(userId: number, body: ManageChannelRole) {
+		const ownerId = await this.getChannelOwnerId(body.channelId)
+	
+		if (userId !== ownerId)
+			throw new ForbiddenException('You can not manage role for this channel')
+
+		try {
+			await this.prisma.channelMember.update({
+				where: {
+					id: body.memberId,
+					NOT: {
+						userId: ownerId
+					}
+				},
+				data: {
+					role: body.role
+				}
+			})
+		}
+		catch(e) {
+			throw new NotFoundException('Can not found the member to update')
+		}
+	}
+
 	async getMembersofChannel(channelId: number) {
 		const members = await this.prisma.channelMember.findMany({
 			where: {
@@ -570,7 +595,7 @@ export class ChannelService {
 				return member.userId
 		}
 
-		throw new NotFoundException("Channel Not Found")
+		throw new NotFoundException("Owner Not Found")
 	}
 
 	async countMemberOfChannels(channelId: number) {

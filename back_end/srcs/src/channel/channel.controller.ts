@@ -1,12 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from "express";
+import { GetCurrentUser } from 'src/common/decorators';
 import { ChannelService } from './channel.service';
-import { GetCurrentUser, Public } from 'src/common/decorators';
 import { CreateChannelDto } from './dto/CreateChannel.dto';
 import { IncomingChannelMessage } from './dto/IncomingChannelMessage.dto';
-import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } from './dto/JoinChannel.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ManageChannelRole } from './dto/ManageChannelRole.dto';
+import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 
 // @Public()
 @Controller('channel')
@@ -135,6 +136,14 @@ export class ChannelController {
 		@GetCurrentUser('sub') userId: number,
 		@Param('channelId') channelId: number) {
 		await this.channelService.uploadBadge(userId, channelId, file)
+	}
+
+	@Get('badge/:channelId')
+	getBadge(
+		@Res() res: Response,
+		@Param('channelId', ParseIntPipe) channelId: number
+	) {
+		return this.channelService.getChannelBadge(res, channelId)
 	}
 
 }

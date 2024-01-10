@@ -4,12 +4,10 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedR
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { Response } from "express";
 import { TfaDto } from "src/auth/dto/tfa.dto";
-import { Public } from "src/common/decorators";
 import { FriendshipService } from "src/friendship/friendship.service";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { Friend } from "./dto/friend.dto";
 import { updateUserDescriptionDto, updateUsernameDto } from "./dto/updateUsername.dto";
-import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
 import { UserService } from './user.service';
 
 @ApiBearerAuth()
@@ -19,109 +17,96 @@ export class UserController {
 	constructor(private userService: UserService,
 				private friendService: FriendshipService) {}
 
-	// @Get('profile/:username')
-	// getProfile(@Param('username') username: string) : Promise<any> {
-	// 	return this.userService.getUserProfil(username)
-	// }
-
 	@Get('idbyname/:username')
 	async getuserIdbyName(@Param('username') username: string) {
 		return await this.userService.getUserIdByName(username)
 	}
-
-	// @Public()
-	// @Get('image/:username')
-	// async getImage(@Res() res: Response, @Param('username') username: string) {
-	// 	return await this.userService.getUserImage(res, username)
-	// }
 	
-	@Get('profile/:id')
-	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
+	@Get('profile')
+	getProfile(@GetCurrentUser('sub') userId: number) : Promise<any> {
 		return this.userService.getUserProfil(userId)
 	}
-
-
-
-
-
 
 	@Get('friends')
 	async getFriends (@GetCurrentUser('sub') userId: number): Promise<Friend[]>{
 		return await this.userService.getUserFriends(userId)
 	}
 
-
-	@Public()
-	@Get('test/friend/:id')
-	async wehbnfowie(@Param('id', ParseIntPipe) userId: number) {
-		return await this.userService.getUserFriends(userId)
-	}
-
-	@Public()
-	@Get('pending/:id')
-	async wjebfiewf(@Param('id', ParseIntPipe) userId: number) {
+	@Get('pending')
+	async wjebfiewf(@GetCurrentUser('sub') userId: number) {
 		return await this.userService.getUserPendingInvite(userId)
 	}
 
-//////////////// TODO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
+	@Get('friend/create/:receiverId')
+	async CreateFriendRequest(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId') receiverId: number
+	) {
+		return await this.friendService.createFriendRequest(userId, receiverId)
+	}
 
-
-	@Public()
+	@Get('friend/cancel/:receiverId')
+	async CancelFriendRequest(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId') receiverId: number
+	) {
+		return await this.friendService.cancelFriendRequest(userId, receiverId)
+	}
+		
 	@HttpCode(HttpStatus.OK)
-	@Post('friend/accept/:id/:rec')
-	async wroeufghow(@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
+	@Post('friend/accept/:receiverId')
+	async AcceptFriendRequest(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number
+	) {
 		return await this.friendService.acceptFriendRequest(userId, receiverId)
 	}
 
-
-	@Public()
 	@HttpCode(HttpStatus.OK)
-	@Post('friend/reject/:id/:rec')
-	async woefoef (@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
+	@Post('friend/reject/:receiverId')
+	async RejectFriendRequest (
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number
+	) {
 		return await this.friendService.rejectFriendRequest(userId, receiverId)
 	}
 
-	@Public()
 	@HttpCode(HttpStatus.OK)
-	@Post('friend/block/:id')
-	async wfgwei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
-		return await this.friendService.blockUser(userId, body.blockedUserId)
+	@Post('friend/block/:receiverId')
+	async BlockUser(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number
+	) {
+		return await this.friendService.blockUser(userId, receiverId)
 	}
 
-	@Public()
 	@HttpCode(HttpStatus.OK)
-	@Post('friend/unblock/:id')
-	async wfgwewei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
-		return await this.friendService.unblockUser(userId, body.blockedUserId)
+	@Post('friend/unblock/:receiverId')
+	async UnblockUser(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number
+	) {
+		return await this.friendService.unblockUser(userId, receiverId)
 	}
 
-	@Public()
 	@HttpCode(HttpStatus.OK)
-	@Get('blocked/:id')
-	async wiefgiwef(@Param('id', ParseIntPipe) userId: number) {
+	@Get('blocked')
+	async GetBlockedUser(@GetCurrentUser('sub') userId: number,) {
 		return await this.userService.getBlockedUser(userId)
 	}
-//////////////// TODO TEST TO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
 
-
-	@Public()
-	@Get('username/:id')
-	async getUsername(@Param('id', ParseIntPipe) userId: number): Promise<string> {
+	@Get('username')
+	async GetUsername(@GetCurrentUser('sub') userId: number): Promise<string> {
 		return await this.userService.getUsername(userId)
 	}
 
-	@Public()
-	@Get('image/:id')
-	getImage(@Res() res: Response, @Param('id', ParseIntPipe) userId: number) {
+	@Get('image/:userId')
+	getImage(
+		@Res() res: Response,
+		@Param('userId', ParseIntPipe) userId: number
+	) {
 		return this.userService.getUserImage(res, userId)
 	}
-
-
-	// @Get('chat/:username')
-	// getProfileFromChat(@Param('username') username: string) : Promise<any>
-	// {
-	// 	return this.userService.getChatProfil(username)
-	// }
 
 	@ApiOperation({ description: 'The route name is clear enough' })
 	@ApiConsumes('application/json')
@@ -191,13 +176,4 @@ export class UserController {
 	disableTFA(@GetCurrentUser('sub') userId: number) {
 		return this.userService.disableTFA(userId)
 	}
-
-
-	@Public()
-	@Get('test')
-	async weif(){
-		console.log(await this.userService.doMemberOneBlockedMemberTwo(1,2))
-		console.log(await this.userService.isMemberOneBlockedByMemberTwo(1,2))
-	}
-
 }

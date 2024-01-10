@@ -11,6 +11,7 @@ import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 var sizeOf = require('buffer-image-size');
 import * as fs from 'fs';
 import { ManageChannelRole } from './dto/ManageChannelRole.dto';
+import { Response } from "express";
 
 @Injectable()
 export class ChannelService {
@@ -614,4 +615,15 @@ export class ChannelService {
 			return false
 		return channelMember.muteDate.getTime() > new Date().getTime()
 	}
+	
+	getChannelBadge(res: Response, channelId: number) {
+		const imagePath = process.env.BADGE_DIRECTORY + '/' + channelId + '.jpeg'
+
+		if (!fs.existsSync(imagePath))
+			throw new NotFoundException()
+
+		fs.createReadStream(imagePath).pipe(res)
+	}
+
+
 }

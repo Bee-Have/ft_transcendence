@@ -90,129 +90,6 @@ export class UserGateway {
 		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 
-
-	@SubscribeMessage(process.env.SERVER_CREATE_FRIEND_REQUEST)
-	async handleCreateFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-		
-		const senderId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-		
-		await this.friendService.createFriendRequest(senderId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_CREATED, receiverId)
-
-		const receiver = this.userService.connected_user_map.get(receiverId)
-	
-		if (receiver)
-		{
-			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId} })
-		}
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_CANCEL_FRIEND_REQUEST)
-	async handleCancelFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-		
-		const senderId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-		
-		await this.friendService.cancelFriendRequest(senderId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_CANCELED, receiverId)
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_ACCEPT_FRIEND_REQUEST)
-	async handleAcceptFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-
-		const acceptorId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-
-		await this.friendService.acceptFriendRequest(acceptorId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_ACCEPTED, receiverId)
-
-		const newFriend = this.userService.connected_user_map.get(receiverId)
-
-		if (newFriend)
-		{
-			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).status
-			
-			newFriend.socket.join(acceptorId.toString())
-			client.join(receiverId.toString())
-
-			newFriend.socket.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: acceptorId, status: acceptorStatus })
-			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.status})
-		}
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_REJECT_FRIEND_REQUEST)
-	async handleRejectFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-
-		const rejectorId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-
-		await this.friendService.rejectFriendRequest(rejectorId, receiverId)
-	
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_REJECTED, receiverId)
-	}
-
-	@SubscribeMessage(process.env.SERVER_BLOCK_USER)
-	async handleBlockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
-
-		const userId: number = Number(client.handshake.headers.id)
-		const blockedUserId = data.blockedUserId
-
-		await this.friendService.blockUser(userId, blockedUserId)
-
-		client.emit(process.env.CLIENT_BLOCK_USER_SUCCESS)
-	}
-
-	@SubscribeMessage(process.env.SERVER_UNBLOCK_USER)
-	async handleUnblockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
-		
-		const userId: number = Number(client.handshake.headers.id)
-		const blockedUserId = data.blockedUserId
-	
-		await this.friendService.unblockUser(userId, blockedUserId)
-
-		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
-	}
-
-	// @SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
-	// async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
-
-	// 	const senderId: number = Number(client.handshake.headers.id)
-	// 	const receiverId: number = data.receiverId
-	// 	const content: string = data.content
-
-	// 	const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
-
-	// 	if (senderBlockedReceiver){
-	// 		throw new WsException("You can't send message to this user")
-	// 	}
-
-	// 	const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
-	// 	const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
-	// 	// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
-	// 	const message = 'weif'
-	// 	const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
-
-	// 	client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
-
-	// 	if (!receiverBlockedSender)
-	// 	{
-	// 		const receiver = this.userService.connected_user_map.get(receiverId)
-			
-	// 		if (receiver)
-	// 		{
-	// 			receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
-	// 		}
-	// 	}
-
-	// }
-
 	@SubscribeMessage('message')
 	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
 	{
@@ -224,7 +101,6 @@ export class UserGateway {
 			friend.socket.emit('new-message', body)
 
 	}
-
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 

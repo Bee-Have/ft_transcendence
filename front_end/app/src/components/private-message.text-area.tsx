@@ -3,6 +3,7 @@ import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { socket } from '../pages/global/websocket';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 interface MessageProps {
 	id: number,
@@ -19,7 +20,7 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 		<div className="message">
 			{ isSame ? "" :
 			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={'http://localhost:3001/user/image/' + message.senderId} />
+				<Avatar className="private-message-avatar" alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={BACKEND_URL + '/user/image/' + message.senderId} />
 				<div className='private-message-name'>{message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}</div>
 			</div>}
 
@@ -40,7 +41,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	}, [messages]);
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/privatemessage/messages/' + userId + '/' + currentChat.conversation.id)
+		axios.get(BACKEND_URL + '/privatemessage/messages/' + currentChat.conversation.id, { withCredentials: true })
 			.then((res) => {
 				setMessages(res.data)
 			})
@@ -54,7 +55,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 			if (currentChat.conversation.id === message.conversationId)
 			{
 				setMessages((prev) => [...prev, message]);
-				axios.get('http://localhost:3001/privatemessage/conversations/isread/' + userId + '/' + currentChat.conversation.id)
+				axios.get(BACKEND_URL + '/privatemessage/conversations/isread/' + currentChat.conversation.id, { withCredentials: true })
 					.then((res) => console.log(res.data))
 					.catch((err) => console.log(err))
 			}
@@ -80,7 +81,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
-			axios.post('http://localhost:3001/privatemessage/messages/' + userId, { conversationId: currentChat.conversation.id, content: inputValue })
+			axios.post(BACKEND_URL + '/privatemessage/messages', { conversationId: currentChat.conversation.id, content: inputValue }, { withCredentials: true })
 				.then((res): any => {
 					setMessages([...messages, res.data]);
 					setInputValue('');

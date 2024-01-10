@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userId } from 'src/pages/global/userId';
 import '../css/chat.css';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 
 interface CardProps {
@@ -40,7 +41,7 @@ const Channel = ({ channel }: any) => {
 			onMouseOut={handleMouseOut}
 			onClick={() => { navigate("/channel/" + channel.id) }}>
 			<img
-				src={'http://localhost:3001/user/image/' + channel.ownerId}
+				src={BACKEND_URL + '/user/image/' + channel.ownerId}
 				alt={'test'}
 				className="group-image"
 			/>
@@ -55,7 +56,7 @@ const ChannelList: React.FC = () => {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel', {withCredentials: true})
+		axios.get(BACKEND_URL + '/channel', {withCredentials: true})
 			.then((res: any) => {
 				setChannels(res.data)
 				console.log(res.data)
@@ -67,7 +68,7 @@ const ChannelList: React.FC = () => {
 	return (
 		<div className="channelList">
 			<center>
-				<GroupPicture photo={'http://localhost:3001/user/image/' + userId} />
+				<GroupPicture photo={BACKEND_URL + '/user/image/' + userId} />
 				<div className="separator"></div>
 				{
 					Object.keys(channels).map((index) => (

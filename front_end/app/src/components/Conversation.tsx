@@ -9,6 +9,7 @@ import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -64,7 +65,7 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 			<Avatar
 				className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 				alt={friendUsername}
-				src={'http://localhost:3001/user/image/' + friendId} />
+				src={BACKEND_URL + '/user/image/' + friendId} />
 		</Badge>
 	)
 }
@@ -88,7 +89,7 @@ const Conversation = ({ onClick, conv }: any) => {
 						<Avatar
 							className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 							alt={friendUsername}
-							src={'http://localhost:3001/user/image/' + friendId} />
+							src={BACKEND_URL + '/user/image/' + friendId} />
 				}
 
 				<div className="name">{friendUsername}</div>
@@ -109,7 +110,7 @@ const Conversations: React.FC = () => {
 
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/privatemessage/conversations/' + userId)
+		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
 			.then((res): any => {
 				setConvs(res.data)
 			})
@@ -145,9 +146,9 @@ const Conversations: React.FC = () => {
 	}
 
 	const createConvCallBack = (inputValue: any) => {
-		axios.get('http://localhost:3001/user/idbyname/' + inputValue, { withCredentials: true })
+		axios.get(BACKEND_URL + '/user/idbyname/' + inputValue, { withCredentials: true })
 			.then((response) => {
-				axios.post('http://localhost:3001/' + 'privatemessage/conversations/' + userId + '/' + response.data, null, { withCredentials: true })
+				axios.post(BACKEND_URL + '/privatemessage/conversations/' + response.data, null, { withCredentials: true })
 					.then((res) => {
 						const exist = convs.some((conv) => conv.conversation.id === res.data.conversation.id)
 						if (!exist)

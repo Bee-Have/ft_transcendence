@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import Menu from '../../components/menu';
 import axios from 'axios';
 import '../../css/channel.css';
+import { BACKEND_URL } from '../global/env';
 
 
 const Channel = ({ channel }: any) => {
 
 	const joinPublic = () => {
-		axios.post('http://localhost:3001/channel/join/public', {channelId: channel.id}, { withCredentials: true })
+		axios.post(BACKEND_URL + '/channel/join/public', {channelId: channel.id}, { withCredentials: true })
 		.then(() => console.log('success'))
 		.catch((e) => console.log(e.response.data))
 	}
@@ -24,7 +25,7 @@ const Channel = ({ channel }: any) => {
 	return (
 		<div className="channel-box" onClick={somefunc}>
 			<div className="owner">
-				<img className="ownerimg" src={"http://localhost:3001/user/image/" + channel.ownerId} />
+				<img className="ownerimg" src={BACKEND_URL + '/user/image/' + channel.ownerId} />
 				<p className='ownerUsername'>{channel.ownerUsername}</p>
 			</div>
 			<div className='channelInfo'>
@@ -41,7 +42,7 @@ const Channels: React.FC = () => {
 	const [channelList, setChannelList] = useState([])
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/list', { withCredentials: true })
+		axios.get(BACKEND_URL + '/channel/list', { withCredentials: true })
 			.then((res): any => {
 				setChannelList(res.data)
 			})

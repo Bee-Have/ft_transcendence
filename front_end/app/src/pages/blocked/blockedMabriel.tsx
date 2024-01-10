@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import { userId } from '../global/userId';
 import axios from 'axios';
 //import test from '../asset/default.jpg'
 
 import Menu from '../../components/menu';
+import { BACKEND_URL } from '../global/env';
 
 const Card = ({ prop }: any) => {
 
 	const [message, setMessage] = useState<string | null>(null)
 
 	const handleUnblock = () => {
-		axios.post('http://localhost:3001/user/friend/unblock/' + userId, { blockedUserId: prop.id }, { withCredentials: true })
+		axios.post(BACKEND_URL + '/user/friend/unblock/' + prop.id, {}, { withCredentials: true })
 		.then(() => setMessage('Unblocked'))
 		.catch((e) => console.log(e))
 	}	
@@ -19,7 +19,7 @@ const Card = ({ prop }: any) => {
 	return (
 		<div className="card">
 			<div className="PP">
-				<img src={'http://localhost:3001/user/image/' + prop.id} alt="test" className="person-image" />
+				<img src={BACKEND_URL + '/user/image/' + prop.id} alt="test" className="person-image" />
 			</div>
 			<div className="name">
 				<h1>{prop.username}</h1>
@@ -34,12 +34,13 @@ const Card = ({ prop }: any) => {
 	);
 };
 
+
 const Bloqued: React.FC = () => {
 
 	const [blockedUser, setBlockedUser] = useState([])
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/user/blocked/' + userId, { withCredentials: true })
+		axios.get(BACKEND_URL + '/user/blocked', { withCredentials: true })
 			.then((res) => setBlockedUser(res.data))
 			.catch((e) => console.log(e))
 	}, [])

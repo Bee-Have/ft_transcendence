@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import PopUp from '../../components/popUp';
 import Menu from '../../components/menu';
 import { Friend } from '../global/friend.dto';
-import { userId } from '../global/userId';
 import { socket } from '../global/websocket';
+import { BACKEND_URL } from '../global/env';
 
 interface CardProps {
 	photo: string;
@@ -46,7 +46,7 @@ const FriendList: React.FC = () => {
 	};
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/user/test/friend/' + userId, { withCredentials: true })
+		axios.get(BACKEND_URL + '/user/friends', { withCredentials: true })
 		.then(res => setFriends(res.data))
 		.catch(err => console.log(err))
 	}, [])
@@ -72,7 +72,7 @@ const FriendList: React.FC = () => {
 					{Object.keys(friends).map((i) => (
 						<Card 
 							key={i}
-							photo={'http://localhost:3001/user/image/' + friends[i].id}
+							photo={BACKEND_URL + '/user/image/' + friends[i].id}
 							name={friends[i].username}
 							onClick={handleCardClick}
 							status={friends[i].status}/>

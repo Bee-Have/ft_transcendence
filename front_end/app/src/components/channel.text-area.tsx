@@ -3,6 +3,7 @@ import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { socket } from '../pages/global/websocket';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 interface ChannelMessageProps {
 	id: number,
@@ -20,7 +21,7 @@ const Message = ({ message, isSame }: any) => {
 		<div className="message">
 			{ isSame ? "" :
 			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.username} src={'http://localhost:3001/user/image/' + message.senderUserId} />
+				<Avatar className="private-message-avatar" alt={message.username} src={BACKEND_URL + '/user/image/' + message.senderUserId} />
 				<div className='private-message-name'>{message.username}</div>
 			</div>}
 
@@ -41,7 +42,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 	}, [messages]);
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/messages/' + currentChannelId, {withCredentials: true})
+		axios.get(BACKEND_URL + '/channel/messages/' + currentChannelId, {withCredentials: true})
 			.then((res) => {
 				setMessages(res.data)
 				console.log(res.data)
@@ -80,7 +81,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
-			axios.post('http://localhost:3001/channel/messages', { channelId: currentChannelId, content: inputValue }, {withCredentials: true})
+			axios.post(BACKEND_URL + '/channel/messages', { channelId: currentChannelId, content: inputValue }, {withCredentials: true})
 				.then((res): any => {
 					// setMessages([...messages, res.data]);
 					setInputValue('');

@@ -89,7 +89,6 @@ export class UserController {
 		return await this.friendService.unblockUser(userId, receiverId)
 	}
 
-	@HttpCode(HttpStatus.OK)
 	@Get('blocked')
 	async GetBlockedUser(@GetCurrentUser('sub') userId: number,) {
 		return await this.userService.getBlockedUser(userId)

@@ -32,6 +32,8 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+      - REACT_APP_BACKEND_URL=${BACKEND_URL}
+      - REACT_APP_AUTH_CALLBACK_URI=${AUTH_CALLBACK_URI}
     ports:
       - ${PORT_FRONT}:${PORT_FRONT}
     restart: always

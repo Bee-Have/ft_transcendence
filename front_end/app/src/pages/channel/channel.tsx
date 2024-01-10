@@ -7,6 +7,7 @@ import ChannelTextArea from 'src/components/channel.text-area';
 import axios from 'axios';
 import ChannelList from 'src/components/channelList';
 import { userId } from '../global/userId';
+import { BACKEND_URL } from '../global/env';
 
 interface MemberProps {
 	userId: number,
@@ -23,7 +24,7 @@ const ChannelMembers = ({ channelId }: { channelId: number }) => {
 	const [channelMembers, setChannelMembers] = useState<MemberProps[]>([])
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/channel/members/' + channelId, {withCredentials: true})
+		axios.get(BACKEND_URL + '/channel/members/' + channelId, {withCredentials: true})
 			.then((res): any => {
 				setChannelMembers(res.data)
 			})
@@ -40,7 +41,7 @@ const ChannelMembers = ({ channelId }: { channelId: number }) => {
 						<Avatar
 							className="avatar"
 							alt={member.username}
-							src={'http://localhost:3001/user/image/' + member.userId}
+							src={BACKEND_URL + '/user/image/' + member.userId}
 							sx={{width: 60, height: 60}} />
 						<div className="name">{member.username}<span className='role'>{member.role === "NONADMIN" ? "VILLAGERS" : member.role }</span></div>
 					</ListItemButton>

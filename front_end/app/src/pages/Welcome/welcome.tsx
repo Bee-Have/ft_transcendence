@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ReadCookie } from '../../components/ReadCookie';
 import isTokenExpired from '../global/isTokenExpired';
+import { BACKEND_URL } from '../global/env';
 
 // interface WelcomeProps
 // {
@@ -29,7 +30,7 @@ const Welcome: React.FC = () => {
   const authenticateUser = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
-    axios.get('http://localhost:3001/auth')
+    axios.get(BACKEND_URL + '/auth')
     .then((res: any) => {
       window.location.replace(res.data)
     })
@@ -57,7 +58,7 @@ const Welcome: React.FC = () => {
 			else
 			{
 				console.log('posting')
-				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
+				axios.post(BACKEND_URL + '/auth/refresh', {}, { withCredentials:true })
 				.then(() => {
 					window.location.reload()
 				})

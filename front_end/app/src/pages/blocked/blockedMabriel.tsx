@@ -1,61 +1,94 @@
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import { userId } from '../global/userId';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import { userId } from "../global/userId";
+import axios from "axios";
 //import test from '../asset/default.jpg'
 
-import Menu from '../../components/menu';
+import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
+import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
-const Card = ({ prop }: any) => {
+import Menu from "../../components/menu";
 
-	const [message, setMessage] = useState<string | null>(null)
+import { Friend } from "src/pages/global/friend.dto";
 
-	const handleUnblock = () => {
-		axios.post('http://localhost:3001/user/friend/unblock/' + userId, { blockedUserId: prop.id }, { withCredentials: true })
-		.then(() => setMessage('Unblocked'))
-		.catch((e) => console.log(e))
-	}	
+const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
-	return (
-		<div className="card">
-			<div className="PP">
-				<img src={'http://localhost:3001/user/image/' + prop.id} alt="test" className="person-image" />
-			</div>
-			<div className="name">
-				<h1>{prop.username}</h1>
-			</div>
-			<div className="align-right">
-				{
-				message ? message : 
-				<Button variant="contained" className="unblockBtn" onClick={handleUnblock}>Unblock</Button>
-				}
-			</div>
-		</div>
-	);
+interface CardProps {
+  user: Friend;
+}
+
+const Card = ({ user }: CardProps) => {
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleUnblock = () => {
+    axios
+      .post(
+        "http://localhost:3001/user/friend/unblock/" + userId,
+        { blockedUserId: user.id },
+        { withCredentials: true }
+      )
+      .then(() => setMessage("Unblocked"))
+      .catch((e) => console.log(e));
+  };
+
+  return (
+    <div className="card">
+      <div className="PP">
+        <InteractiveAvatar user={user} />
+      </div>
+      <div className="name">
+        <InteractiveUsername user={user} />
+      </div>
+      <div className="align-right">
+        {message ? (
+          message
+        ) : (
+          <Button
+            variant="contained"
+            className="unblockBtn"
+            onClick={handleUnblock}
+          >
+            Unblock
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const Bloqued: React.FC = () => {
+  const [blockedUser, setBlockedUser] = useState<Friend[]>([]);
 
-	const [blockedUser, setBlockedUser] = useState([])
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/user/blocked/" + userId, {
+        withCredentials: true,
+      })
+      .then((res) =>
+        setBlockedUser(
+          res.data.map((friend: Friend) => {
+            if (friend.id === userId) return null;
 
-	useEffect(() => {
-		axios.get('http://localhost:3001/user/blocked/' + userId, { withCredentials: true })
-			.then((res) => setBlockedUser(res.data))
-			.catch((e) => console.log(e))
-	}, [])
+            friend.photo = PHOTO_FETCH_URL + friend.id;
+            return friend;
+          })
+        )
+      )
+      .catch((e) => console.log(e));
+  }, []);
 
-	return (
-		<div className="bloqued">
-			<Menu />
-			<div className="content">
-				<div className="printCard">
-					{Object.keys(blockedUser).map((i) => (
-						<Card prop={blockedUser[i]} />
-					))}
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="blocked">
+      <Menu />
+      <div className="content">
+        <div className="printCard">
+          {Object.keys(blockedUser).map((i) => (
+            <Card key={i} user={blockedUser[i]} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Bloqued;

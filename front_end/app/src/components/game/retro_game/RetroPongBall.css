@@ -1,0 +1,13 @@
+.RetroPongBall {
+	--positionX: 50;
+	--positionY: 50;
+	position: absolute;
+	top: calc(var(--positionY) * 1vh);
+	left: calc(var(--positionX) * 1vw);
+	transform: translate(-50%, -50%);
+	
+	background-color: #ffffff;
+
+	height: 0.76vh;
+	width: 0.76vh;
+}

@@ -10,26 +10,26 @@ export enum UserStatus {
 export class UserInfo {
 	id: number
 	socket: Socket
-	status: UserStatus
+	userstatus: UserStatus
 
 	constructor(userId: number, socket: Socket, status: UserStatus) {
 		this.id = userId
 		this.socket = socket
-		this.status = status
+		this.userstatus = status
 	}
 
 	updateStatus(status: UserStatus) {
-		this.status = status
+		this.userstatus = status
 		return this
 	}
 }
 
 export class UserStatusEventDto {
 	userId: number
-	status: UserStatus
+	userstatus: UserStatus
 
 	constructor(user: UserInfo) {	
 		this.userId = user.id	
-		this.status = user.status
+		this.userstatus = user.userstatus
 	}
 }

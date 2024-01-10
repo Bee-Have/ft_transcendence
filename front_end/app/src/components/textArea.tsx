@@ -8,7 +8,7 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({msg, name}) => {
-	return (
+	return (	
 		<div className="message">
 			<Avatar alt={name} src={require('../asset/default.jpg')}/>
 			<div className="message-content">
@@ -25,20 +25,18 @@ const TextArea: React.FC = () => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+	if (messagesEndRef.current)
+		messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-			const element = document.getElementById("test");
-			if (element){
-				element.scrollTop = element.scrollHeight;
-				}
-			setMessages([...messages,{ msg:inputValue, name: 'me' }]);
-      setInputValue('');
-    }
+	if (event.key === 'Enter') {
+		const element = document.getElementById("test");
+		if (element)
+			element.scrollTop = element.scrollHeight;
+		setMessages([...messages,{ msg:inputValue, name: 'me' }]);
+		setInputValue('');
+	}
   };
 	return (
 		<div className="textArea" id="test">
@@ -52,8 +50,8 @@ const TextArea: React.FC = () => {
 					placeholder='Message "Friend name"' 
 					style={{width:'100%'}} 
 					value={inputValue}
-				  onChange={(e) => setInputValue(e.target.value)}
-      		onKeyDown={handleKeyDown}
+					onChange={(e) => setInputValue(e.target.value)}
+					onKeyDown={handleKeyDown}
 				/>
 			</div>
 		</div>

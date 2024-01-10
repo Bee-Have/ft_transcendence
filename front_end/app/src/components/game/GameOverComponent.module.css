@@ -1,0 +1,75 @@
+
+.GamePlayerWon > .Winner {
+	font-size: 7.5vh;
+	font-weight: bold;
+}
+
+.GameOpponentWon > .Winner {
+	font-size: 7.5vh;
+	font-weight: bold;
+}
+
+.GamePlayerWon > .WinMessage {
+	font-size: 5.5vh;
+	color: aquamarine;
+}
+
+.GameOpponentWon > .WinMessage {
+	font-size: 5.5vh;
+	color: aquamarine;
+}
+
+.GamePlayerWon {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: auto;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	background-color: #6D6D6D;
+
+	z-index: -9999;
+}
+
+.GameOpponentWon {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: auto;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	background-color: #B4B4B4;
+
+	z-index: -9999;
+}
+
+.HomeButton {
+	position: absolute;
+
+	background-color: #C1C0C0;
+	bottom: 5vh;
+	margin: 1;
+	display: "inline-block";
+	text-align: center;
+	border-radius: 1vh;
+	font-weight: 500;
+	color: black;
+	text-transform: none;
+	font-size: 3vh;
+}
+
+.HomeButton:hover {
+	background-color: #939292;
+}

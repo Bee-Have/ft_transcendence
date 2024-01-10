@@ -1,0 +1,13 @@
+.PongBall {
+	--positionX: 50;
+	--positionY: 50;
+	position: absolute;
+	top: calc(var(--positionY) * 1vh);
+	left: calc(var(--positionX) * 1vw);
+	transform: translate(-50%, -50%);
+	
+	height: 2vh;
+	width: 2vh;
+	border-radius: 50%;
+	background-color: #ffffff;
+}

@@ -1,0 +1,45 @@
+/* Original Pong game visuals */
+.Pong-game-retro {
+	/* make this div take all the screen */
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: auto;
+	
+	/* Make a white dotted line in the middle of the background like the 72's Pong */
+	background-color: black;
+}
+.Pong-game-retro::before {
+	content: "";
+	width: 1px;
+	height: 100%;
+	position: absolute;
+	left: 50%;
+	top: 0;
+	background: linear-gradient(to bottom, white 50%, black 50%);
+	background-size: 100% 8vh;
+}
+
+.Pong-game-retro > * {
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+}
+
+.Pong-game-retro-hidden-bg {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+
+	left: 50%;
+	right: 50%;
+	
+	background-color: #6D6D6D;
+
+	transition-property: left, right;
+	transition-duration: 1s;
+	transition-timing-function: ease-in-out;
+	transition-delay: 1s;
+
+}

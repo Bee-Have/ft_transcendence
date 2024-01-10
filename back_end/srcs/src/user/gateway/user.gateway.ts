@@ -136,13 +136,13 @@ export class UserGateway {
 
 		if (newFriend)
 		{
-			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).status
+			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).userstatus
 			
 			newFriend.socket.join(acceptorId.toString())
 			client.join(receiverId.toString())
 
 			newFriend.socket.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: acceptorId, status: acceptorStatus })
-			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.status})
+			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.userstatus})
 		}
 	}
 

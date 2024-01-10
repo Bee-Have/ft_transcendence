@@ -54,3 +54,19 @@
 .channel-box .channelInfo .channelMode {
 	text-align: center;
 }
+
+.channel-form {
+	justify-content: center;
+	text-align: center;
+	display: block;
+	width: 80%;
+	height: auto;
+	color: black;
+	border: 2px solid black;
+}
+
+.channel-form .button {
+	color: aqua;
+	text-align: center;
+
+}

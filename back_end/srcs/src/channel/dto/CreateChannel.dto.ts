@@ -1,5 +1,5 @@
 import { ChannelMode } from "@prisma/client"
-import { IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator"
+import { IsEnum, IsString, Length } from "class-validator"
 
 export function RespectPasswordPolicy (password: string) {
 	if (
@@ -15,7 +15,7 @@ export function RespectPasswordPolicy (password: string) {
 
 export class CreateChannelDto {
 	
-	@MinLength(5)
+	@Length(3, 10)
 	@IsString()
 	name: string
 

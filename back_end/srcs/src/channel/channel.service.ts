@@ -201,11 +201,11 @@ export class ChannelService {
 		if (bool) {
 			await this.prisma.channelMember.create({
 				data: {
-					channelId: channel.id,
+					channelId: channel.id ,
 					userId,
 					role: "NONADMIN",
 					state: "REGULAR"
-				}
+				} 
 			})
 		}
 		else
@@ -616,11 +616,15 @@ export class ChannelService {
 		return channelMember.muteDate.getTime() > new Date().getTime()
 	}
 	
-	getChannelBadge(res: Response, channelId: number) {
+	async getChannelBadge(res: Response, channelId: number) {
 		const imagePath = process.env.BADGE_DIRECTORY + '/' + channelId + '.jpeg'
 
-		if (!fs.existsSync(imagePath))
-			throw new NotFoundException()
+		if (!fs.existsSync(imagePath)){
+			const ownerId: number = await this.getChannelOwnerId(channelId)
+
+			return this.userService.getUserImage(res, ownerId)
+
+		}
 
 		fs.createReadStream(imagePath).pipe(res)
 	}

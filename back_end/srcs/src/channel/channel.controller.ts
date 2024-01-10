@@ -33,13 +33,14 @@ export class ChannelController {
 	) {
 		await this.channelService.joinPublicChannel(userId, body)
 	}
-
+  
 	@Post('join/protected')
 	@HttpCode(HttpStatus.OK)
 	async JoinProtectedChannel(
 		@GetCurrentUser('sub') userId: number,
 		@Body() body: JoinProtectedChannelDto,
 	) {
+		console.log(body)
 		await this.channelService.joinProtectedChannel(userId, body)
 	}
 
@@ -73,7 +74,7 @@ export class ChannelController {
 	async CreateChannel(
 		@GetCurrentUser('sub') userId: number,
 		@Body() body: CreateChannelDto) {
-		await this.channelService.createChannel(userId, body)
+		return await this.channelService.createChannel(userId, body)
 	}
 
 	@Get()
@@ -139,11 +140,11 @@ export class ChannelController {
 	}
 
 	@Get('badge/:channelId')
-	getBadge(
+	async getBadge(
 		@Res() res: Response,
 		@Param('channelId', ParseIntPipe) channelId: number
 	) {
-		return this.channelService.getChannelBadge(res, channelId)
+		return await this.channelService.getChannelBadge(res, channelId)
 	}
 
 }

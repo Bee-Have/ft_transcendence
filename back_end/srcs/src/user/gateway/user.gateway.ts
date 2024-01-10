@@ -69,7 +69,6 @@ export class UserGateway {
 		}
 	}
 
-
 	@SubscribeMessage(process.env.SERVER_UPDATE_USER_STATUS)
 	updateUserStatus(@ConnectedSocket() client: Socket, @MessageBody() data: string){
 

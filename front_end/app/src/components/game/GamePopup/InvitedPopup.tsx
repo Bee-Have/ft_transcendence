@@ -5,17 +5,19 @@ import CardContent from "@mui/material/CardContent";
 
 import CircularProgress from "@mui/material/CircularProgress";
 
-import UnknownUser from "@mui/icons-material/Help";
 import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./GamePopup.module.css";
 
 import GamePopupProps from "./GamePopupInterface.dto";
+import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 
 // receiver will be ignored since you wont know your opponent
-function MatchmakingPopup({ emitter, receiver, gameMode }: GamePopupProps) {
+function InvitedPopup({ emitter, receiver, gameMode }: GamePopupProps) {
+  if (receiver === undefined) return null;
+
   const closePopup = () => {
-    // send an axios call to the backend to cancel the matchmaking
+    // send an axios call to the backend to cancel the invite
     // emit a socket event to refetch the popups
   };
 
@@ -24,8 +26,8 @@ function MatchmakingPopup({ emitter, receiver, gameMode }: GamePopupProps) {
       <CardContent>
         <div className={styles.InteractiveContent}>
           <CircularProgress className={styles.CircularProgress} />
-            <CloseIcon className={styles.CancelButton} onClick={closePopup} />
-          <UnknownUser className={styles.UserIcon} />
+          <CloseIcon className={styles.CancelButton} onClick={closePopup} />
+          <InteractiveAvatar user={receiver} />
         </div>
         <div className={styles.GameMode}>{gameMode}</div>
       </CardContent>
@@ -33,4 +35,4 @@ function MatchmakingPopup({ emitter, receiver, gameMode }: GamePopupProps) {
   );
 }
 
-export default MatchmakingPopup;
+export default InvitedPopup;

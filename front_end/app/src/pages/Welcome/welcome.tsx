@@ -11,8 +11,6 @@ import isTokenExpired from "../global/isTokenExpired";
 
 import { useGamePopup } from "src/context/GamePopupContext";
 
-import MatchmakingPopup from "src/components/game/GamePopup/MatchmakingPopup";
-
 // interface WelcomeProps
 // {
 //   isLogged: boolean;
@@ -80,7 +78,6 @@ const Welcome: React.FC = () => {
 
   return (
     <div className="log_window">
-      {gamePopup.isVisible && <MatchmakingPopup/>}
       {/* add querry here to check if authentification token was filled */}
       {authenticated && (
         <div className="header">

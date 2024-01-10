@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Menu from 'src/components/menu';
@@ -11,20 +11,19 @@ import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
 
 const Profil: React.FC = () => {
 
-	var realName: string = "real Name";
-	var nickName: string = "current Nickname";
+	const [realName, setRealName] = useState(1);
+	const [nickName, setNickName] = useState(1);
 	const navigate = useNavigate();
-
 
 	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
 	.then( function (response)
 	{
 		console.log(response.data);
-		realName = response.data.username;
+		setRealName(response.data.username);
 		if (response.data.nickname == null)
-			nickName = response.data.username;
+			setNickName(response.data.username);
 		else
-			nickName = response.data.nickname;
+			setNickName(response.data.nickname);
 		console.log("realName : " + realName)
 	})
 	.catch(err => {

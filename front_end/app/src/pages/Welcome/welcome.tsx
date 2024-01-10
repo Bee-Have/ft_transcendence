@@ -57,7 +57,7 @@ const Welcome: React.FC = () => {
         console.log("posting");
         axios
           .post(
-            "http://localhost:3001/auth/refresh",
+            BACKEND_URL + "/auth/refresh",
             {},
             { withCredentials: true }
           )

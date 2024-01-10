@@ -9,8 +9,8 @@ import { Box } from "@mui/material";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
+import { PHOTO_FETCH_URL } from "../global/env";
 
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
   outcome: string;

@@ -8,11 +8,9 @@ import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 import Menu from "../../components/menu";
-import { BACKEND_URL } from '../global/env';
+import { BACKEND_URL, PHOTO_FETCH_URL } from '../global/env';
 
 import { Friend } from "src/pages/global/friend.dto";
-
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
   user: Friend;
@@ -25,8 +23,7 @@ const Card = ({ user }: CardProps) => {
     axios
       .post(BACKEND_URL + '/user/friend/unblock/' + user.id,
         {},
-        { withCredentials: true }
-      )
+        { withCredentials: true })
       .then(() => setMessage("Unblocked"))
       .catch((e) => console.log(e));
   };
@@ -62,7 +59,7 @@ const Bloqued: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get(BACKEND_URL + '/user/blocked' {
+      .get(BACKEND_URL + '/user/blocked', {
         withCredentials: true,
       })
       .then((res) =>

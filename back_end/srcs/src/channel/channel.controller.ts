@@ -53,6 +53,14 @@ export class ChannelController {
 		await this.channelService.JoinPrivateChannel(userId, body)
 	}
 
+	@Get('leave/:channelId')
+	async LeaveChannel(
+		@GetCurrentUser('sub') userId: number,
+		@Param('channelId', ParseIntPipe) channelId: number
+	) {
+		await this.channelService.leaveChannel(userId, channelId)
+	}
+
 	@Get('secret/update/:channelId')
 	async UpdatePrivateChannelSecret(
 		@GetCurrentUser('sub') userId: number,

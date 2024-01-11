@@ -256,6 +256,37 @@ export class ChannelService {
 		}
 	}
 
+	async leaveChannel(userId: number, channelId: number){
+		const member = await this.getChannelMember(userId, channelId)
+
+		if (member.state === "BANNED" || member.state === "MUTED")
+			throw new ForbiddenException("You can't leave this channel")
+
+		if (member.role === "OWNER") {
+			try {
+			await this.prisma.channel.delete({
+				where: {
+					id: channelId
+				}
+			})}
+			catch (e) {
+				throw new InternalServerErrorException('Error while deleting the channel')
+			}
+		}
+		else {
+			try {
+			await this.prisma.channelMember.delete({
+				where: {
+					id: member.id
+				}
+			})}
+			catch (e) {
+				throw new InternalServerErrorException('Error while leaving the channel')
+			}
+		}
+	}
+
+
 	async changePrivateChannelSecret(userId: number, channelId: number) {
 		const channel = await this.getChannel(channelId)
 		const member = await this.getChannelMember(userId, channelId)

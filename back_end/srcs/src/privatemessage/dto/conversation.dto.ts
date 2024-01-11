@@ -5,7 +5,7 @@ export class ConversationProps {
 	conversation: Conversation
 	lastMessage: OutgoingDirectMessage
 	convIsUnRead: boolean
-	status: UserStatus | null
+	userstatus: UserStatus | null
 }
 
 export class Conversation {

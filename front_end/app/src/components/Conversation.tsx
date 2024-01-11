@@ -39,7 +39,7 @@ interface ConversationProps {
 	}
 	lastMessage: object
 	convIsUnRead: boolean
-	status: string | null
+	userstatus: string | null
 }
 
 console.log(userId)
@@ -61,7 +61,7 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 			overlap="circular"
 			variant="dot"
 			anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-			sx={{ "& .MuiBadge-badge": { backgroundColor: getColorFromStatus(conv.status) } }} >
+			sx={{ "& .MuiBadge-badge": { backgroundColor: getColorFromStatus(conv.userstatus) } }} >
 			<Avatar
 				className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 				alt={friendUsername}
@@ -85,7 +85,7 @@ const Conversation = ({ onClick, conv }: any) => {
 		<div className="friend" >
 			<ListItemButton key={id} onClick={onClick} onContextMenu={showMenu}>
 				{
-					conv.status ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
+					conv.userstatus ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar
 							className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 							alt={friendUsername}
@@ -176,7 +176,7 @@ const Conversations: React.FC = () => {
 			console.log(status)
 			const updatedConvs = convs.map(conv =>
 				conv.conversation.memberOneId === status.userId || conv.conversation.memberTwoId === status.userId
-					? { ...conv, status: status.status } : conv)
+					? { ...conv, userstatus: status.userstatus } : conv)
 			setConvs(updatedConvs)
 		}
 

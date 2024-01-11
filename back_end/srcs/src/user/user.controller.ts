@@ -103,6 +103,15 @@ export class UserController {
 		return await this.friendService.unblockUser(userId, receiverId)
 	}
 
+	@HttpCode(HttpStatus.OK)
+	@Post('friend/delete/:receiverId')
+	async DeleteFriend(
+		@GetCurrentUser('sub') userId: number,
+		@Param('receiverId', ParseIntPipe) receiverId: number
+	) {
+		await this.friendService.deleteFriend(userId, receiverId)
+	}
+
 	@Get('blocked')
 	async GetBlockedUser(@GetCurrentUser('sub') userId: number,) {
 		return await this.userService.getBlockedUser(userId)

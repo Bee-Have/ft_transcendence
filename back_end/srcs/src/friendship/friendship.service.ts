@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class FriendshipService {
 
-	constructor(private prisma: PrismaService) {}
+	constructor(private prisma: PrismaService,) {}
 
 	async createFriendRequest(senderId: number, receiverId: number) {
 		if (senderId === receiverId)
@@ -202,6 +202,31 @@ export class FriendshipService {
 				return true
 		}
 		return false
+	}
+
+	async deleteFriend(userId: number, receiverId: number) {
+		if (userId === receiverId)
+			throw new BadRequestException('Sender cant be receiver')
+
+		try {
+			await this.prisma.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					friends: {
+						disconnect: [{id: receiverId}]
+					},
+					friendsRelation: {
+						disconnect: [{id: receiverId}]
+					}
+				}
+			})
+		}
+		catch(e) {
+			console.log(e)
+			throw new InternalServerErrorException('Error while deleting friendship')
+		}
 	}
 
 	async userExist (userId: number) : Promise<boolean> {

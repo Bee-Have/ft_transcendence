@@ -55,18 +55,39 @@
 	text-align: center;
 }
 
-.channel-form {
-	justify-content: center;
-	text-align: center;
+.channel-form  {
+	width: 500px;
+	margin: 0 auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	box-sizing: border-box; /* Assure que la largeur inclut le padding et la bordure */
+  }
+
+.channel-form label {
 	display: block;
-	width: 80%;
-	height: auto;
-	color: black;
-	border: 2px solid black;
+	margin-bottom: 8px;
 }
 
-.channel-form .button {
-	color: aqua;
-	text-align: center;
-
+.channel-form
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
 }
+
+.channel-form button {
+	background-color: #4caf50;
+	color: white;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+  }
+  
+.channel-formbutton:hover {
+	background-color: #45a049;
+  }

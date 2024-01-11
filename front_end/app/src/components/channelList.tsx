@@ -41,7 +41,7 @@ const Channel = ({ channel }: any) => {
 			onMouseOut={handleMouseOut}
 			onClick={() => { navigate("/channel/" + channel.id) }}>
 			<img
-				src={BACKEND_URL + '/user/image/' + channel.ownerId}
+				src={BACKEND_URL + '/channel/badge/' + channel.id}
 				alt={'test'}
 				className="group-image"
 			/>

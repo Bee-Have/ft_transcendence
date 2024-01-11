@@ -82,12 +82,18 @@ const CreateChannel = () => {
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [file, setFile] = useState(null)
+	const [errorMessage, setErrorMessage] = useState<null | string>(null)
+	const [badgeUpload, setbadgeUpload] = useState<null | string>(null)
+	const [channelMessage, setchannelMessage] = useState<null | string>(null)
 
 	const handleNameChange = (e:any) => {
 		setName(e.target.value);
 	};
 
 	const handleModeChange = (e:any) => {
+		setErrorMessage(null)
+		setchannelMessage(null)
+		setbadgeUpload(null)
 		setMode(e.target.value);
 	};
 
@@ -105,20 +111,23 @@ const CreateChannel = () => {
 
 	const handleSubmit = (e: any) => {
 		e.preventDefault()
+		setErrorMessage(null)
+		setchannelMessage(null)
+		setbadgeUpload(null)
 
 		axios.post(BACKEND_URL + '/channel',
 			{name, password, passwordConfirm, mode},
 			{ withCredentials: true })
 		.then((res: any) => {
-			console.log('channel Created')
+			setchannelMessage('channel Created')
 			if (file)
 				axios.postForm(BACKEND_URL + '/channel/upload/badge/' + res.data.channelId, 
 					{'badge': file },
 					{withCredentials: true})
-				.then(() => console.log('badge upload success'))
-				.catch((e) => console.log(e.response.data.message))
+				.then(() => setbadgeUpload('badge upload success'))
+				.catch((e) => setErrorMessage(e.response.data.message))
 		})
-		.catch((e) => console.log(e.response.data.message))
+		.catch((e) => setErrorMessage(e.response.data.message))
 	}
 
 	return (
@@ -155,10 +164,13 @@ const CreateChannel = () => {
 				</div>
 			)}
 			<label>
-    	      File:
+    	      Badge:
     	      <input type="file" onChange={handleFileChange} />
     	    </label>
-		   <button type="submit" className='button'>Create</button>
+		   <button type="submit" className='button'>Create</button><br></br>
+		   { errorMessage &&  <><span>{errorMessage}</span><br/></> }
+		   { channelMessage && <><span>{channelMessage}</span><br/></> }
+		   { badgeUpload && <span>{badgeUpload}</span> }
 		</div>
 		</form>
 		</div>

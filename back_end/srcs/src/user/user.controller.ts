@@ -9,6 +9,7 @@ import { GetCurrentUser } from '../common/decorators/get-current-user.decorator'
 import { Friend } from "./dto/friend.dto";
 import { updateUserDescriptionDto, updateUsernameDto } from "./dto/updateUsername.dto";
 import { UserService } from './user.service';
+import { UserStatusEventDto } from "./gateway/dto/userStatus.dto";
 
 @ApiBearerAuth()
 @Controller('user')
@@ -59,7 +60,20 @@ export class UserController {
 		@GetCurrentUser('sub') userId: number,
 		@Param('receiverId', ParseIntPipe) receiverId: number
 	) {
-		return await this.friendService.acceptFriendRequest(userId, receiverId)
+		await this.friendService.acceptFriendRequest(userId, receiverId)
+	
+		const newFriend = this.userService.connected_user_map.get(receiverId)
+
+		if (newFriend)
+		{
+			const user = this.userService.connected_user_map.get(userId)
+			newFriend.socket.join(receiverId.toString())
+			user?.socket.join(receiverId.toString())
+
+			if (user)
+				newFriend.socket.emit('user-status', new UserStatusEventDto(user))
+			user?.socket.emit('user-status', new UserStatusEventDto(newFriend))
+		}
 	}
 
 	@HttpCode(HttpStatus.OK)

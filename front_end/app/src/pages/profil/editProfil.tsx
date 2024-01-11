@@ -30,6 +30,7 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [printPopUp, setPopUp] = useState<boolean>(false);
 	const [FAActive, setFAActive] = useState<boolean>(false);
+	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
 
 	const SelectorImage = (event: ChangeEvent<HTMLInputElement>) => 
 	{
@@ -60,6 +61,7 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 			setNickName(response.data.username);
 		else
 			setNickName(response.data.nickname);
+		setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
 	})
 	.catch(err => {
 		console.log(err);
@@ -88,7 +90,7 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 				<center>
 					<Avatar
 						className='avatar'
-						src={selectedImage || require("src/asset/default.jpg")}
+						src={selectedImage || profilePic || require("src/asset/default.jpg")}
 						style={{width:'100px',height: '100px' }}
 					/>
 					<br />

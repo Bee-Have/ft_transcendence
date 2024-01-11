@@ -13,9 +13,13 @@ const Profil: React.FC = () => {
 
 	const [realName, setRealName] = useState("Default");
 	const [nickName, setNickName] = useState("Default");
+	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
 	const navigate = useNavigate();
 
-	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
+	const id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+
+
+	axios.get(`http://localhost:3001/user/profile/${id}`, {withCredentials: true})
 	.then( function (response)
 	{
 		setRealName(response.data.username);
@@ -23,6 +27,7 @@ const Profil: React.FC = () => {
 			setNickName(response.data.username);
 		else
 			setNickName(response.data.nickname);
+		setProfilePic(`http://localhost:3001/user/image/${id}`);
 	})
 	.catch(err => {
 		console.log(err);
@@ -35,9 +40,15 @@ const Profil: React.FC = () => {
 	return (
 		<div className='content'>
 			<div className="header">
-                <button className="btn btn-light">invit to game</button>
-                <button className="btn btn-light">add friend</button>
-                <button className="btn btn-light" onClick={() => navigate("/profil/edit-Profil")}>edit profil</button>
+				{id !== ReadCookie("userId") && 
+					<>
+                		<button className="btn btn-light">invit to game</button>
+                		<button className="btn btn-light">add friend</button>
+					</>
+				}
+				{id === ReadCookie("userId") && 
+                	<button className="btn btn-light" onClick={() => navigate("/profil/edit-Profil")}>edit profil</button>
+				}
                 <button className="btn btn-light" onClick={() => {
 					axios.post("http://localhost:3001/auth/logout", {}, {headers: {Authorization: `Bearer ${ReadCookie("access_token")}`}, withCredentials: true}).then( () =>
 					{
@@ -53,7 +64,7 @@ const Profil: React.FC = () => {
 			<Menu/>
 			<div className='profil'>
 				<center>
-					<Avatar className='avatar' src={require("src/asset/default.jpg")} style={{width:'100px', height:'100px'}}/><br/>
+					<Avatar className='avatar' src={profilePic} style={{width:'100px', height:'100px'}}/><br/>
 				</center>
 				<div className='information'>
 					<div className='fs-2'>

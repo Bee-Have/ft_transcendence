@@ -97,7 +97,7 @@ const Welcome: React.FC = () => {
       {/* add querry here to check if authentification token was filled */}
       {authenticated && (
         <div className="header">
-          <button className="btn btn-light" onClick={() => navigate("/profil")}>
+          <button className="btn btn-light" onClick={() => navigate(`/profil/${ReadCookie("userId")}`)}>
             profile
           </button>
         </div>

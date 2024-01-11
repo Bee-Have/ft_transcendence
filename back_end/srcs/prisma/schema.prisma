@@ -32,22 +32,36 @@ model User {
     User_Channel_channelOwner    Channel[] @relation("Channel_OwnerUser")
     User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
 
-
     friends         User[] @relation("friends")
     friendsRelation User[] @relation("friends")
 
     sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
     receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 
-    blocked BlockedUser[] @relation("BlockedBy")
-    blockedBy  BlockedUser[] @relation("Blocked")
+    blocked   BlockedUser[] @relation("BlockedBy")
+    blockedBy BlockedUser[] @relation("Blocked")
 
     conversationInitiated Conversation[] @relation("convInitiated")
     conversationReceived  Conversation[] @relation("convReceived")
 
     directMessages DirectMessage[]
 
+    sentGameInvites     GameInvite[] @relation("SentGameInvites")
+    receivedGameInvites GameInvite[] @relation("ReceivedGameInvites")
+
     @@map("users")
+}
+
+model GameInvite {
+    id Int @id @default(autoincrement())
+
+    sender   User @relation("SentGameInvites", fields: [senderId], references: [id])
+    senderId Int
+
+    receiver   User @relation("ReceivedGameInvites", fields: [receiverId], references: [id])
+    receiverId Int
+
+    @@index([senderId, receiverId])
 }
 
 model Channel {
@@ -120,12 +134,12 @@ model Conversation {
 }
 
 model DirectMessage {
-    id Int @id @default(autoincrement())
+    id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
 
     content   String
-	isBlocked Boolean @default(false)
-	isRead    Boolean @default(false)
+    isBlocked Boolean @default(false)
+    isRead    Boolean @default(false)
 
     senderId Int
     sender   User @relation(fields: [senderId], references: [id])

@@ -19,6 +19,8 @@ import Divider from "@mui/material/Divider";
 
 import styles from "./PlayGameModeDialogButton.module.css";
 
+import gameService from "src/services/game";
+
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
 
@@ -43,7 +45,19 @@ function GameModeDialog(props: GameModeDialogProps) {
   };
 
   const handleLaunchGame = () => {
-    navigate("/game/" + selectedMode + "?multi=" + isMulti);
+    navigate("/game/" + selectedMode + "?multi=false");
+  };
+
+  const handleLaunchMatchmaking = () => {
+    console.log("launching matchmaking");
+    gameService
+      .joinMatchmaking()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -122,7 +136,12 @@ function GameModeDialog(props: GameModeDialogProps) {
         </List>
         <Divider />
         <br />
-        <Button className={styles.StartGameButton} onClick={handleLaunchGame}>
+        <Button
+          className={styles.StartGameButton}
+          onClick={
+            isMulti === false ? handleLaunchGame : handleLaunchMatchmaking
+          }
+        >
           {isMulti === false ? "Start Game" : "Matchmaking"}
         </Button>
       </DialogContent>
@@ -148,7 +167,11 @@ function PlayGameModeDialogButton() {
 
   return (
     <div>
-      <Button className={styles.ButtonDialogOpen} variant="outlined" onClick={handleClickOpen}>
+      <Button
+        className={styles.ButtonDialogOpen}
+        variant="outlined"
+        onClick={handleClickOpen}
+      >
         play
       </Button>
       <GameModeDialog

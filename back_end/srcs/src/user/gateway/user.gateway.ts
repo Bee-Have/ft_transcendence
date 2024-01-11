@@ -10,6 +10,9 @@ import { PrivateMessageService } from '../../privatemessage/privatemessage.servi
 import { BlockedUserDto } from './dto/blocked-user.dto';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
+import { SocketAuthMiddleware } from './ws.md';
+import { ExtractJwt } from 'passport-jwt';
+import { jwtDecode } from 'jwt-decode';
 
 @WebSocketGateway({ namespace: 'user', cors: true })
 @UseFilters(new WsExceptionFilter())
@@ -24,22 +27,24 @@ export class UserGateway {
 	@WebSocketServer()
 	server: Namespace
 
-	//TODO use this midleware to use JWT auth
-	// afterInit(client: Socket) {
-	// 	client.use(SocketAuthMiddleware() as any)
-	// }
+	// TODO use this midleware to use JWT auth
+	afterInit(client: Socket) {
+		client.use(SocketAuthMiddleware() as any)
+	}
 
 	async handleConnection(@ConnectedSocket() client: Socket) {
 
-		const userId: number = Number(client.handshake?.headers?.id)
 
-		console.log(userId, 'connect')
-
+		const atToken = jwtDecode(String(client.handshake?.headers?.id))
+		const userId: number = Number(atToken.sub)
+		
 		if (Number.isNaN(userId))
 		{
+			console.log(client.handshake)
 			client.disconnect()
 			return
 		}
+		console.log(userId, 'connect')
 
 		// if (this.userService.connected_user_map.get(userId))
 		// {

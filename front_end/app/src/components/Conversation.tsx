@@ -168,8 +168,11 @@ const Conversations: React.FC = () => {
 
 	useEffect(() => {
 		const listenNewMessage = (message: any) => {
-			if (!currentChat || currentChat.conversation.id !== message.conversationId)
-				convUpdateUnReadStatus(message.conversationId, true)
+			if (!currentChat || currentChat.conversation.id !== message.conversationId) {
+				const updated = convs.map(conv => conv.conversation.id === message.conversationId ? { ...conv, convIsUnRead: true } : conv)
+
+				setConvs(updated)
+			}
 		}
 
 		const listenNewStatus = (status: any) => {

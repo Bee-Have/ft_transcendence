@@ -49,11 +49,13 @@ const Welcome: React.FC = () => {
     if (!aToken) {
       console.log("login");
       // login()
+      gamePopup.setIsVisible(false);
       setAuthenticated(false);
     } else if (isTokenExpired(aToken)) {
       console.log("Atoken Expired");
       if (!rToken || isTokenExpired(rToken)) {
         console.log("No Rt or expired");
+        gamePopup.setIsVisible(false);
         setAuthenticated(false);
         // login()
       } else {
@@ -69,7 +71,10 @@ const Welcome: React.FC = () => {
           })
           .catch((e) => console.log(e));
       }
-    } else setAuthenticated(true);
+    } else {
+      gamePopup.setIsVisible(true);
+      setAuthenticated(true);
+    }
   }, []);
 
   const guestUser = () => {
@@ -110,7 +115,7 @@ const Welcome: React.FC = () => {
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible)}} >leaderboard</button>
+          <button className="btn btn-light">leaderboard</button>
           {/* <button className="btn btn-light" onClick={() => navigate("/leaderboard")}>leaderboard</button> */}
         </div>
       </div>

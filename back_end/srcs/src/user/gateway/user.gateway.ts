@@ -10,6 +10,9 @@ import { PrivateMessageService } from '../../privatemessage/privatemessage.servi
 import { BlockedUserDto } from './dto/blocked-user.dto';
 import { FriendRequestDto } from './dto/frien-request.dto';
 import { WsExceptionFilter } from './filter/user.filter';
+import { SocketAuthMiddleware } from './ws.md';
+import { ExtractJwt } from 'passport-jwt';
+import { jwtDecode } from 'jwt-decode';
 
 @WebSocketGateway({ namespace: 'user', cors: true })
 @UseFilters(new WsExceptionFilter())
@@ -24,22 +27,24 @@ export class UserGateway {
 	@WebSocketServer()
 	server: Namespace
 
-	//TODO use this midleware to use JWT auth
-	// afterInit(client: Socket) {
-	// 	client.use(SocketAuthMiddleware() as any)
-	// }
+	// TODO use this midleware to use JWT auth
+	afterInit(client: Socket) {
+		client.use(SocketAuthMiddleware() as any)
+	}
 
 	async handleConnection(@ConnectedSocket() client: Socket) {
 
-		const userId: number = Number(client.handshake?.headers?.id)
 
-		console.log(userId, 'connect')
-
+		const atToken = jwtDecode(String(client.handshake?.headers?.id))
+		const userId: number = Number(atToken.sub)
+		
 		if (Number.isNaN(userId))
 		{
+			console.log(client.handshake)
 			client.disconnect()
 			return
 		}
+		console.log(userId, 'connect')
 
 		// if (this.userService.connected_user_map.get(userId))
 		// {
@@ -69,7 +74,6 @@ export class UserGateway {
 		}
 	}
 
-
 	@SubscribeMessage(process.env.SERVER_UPDATE_USER_STATUS)
 	updateUserStatus(@ConnectedSocket() client: Socket, @MessageBody() data: string){
 
@@ -91,128 +95,6 @@ export class UserGateway {
 	}
 
 
-	@SubscribeMessage(process.env.SERVER_CREATE_FRIEND_REQUEST)
-	async handleCreateFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-		
-		const senderId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-		
-		await this.friendService.createFriendRequest(senderId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_CREATED, receiverId)
-
-		const receiver = this.userService.connected_user_map.get(receiverId)
-	
-		if (receiver)
-		{
-			receiver.socket.emit(process.env.CLIENT_FRIEND_REQUEST_RECEIVED, { from: {id: senderId} })
-		}
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_CANCEL_FRIEND_REQUEST)
-	async handleCancelFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-		
-		const senderId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-		
-		await this.friendService.cancelFriendRequest(senderId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_CANCELED, receiverId)
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_ACCEPT_FRIEND_REQUEST)
-	async handleAcceptFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-
-		const acceptorId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-
-		await this.friendService.acceptFriendRequest(acceptorId, receiverId)
-
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_ACCEPTED, receiverId)
-
-		const newFriend = this.userService.connected_user_map.get(receiverId)
-
-		if (newFriend)
-		{
-			const acceptorStatus = this.userService.connected_user_map.get(acceptorId).userstatus
-			
-			newFriend.socket.join(acceptorId.toString())
-			client.join(receiverId.toString())
-
-			newFriend.socket.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: acceptorId, status: acceptorStatus })
-			client.emit(process.env.CLIENT_NEW_FRIEND, { newFriendId: receiverId, status: newFriend.userstatus})
-		}
-	}
-
-
-	@SubscribeMessage(process.env.SERVER_REJECT_FRIEND_REQUEST)
-	async handleRejectFriendRequest(@ConnectedSocket() client: Socket, @MessageBody() data: FriendRequestDto) {
-
-		const rejectorId: number = Number(client.handshake.headers.id)
-		const receiverId: number = data.receiverId
-
-		await this.friendService.rejectFriendRequest(rejectorId, receiverId)
-	
-		client.emit(process.env.CLIENT_FRIEND_REQUEST_REJECTED, receiverId)
-	}
-
-	@SubscribeMessage(process.env.SERVER_BLOCK_USER)
-	async handleBlockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
-
-		const userId: number = Number(client.handshake.headers.id)
-		const blockedUserId = data.blockedUserId
-
-		await this.friendService.blockUser(userId, blockedUserId)
-
-		client.emit(process.env.CLIENT_BLOCK_USER_SUCCESS)
-	}
-
-	@SubscribeMessage(process.env.SERVER_UNBLOCK_USER)
-	async handleUnblockUser(@ConnectedSocket() client: Socket, @MessageBody() data: BlockedUserDto) {
-		
-		const userId: number = Number(client.handshake.headers.id)
-		const blockedUserId = data.blockedUserId
-	
-		await this.friendService.unblockUser(userId, blockedUserId)
-
-		client.emit(process.env.CLIENT_UNBLOCK_USER_SUCCESS)
-	}
-
-	// @SubscribeMessage(process.env.SERVER_DIRECT_MESSAGE)
-	// async handleDirectMessage(@ConnectedSocket() client: Socket, @MessageBody() data: IncomingDirectMessage) {
-
-	// 	const senderId: number = Number(client.handshake.headers.id)
-	// 	const receiverId: number = data.receiverId
-	// 	const content: string = data.content
-
-	// 	const senderBlockedReceiver = await this.userService.doMemberOneBlockedMemberTwo(senderId, receiverId)
-
-	// 	if (senderBlockedReceiver){
-	// 		throw new WsException("You can't send message to this user")
-	// 	}
-
-	// 	const conversation = await this.userService.getOrCreateConversation(senderId, receiverId)
-	// 	const receiverBlockedSender = await this.userService.doMemberOneBlockedMemberTwo(receiverId, senderId)
-	// 	// const message = await this.userService.createDirectMessage(senderId, conversation.id, data.content, receiverBlockedSender)
-	// 	const message = 'weif'
-	// 	const outgoingMessage: OutgoingDirectMessage = plainToInstance(OutgoingDirectMessage, message, {excludeExtraneousValues: true})
-
-	// 	client.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, outgoingMessage)
-
-	// 	if (!receiverBlockedSender)
-	// 	{
-	// 		const receiver = this.userService.connected_user_map.get(receiverId)
-			
-	// 		if (receiver)
-	// 		{
-	// 			receiver.socket.emit(process.env.CLIENT_NEW_DIRECT_MESSAGE, message)
-	// 		}
-	// 	}
-
-	// }
-
 	@SubscribeMessage('message')
 	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
 	{
@@ -224,7 +106,6 @@ export class UserGateway {
 			friend.socket.emit('new-message', body)
 
 	}
-
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 

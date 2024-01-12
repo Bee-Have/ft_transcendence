@@ -281,7 +281,7 @@ export class PrivateMessageService {
 			conversation: conv,
 			lastMessage,
 			convIsUnRead: lastMessage ? (lastMessage.senderId != userId && !lastMessage.isRead) : false,
-			status: await this.getStatus(userId, friendId)
+			userstatus: await this.getStatus(userId, friendId)
 		}
 
 		return obj

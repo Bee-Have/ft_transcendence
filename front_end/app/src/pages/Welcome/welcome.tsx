@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import PlayGameModeDialogButton from "../../components/game/GameModeDialog/PlayGameModeDialogButton";
 
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ReadCookie } from '../../components/ReadCookie';
+import isTokenExpired from '../global/isTokenExpired';
+import { BACKEND_URL } from '../global/env';
+        
 import "src/css/welcome.css";
 import "src/css/header.css";
-
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ReadCookie } from "../../components/ReadCookie";
-import isTokenExpired from "../global/isTokenExpired";
 
 import { useGamePopup } from "src/context/GamePopupContext";
 
@@ -37,19 +38,12 @@ const Welcome: React.FC = () => {
   const authenticateUser = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
-    axios
-      .get("http://localhost:3001/auth")
-      .then((res: any) => {
-        window.location.replace(res.data);
-      })
-      .catch((e) => console.log(e));
-    // login()
-    
-    axios.get('http://localhost:3001/auth')
+    axios.get(BACKEND_URL + '/auth')
     .then((res: any) => {
-      window.location.replace(res.data);
+      window.location.replace(res.data)
     })
-    .catch(e => console.log(e));
+    .catch(e => console.log(e))
+
 	// login()
     // setAuthenticated(true);
   };
@@ -73,19 +67,22 @@ const Welcome: React.FC = () => {
 			else
 			{
 				console.log('posting')
-				axios.post('http://localhost:3001/auth/refresh', {}, { withCredentials:true })
-				.then(() => {
-					window.location.reload();
-				})
-				.catch((e) => console.log(e));
+        axios
+          .post(
+            BACKEND_URL + "/auth/refresh",
+            {},
+            { withCredentials: true }
+          )
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((e) => console.log(e));
 			}
 
 		}
 		else
 			setAuthenticated(true)
   }, [])
-
-
 
   const guestUser = () => {
     setGuest(true);

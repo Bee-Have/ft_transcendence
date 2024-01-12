@@ -1,0 +1,72 @@
+
+.channel-box {
+	width: 90%;
+	height: 150px;
+	background-color: #f0f0f0;
+	border: 5px solid #ccc;
+	margin: 10px;
+	display: flex;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.channel-box:hover {
+	background-color: rgba(0, 0, 0, 0.4);
+	color: aliceblue;
+	cursor: pointer;
+}
+
+
+.channel-box .owner {
+	margin: 5px;
+	width: 15%;
+	height: 100%;
+	text-align: center;
+}
+
+.channel-box  .owner .ownerUsername {
+	text-align: center;
+}
+
+.channel-box .owner .ownerimg {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+
+.channel-box .channelInfo {
+	width: 90%;
+	height: 100%;
+}
+
+.channel-box .channelInfo .channelName {
+	width: 89%;
+	text-align: center;
+	height: 40%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.channel-box .channelInfo .channelMode {
+	text-align: center;
+}
+
+.channel-form {
+	justify-content: center;
+	text-align: center;
+	display: block;
+	width: 80%;
+	height: auto;
+	color: black;
+	border: 2px solid black;
+}
+
+.channel-form .button {
+	color: aqua;
+	text-align: center;
+
+}

@@ -83,49 +83,50 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 			{printPopUp && !FAActive && <FAEnable popUp={setPopUp} btn={setFAActive}/>}
 			{printPopUp && FAActive && <FADisable popUp={setPopUp} btn={setFAActive}/>}
 			<div className="header">
-				<button className="btn btn-light" onClick={() => navigate("/profil")}>home</button>
+				<button className="btn btn-light" onClick={() => navigate("/")}>home</button>
 			</div>
 			<Menu/>
 			<div className='profil'>
-				<center>
-					<Avatar
-						className='avatar'
-						src={selectedImage || profilePic || require("src/asset/default.jpg")}
-						style={{width:'100px',height: '100px' }}
-					/>
-					<br />
-					<button onClick={handleEditPicture}>Edit picture</button>
-				</center>
-				<div className='information'>
-					<InputLabel htmlFor="component-simple">Nickname</InputLabel>
-					<Input value={nickName}/>
-					<br/><br/>
-
-					<InputLabel htmlFor="component-simple">RealName</InputLabel>
-					<Input value={realName}/>
-					<br/><br/>
-
-					<TextField
-						label="Description"
-						multiline rows={10}
-						defaultValue={description}
-						style={{width: '80%'}}
-					/>
-					<br/><br/>
-
-					<div style={{width:'100%'}}>
-						<button style={{marginLeft:'75%'}} >Save</button>
+				<form action="" method="POST">
+					<center>
+						<Avatar
+							className='avatar'
+							src={selectedImage || profilePic || require("src/asset/default.jpg")}
+							style={{width:'100px',height: '100px' }}
+							/>
+						<br />
+						<button onClick={handleEditPicture}>Edit picture</button>
+					</center>
+					<div className='information'>
+						<InputLabel htmlFor="component-simple">Nickname</InputLabel>
+						<Input value={nickName}/>
 						<br/><br/>
-					</div>
 
-					Two factor authentification :<br/>
-					<FormControlLabel
-						control={<Switch/>} 
-						label={FAActive?"activer":"désactiver"}
-						checked={FAActive}
-						onChange={handleToggleFA}
-					/>
-				</div>
+						<InputLabel htmlFor="component-simple">RealName</InputLabel>
+						<Input value={realName}/>
+						<br/><br/>
+
+						<TextField
+							label="Description"
+							multiline rows={10}
+							defaultValue={description}
+							style={{width: '80%'}}
+							/>
+						<br/><br/>
+
+						Two factor authentification :<br/>
+						<FormControlLabel
+							control={<Switch/>} 
+							label={FAActive?"activer":"désactiver"}
+							checked={FAActive}
+							onChange={handleToggleFA}
+							/>
+
+						<div style={{width:'100%'}}>
+							<button style={{marginLeft:'75%'}} type="submit">Save</button>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
 	);

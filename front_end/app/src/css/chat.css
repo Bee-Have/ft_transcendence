@@ -30,7 +30,7 @@
 }
 
 .avatar{
-	margin-right:20px;
+	margin-right: 15px;
 }
 
 .channelPeople .name{
@@ -53,16 +53,16 @@
 	min-width: 50px;
 	height: 100%;
 	background-color: grey;
-	overflow-y: auto;
+	/* overflow-y: auto; */
 }
 
-.group-image {
+/* .group-image {
 	margin: auto;
 	width: 90%;
 	margin-bottom: 5px;	
 	object-fit: cover;
 	border-radius: 50%;
-}
+} */
 
 .channelList .separator {
 	margin: auto;
@@ -110,12 +110,14 @@
 	min-width: 50px;
 	height: 100%;
 	background-color: grey;
-	overflow-y: auto;
+	z-index: 123412;
+	/* overflow-y: auto; */
 }
 
 .group-image {
 	margin: auto;
-	width: 90%;
+	width: 60px;
+	height: 60px;
 	margin-bottom: 5px;	
 	object-fit: cover;
 	border-radius: 50%;
@@ -166,9 +168,14 @@
 
 .name{
 	font-weight: bold;
-	font-size: 50%;
+	font-size: 30px;
 	display: flex;
-	margin-left: 10%;
+	/* margin-left: 10%; */
+}
+
+.role {
+	font-weight: 400;
+	font-size: 12px;
 }
 
 .private-message-header {
@@ -224,3 +231,31 @@
 	position: fixed;
 	background-color: rosybrown;
 }
+
+
+.channelName {
+	margin: auto;
+	width: 60%;
+	height: auto;
+	font-size:xx-large;
+	align-content: center;
+	text-align: center;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+.channel-show-name {
+	position: absolute;
+	top: 50%;
+	left: 120%;
+	transform: translate(-50%, -50%);
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 10px;
+	border-radius: 4px;
+	z-index: 999999999;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	overflow: visible;
+}
+

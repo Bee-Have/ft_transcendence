@@ -9,6 +9,7 @@ import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -38,7 +39,7 @@ interface ConversationProps {
 	}
 	lastMessage: object
 	convIsUnRead: boolean
-	status: string | null
+	userstatus: string | null
 }
 
 console.log(userId)
@@ -60,11 +61,11 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 			overlap="circular"
 			variant="dot"
 			anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-			sx={{ "& .MuiBadge-badge": { backgroundColor: getColorFromStatus(conv.status) } }} >
+			sx={{ "& .MuiBadge-badge": { backgroundColor: getColorFromStatus(conv.userstatus) } }} >
 			<Avatar
 				className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 				alt={friendUsername}
-				src={'http://localhost:3001/user/image/' + friendId} />
+				src={BACKEND_URL + '/user/image/' + friendId} />
 		</Badge>
 	)
 }
@@ -75,15 +76,20 @@ const Conversation = ({ onClick, conv }: any) => {
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
+	const showMenu = (e: any) => {
+		//TODO: Add the popup menu for conversations
+		e.preventDefault()
+	}
+
 	return (
 		<div className="friend" >
-			<ListItemButton key={id} onClick={onClick}>
+			<ListItemButton key={id} onClick={onClick} onContextMenu={showMenu}>
 				{
-					conv.status ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
+					conv.userstatus ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar
 							className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 							alt={friendUsername}
-							src={'http://localhost:3001/user/image/' + friendId} />
+							src={BACKEND_URL + '/user/image/' + friendId} />
 				}
 
 				<div className="name">{friendUsername}</div>
@@ -104,7 +110,7 @@ const Conversations: React.FC = () => {
 
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/privatemessage/conversations/' + userId)
+		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
 			.then((res): any => {
 				setConvs(res.data)
 			})
@@ -140,9 +146,9 @@ const Conversations: React.FC = () => {
 	}
 
 	const createConvCallBack = (inputValue: any) => {
-		axios.get('http://localhost:3001/user/idbyname/' + inputValue, { withCredentials: true })
+		axios.get(BACKEND_URL + '/user/idbyname/' + inputValue, { withCredentials: true })
 			.then((response) => {
-				axios.post('http://localhost:3001/' + 'privatemessage/conversations/' + userId + '/' + response.data, null, { withCredentials: true })
+				axios.post(BACKEND_URL + '/privatemessage/conversations/' + response.data, null, { withCredentials: true })
 					.then((res) => {
 						const exist = convs.some((conv) => conv.conversation.id === res.data.conversation.id)
 						if (!exist)
@@ -162,15 +168,18 @@ const Conversations: React.FC = () => {
 
 	useEffect(() => {
 		const listenNewMessage = (message: any) => {
-			if (!currentChat || currentChat.conversation.id !== message.conversationId)
-				convUpdateUnReadStatus(message.conversationId, true)
+			if (!currentChat || currentChat.conversation.id !== message.conversationId) {
+				const updated = convs.map(conv => conv.conversation.id === message.conversationId ? { ...conv, convIsUnRead: true } : conv)
+
+				setConvs(updated)
+			}
 		}
 
 		const listenNewStatus = (status: any) => {
 			console.log(status)
 			const updatedConvs = convs.map(conv =>
 				conv.conversation.memberOneId === status.userId || conv.conversation.memberTwoId === status.userId
-					? { ...conv, status: status.status } : conv)
+					? { ...conv, userstatus: status.userstatus } : conv)
 			setConvs(updatedConvs)
 		}
 

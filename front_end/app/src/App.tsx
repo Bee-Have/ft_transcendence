@@ -14,10 +14,14 @@ import	MatchHistory	from './pages/match-history/matchHistory';
 import	Chat 			from './pages/chat/chat';
 import	EditProfil		from './pages/profil/editProfil';
 
+import Channel from './pages/channel/channel';
+import Channels from './pages/channel/channels';
+
 import ClassicGame from "./pages/game/Classic";
 import TimedGame from "./pages/game/Timed";
 import SpeedGame from "./pages/game/Speed";
 import RetroGame from "./pages/game/Retro";
+
 
 const App: React.FC = () => {
 	useEffect(() => {
@@ -39,12 +43,12 @@ const App: React.FC = () => {
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/profil/edit-Profil" element={<EditProfil />} />
 				<Route path="/chat" element={<Chat />} />
-
+				<Route path="/channel/:id" Component={Channel} />
+				<Route path="/channel" Component={Channels} />
 				<Route path="/game/classic" element={<ClassicGame />} />
 				<Route path="/game/timed" element={<TimedGame />} />
 				<Route path="/game/speed" element={<SpeedGame />} />
 				<Route path="/game/retro" element={<RetroGame />} />
-
 				<Route path="*" element={<p>404 Not found</p> } />
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>

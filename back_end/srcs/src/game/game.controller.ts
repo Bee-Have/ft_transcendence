@@ -3,7 +3,7 @@ import { Public } from "src/common/decorators";
 
 import { GameService } from './game.service';
 
-import { GameMatchmakingDto } from './dto/game-invite.dto';
+import { GameMatchmakingDto, SendInviteDto } from './dto/game-invite.dto';
 
 @Public()
 @Controller('game')
@@ -36,5 +36,14 @@ export class GameController {
 	async deleteUserInvites(@Param('userId') userId: number) {
 		console.log('delete invites: ', userId)
 		return await this.gameService.deleteUserInvites(userId);
+	}
+
+	@Post('sendInvite/:userId')
+	async sendInvite(
+		@Param('userId') userId: number,
+		@Body() invitedUserDto: SendInviteDto
+	) {
+		console.log('send invite: ', invitedUserDto.invitedUserId, invitedUserDto.gameMode)
+		return await this.gameService.sendInvite(userId, invitedUserDto);
 	}
 }

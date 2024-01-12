@@ -18,9 +18,14 @@ const deleteUserInvites = async (userId: number) => {
   return await axios.post(`${API_URL}/deleteInvites/${userId}`);
 }
 
+const sendInvite = async (userId: number, invitedUserId: number, gameMode: string) => {
+	  return await axios.post(`${API_URL}/sendInvite/${userId}`, { invitedUserId, gameMode });
+}
+
 export default {
   joinMatchmaking,
   leaveMatchmaking,
   getUserInvites,
   deleteUserInvites,
+  sendInvite,
 };

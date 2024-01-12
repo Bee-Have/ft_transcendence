@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { equal } from "assert";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UserInfo } from "src/user/gateway/dto/userStatus.dto";
+import { UserInfo, UserStatus } from "src/user/gateway/dto/userStatus.dto";
 import { UserService } from "src/user/user.service";
+
+import { GameMatchmakingDto, SendInviteDto } from "./dto/game-invite.dto";
 
 @Injectable()
 export class GameService {
@@ -119,5 +121,54 @@ export class GameService {
     }
 
     return { userId };
+  }
+
+  async sendInvite(userId: number, invitedUserDto: SendInviteDto) {
+    const invitedUser = this.userService.connected_user_map.get(
+      invitedUserDto.invitedUserId
+    );
+    const invitee: UserInfo = this.userService.connected_user_map.get(userId);
+
+    if (
+      invitedUser === undefined ||
+      invitedUser.userstatus === UserStatus.ingame ||
+      invitedUser.userstatus === UserStatus.ingamesolo ||
+      invitedUser.userstatus === UserStatus.offline ||
+      invitee === undefined ||
+      invitee.userstatus === UserStatus.ingame ||
+      invitee.userstatus === UserStatus.ingamesolo ||
+      invitee.userstatus === UserStatus.offline
+    )
+      return { msg: "User is not available" };
+
+    const gameInvite = await this.prisma.gameInvite.findMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: invitedUserDto.invitedUserId,
+          },
+          {
+            senderId: invitedUserDto.invitedUserId,
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+
+    if (gameInvite.length > 0) return { msg: "Invite already sent" };
+
+    const newGameInvite = await this.prisma.gameInvite.create({
+      data: {
+        senderId: userId,
+        receiverId: invitedUserDto.invitedUserId,
+        gameMode: invitedUserDto.gameMode,
+      },
+    });
+
+    invitedUser.socket.emit("new-invite");
+    invitee.socket.emit("new-invite");
+
+    return { msg: "Invite sent" };
   }
 }

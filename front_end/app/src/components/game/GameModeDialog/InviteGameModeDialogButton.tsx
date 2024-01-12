@@ -7,7 +7,6 @@ import ListItemText from "@mui/material/ListItemText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 
-import { useNavigate } from "react-router-dom";
 import { DialogContent, Box, Avatar } from "@mui/material";
 
 import Divider from "@mui/material/Divider";
@@ -15,6 +14,9 @@ import Divider from "@mui/material/Divider";
 import styles from "./InviteGameModeDialogButton.module.css";
 
 import { Friend } from "../../../pages/global/friend.dto";
+
+import gameService from "src/services/game";
+import { userId } from "src/pages/global/userId";
 
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
@@ -29,7 +31,6 @@ export interface GameModeDialogProps {
 
 function GameModeDialog(props: GameModeDialogProps) {
   const { onClose, selectedMode, open, updateGameMode, user } = props;
-  const navigate = useNavigate();
 
   const handleClose = () => {
     onClose(selectedMode);
@@ -39,8 +40,16 @@ function GameModeDialog(props: GameModeDialogProps) {
     updateGameMode(value);
   };
 
-  const handleLaunchGame = () => {
-    navigate("/game/" + selectedMode + "?multi=true");
+  const sendInvite = () => {
+    gameService
+      .sendInvite(userId, user.id, selectedMode)
+      .then((res) => {
+        console.log(res);
+		handleClose();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -91,7 +100,7 @@ function GameModeDialog(props: GameModeDialogProps) {
         </List>
         <Divider />
         <br />
-        <Button className={styles.StartGameButton} onClick={handleLaunchGame}>
+        <Button className={styles.StartGameButton} onClick={sendInvite}>
           send Invite
         </Button>
       </DialogContent>

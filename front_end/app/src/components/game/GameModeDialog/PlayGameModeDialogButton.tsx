@@ -48,10 +48,18 @@ function GameModeDialog(props: GameModeDialogProps) {
   };
 
   const handleLaunchGame = () => {
+    gameService
+      .deleteUserInvites(userId)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     navigate("/game/" + selectedMode + "?multi=false");
   };
 
-  const handleLaunchMatchmaking = () => {
+  const joinMatchmakingQueue = () => {
     console.log("launching matchmaking");
     gameService
       .joinMatchmaking(userId, selectedMode)
@@ -141,16 +149,14 @@ function GameModeDialog(props: GameModeDialogProps) {
         <Divider />
         <br />
         <div className={styles.Disclaimer}>
-          <WarningIcon/>
-          Joining game cancels all invites and matchmaking
+          <WarningIcon />
+          Starting a game cancels all invites and matchmaking
         </div>
         <Divider />
         <br />
         <Button
           className={styles.StartGameButton}
-          onClick={
-            isMulti === false ? handleLaunchGame : handleLaunchMatchmaking
-          }
+          onClick={isMulti === false ? handleLaunchGame : joinMatchmakingQueue}
         >
           {isMulti === false ? "Start Game" : "Matchmaking"}
         </Button>

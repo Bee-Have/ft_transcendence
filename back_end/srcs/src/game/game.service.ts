@@ -78,8 +78,6 @@ export class GameService {
   }
 
   async getUserInvites(userId: number) {
-    console.log("get user invites: ", userId);
-
     const gameInvites = await this.prisma.gameInvite.findMany({
       where: {
         OR: [
@@ -98,5 +96,28 @@ export class GameService {
 
     console.log("gameInvites: ", gameInvites);
     return gameInvites;
+  }
+
+  async deleteUserInvites(userId: number) {
+    await this.prisma.gameInvite.deleteMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+          },
+          {
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+
+    const player: UserInfo = this.userService.connected_user_map.get(userId);
+
+    if (player) {
+      player.socket.emit("new-invite");
+    }
+
+    return { userId };
   }
 }

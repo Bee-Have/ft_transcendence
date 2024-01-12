@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, HttpCode, HttpStatus, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, HttpCode, HttpStatus, Body, Delete } from '@nestjs/common';
 import { Public } from "src/common/decorators";
 
 import { GameService } from './game.service';
@@ -30,5 +30,11 @@ export class GameController {
 	async getUserInvites(@Param('userId') userId: number) {
 		console.log('get user invites: ', userId)
 		return await this.gameService.getUserInvites(userId);
+	}
+
+	@Post('deleteInvites/:userId')
+	async deleteUserInvites(@Param('userId') userId: number) {
+		console.log('delete invites: ', userId)
+		return await this.gameService.deleteUserInvites(userId);
 	}
 }

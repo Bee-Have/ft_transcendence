@@ -54,14 +54,15 @@ model User {
 
 model GameInvite {
     id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
 
-    sender   User @relation("SentGameInvites", fields: [senderId], references: [id])
     senderId Int
+    sender   User @relation("SentGameInvites", fields: [senderId], references: [id])
 
-    receiver   User @relation("ReceivedGameInvites", fields: [receiverId], references: [id])
-    receiverId Int
+    receiverId Int?
+    receiver   User? @relation("ReceivedGameInvites", fields: [receiverId], references: [id])
 
-    @@index([senderId, receiverId])
+	@@index([senderId, receiverId])
 }
 
 model Channel {

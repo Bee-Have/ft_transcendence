@@ -12,11 +12,22 @@ import styles from "./GamePopup.module.css";
 
 import GamePopupProps from "./GamePopupInterface.dto";
 
+import gameService from "src/services/game";
+import { userId } from "src/pages/global/userId";
+
 // receiver will be ignored since you wont know your opponent
 function MatchmakingPopup({ emitter, receiver, gameMode }: GamePopupProps) {
   const closePopup = () => {
     // send an axios call to the backend to cancel the matchmaking
     // emit a socket event to refetch the popups
+	gameService
+	  .leaveMatchmaking(userId)
+	  .then((res) => {
+		console.log(res);
+	  })
+	  .catch((err) => {
+		console.log(err);
+	  });
   };
 
   return (

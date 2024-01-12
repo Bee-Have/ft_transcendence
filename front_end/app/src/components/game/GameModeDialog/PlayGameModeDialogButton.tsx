@@ -20,6 +20,7 @@ import Divider from "@mui/material/Divider";
 import styles from "./PlayGameModeDialogButton.module.css";
 
 import gameService from "src/services/game";
+import { userId } from "src/pages/global/userId";
 
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
@@ -51,13 +52,15 @@ function GameModeDialog(props: GameModeDialogProps) {
   const handleLaunchMatchmaking = () => {
     console.log("launching matchmaking");
     gameService
-      .joinMatchmaking()
+      .joinMatchmaking(userId)
       .then((res) => {
         console.log(res);
+		handleClose();
       })
       .catch((err) => {
         console.log(err);
       });
+
   };
 
   return (

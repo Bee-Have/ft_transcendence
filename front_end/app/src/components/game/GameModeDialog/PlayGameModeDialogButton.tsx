@@ -24,9 +24,6 @@ import styles from "./PlayGameModeDialogButton.module.css";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
-import { socket } from "src/pages/global/websocket";
-import { UserStatus } from "src/pages/global/friend.dto";
-
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
 
@@ -55,7 +52,6 @@ function GameModeDialog(props: GameModeDialogProps) {
       .deleteUserInvites(userId)
       .then((res) => {
         console.log(res);
-        socket?.emit("update-user-status", UserStatus[UserStatus.ingamesolo]);
         navigate("/game/" + selectedMode + "?multi=false");
       })
       .catch((err) => {

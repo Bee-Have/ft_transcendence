@@ -21,6 +21,12 @@ export class GameService {
     });
 
     if (gameInvites.length > 0) {
+      // remove gameInvite where the senderId is userId
+      const filteredGameInvites = gameInvites.filter(
+        (gameInvite) => gameInvite.senderId != userId
+      );
+      if (filteredGameInvites.length == 0) return userId;
+
       // Matchmaking logic here.
       //   const opponent: UserInfo = this.userService.connected_user_map.get(gameInvites[0].senderId);
       //   opponent.socket.emit('game-found', userId);

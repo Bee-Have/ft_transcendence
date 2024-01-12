@@ -3,7 +3,8 @@ import { Socket } from 'socket.io'
 export enum UserStatus {
 	online = "Online",
 	offline = "Offline",
-	ingame = "In game",
+	ingame = "Playing",
+	ingamesolo = "Training",
 	inchat = "In chat"
 }
 

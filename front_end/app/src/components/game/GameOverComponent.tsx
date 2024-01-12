@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import IconWinningCup from "@mui/icons-material/EmojiEvents";
 import Button from "@mui/material/Button";
 
+import { socket } from "src/pages/global/websocket";
+import { UserStatus } from "src/pages/global/friend.dto";
+
 function GameOverComponent({
   winner,
   playerScore,
@@ -18,7 +21,10 @@ function GameOverComponent({
 }) {
   const navigate = useNavigate();
 
-  const goHome = () => navigate("/");
+  const goHome = () => {
+    socket?.emit("update-user-status", UserStatus[UserStatus.online]);
+    navigate("/");
+  };
 
   return (
     <div

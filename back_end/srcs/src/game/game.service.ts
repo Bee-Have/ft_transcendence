@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { equal } from "assert";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserInfo } from "src/user/gateway/dto/userStatus.dto";
 import { UserService } from "src/user/user.service";
@@ -10,7 +11,8 @@ export class GameService {
     private userService: UserService
   ) {}
 
-  async joinMatchmaking(userId: number) {
+  async joinMatchmaking(userId: number, gameMode: string) {
+    // Get invitation without receiver and the same game mode
     const gameInvites = await this.prisma.gameInvite.findMany({
       where: {
         receiver: null,
@@ -21,11 +23,11 @@ export class GameService {
     });
 
     if (gameInvites.length > 0) {
-      // remove gameInvite where the senderId is userId
-      const filteredGameInvites = gameInvites.filter(
-        (gameInvite) => gameInvite.senderId != userId
-      );
-      if (filteredGameInvites.length == 0) return userId;
+      gameInvites.forEach((gameInvite) => {
+        if (gameInvite.senderId === userId) {
+          return userId;
+        }
+      });
 
       // Matchmaking logic here.
       //   const opponent: UserInfo = this.userService.connected_user_map.get(gameInvites[0].senderId);
@@ -39,6 +41,7 @@ export class GameService {
     const newGameInvite = await this.prisma.gameInvite.create({
       data: {
         senderId: userId,
+        gameMode: gameMode,
       },
     });
 

@@ -62,6 +62,8 @@ model GameInvite {
     receiverId Int?
     receiver   User? @relation("ReceivedGameInvites", fields: [receiverId], references: [id])
 
+	gameMode String @default("classic")
+
 	@@index([senderId, receiverId])
 }
 

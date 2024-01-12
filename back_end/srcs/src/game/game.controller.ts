@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Param, HttpCode, HttpStatus, Body } from '@nestjs/common';
 import { Public } from "src/common/decorators";
 
 import { GameService } from './game.service';
@@ -12,9 +12,12 @@ export class GameController {
 	{}
 
 	@Post('matchmaking/:userId')
-	async joinMatchmaking(@Param('userId') userId: number): Promise<number> {
-		console.log('join matchmaking: ', userId)
-		return await this.gameService.joinMatchmaking(userId);
+	async joinMatchmaking(
+		@Param('userId') userId: number,
+		@Body() MatchmakingMode: {gameMode: string}
+	): Promise<number> {
+		console.log('join matchmaking: ', userId, MatchmakingMode, MatchmakingMode.gameMode)
+		return await this.gameService.joinMatchmaking(userId, MatchmakingMode.gameMode);
 	}
 
 	@Get('matchmaking/leave/:userId')

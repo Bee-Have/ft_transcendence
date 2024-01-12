@@ -52,7 +52,7 @@ function GameModeDialog(props: GameModeDialogProps) {
   const handleLaunchMatchmaking = () => {
     console.log("launching matchmaking");
     gameService
-      .joinMatchmaking(userId)
+      .joinMatchmaking(userId, selectedMode)
       .then((res) => {
         console.log(res);
 		handleClose();

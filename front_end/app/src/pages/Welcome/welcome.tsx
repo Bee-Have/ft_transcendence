@@ -9,8 +9,6 @@ import axios from "axios";
 import { ReadCookie } from "../../components/ReadCookie";
 import isTokenExpired from "../global/isTokenExpired";
 
-import { useGamePopup } from "src/context/GamePopupContext";
-
 // interface WelcomeProps
 // {
 //   isLogged: boolean;
@@ -26,8 +24,6 @@ const Welcome: React.FC = () => {
   const [guest, setGuest] = React.useState(false);
   const aToken = ReadCookie("access_token");
   const rToken = ReadCookie("refresh_token");
-
-  const gamePopup = useGamePopup();
 
   // const login = () => {
   // }
@@ -49,13 +45,11 @@ const Welcome: React.FC = () => {
     if (!aToken) {
       console.log("login");
       // login()
-      gamePopup.setIsVisible(false);
       setAuthenticated(false);
     } else if (isTokenExpired(aToken)) {
       console.log("Atoken Expired");
       if (!rToken || isTokenExpired(rToken)) {
         console.log("No Rt or expired");
-        gamePopup.setIsVisible(false);
         setAuthenticated(false);
         // login()
       } else {
@@ -72,7 +66,6 @@ const Welcome: React.FC = () => {
           .catch((e) => console.log(e));
       }
     } else {
-      gamePopup.setIsVisible(true);
       setAuthenticated(true);
     }
   }, []);

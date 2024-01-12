@@ -12,8 +12,10 @@ import { Box, CardContent, DialogContent } from "@mui/material";
 
 import Switch from "@mui/material/Switch";
 import Card from "@mui/material/Card";
+
 import RobotIcon from "@mui/icons-material/SmartToyTwoTone";
 import PersonIcon from "@mui/icons-material/PersonOutlineTwoTone";
+import WarningIcon from "@mui/icons-material/WarningAmberRounded";
 
 import Divider from "@mui/material/Divider";
 
@@ -55,12 +57,11 @@ function GameModeDialog(props: GameModeDialogProps) {
       .joinMatchmaking(userId, selectedMode)
       .then((res) => {
         console.log(res);
-		handleClose();
+        handleClose();
       })
       .catch((err) => {
         console.log(err);
       });
-
   };
 
   return (
@@ -137,6 +138,12 @@ function GameModeDialog(props: GameModeDialogProps) {
           })}
           {/* Add bottom button independant from list items */}
         </List>
+        <Divider />
+        <br />
+        <div className={styles.Disclaimer}>
+          <WarningIcon/>
+          Joining game cancels all invites and matchmaking
+        </div>
         <Divider />
         <br />
         <Button

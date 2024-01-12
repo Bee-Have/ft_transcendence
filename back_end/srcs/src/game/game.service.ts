@@ -4,7 +4,11 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { UserInfo, UserStatus } from "src/user/gateway/dto/userStatus.dto";
 import { UserService } from "src/user/user.service";
 
-import { GameMatchmakingDto, SendInviteDto } from "./dto/game-invite.dto";
+import {
+  GameMatchmakingDto,
+  SendInviteDto,
+  InviteDto,
+} from "./dto/game-invite.dto";
 
 @Injectable()
 export class GameService {
@@ -79,8 +83,12 @@ export class GameService {
     return { userId };
   }
 
-  async getUserInvites(userId: number) {
-    const gameInvites = await this.prisma.gameInvite.findMany({
+  async getUserInvites(userId: number): Promise<InviteDto[]> {
+    let result: InviteDto[] = [];
+
+    console.log("getUserInvites: ", userId);
+
+    const gameInvite = await this.prisma.gameInvite.findMany({
       where: {
         OR: [
           {
@@ -94,10 +102,51 @@ export class GameService {
       orderBy: {
         createdAt: "asc",
       },
+      select: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        gameMode: true,
+      },
     });
 
-    console.log("gameInvites: ", gameInvites);
-    return gameInvites;
+    if (gameInvite === undefined || gameInvite.length == 0) return result;
+
+    gameInvite.forEach((invite) => {
+      result.push({
+        sender: {
+          id: invite.sender.id,
+          username: invite.sender.username,
+          userstatus: this.userService.connected_user_map.get(invite.sender.id)
+            ?.userstatus,
+          photo: process.env.BACKEND_URL + "/user/image/" + invite.sender.id,
+        },
+        gameMode: invite.gameMode,
+      });
+      result[result.length - 1].receiver = invite.receiver
+        ? {
+            id: invite.receiver.id,
+            username: invite.receiver.username,
+            userstatus: this.userService.connected_user_map.get(
+              invite.receiver.id
+            )?.userstatus,
+            photo:
+              process.env.BACKEND_URL + "/user/image/" + invite.receiver.id,
+          }
+        : undefined;
+    });
+
+    console.log("gameInvites: ", result);
+    return result;
   }
 
   async deleteUserInvites(userId: number) {
@@ -170,5 +219,34 @@ export class GameService {
     invitee.socket.emit("new-invite");
 
     return { msg: "Invite sent" };
+  }
+
+  async declineInvite(userId: number, declinedUserId: number) {
+    console.log(`declineInvite: ${userId} -> ${declinedUserId}`);
+    await this.prisma.gameInvite.deleteMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: declinedUserId,
+          },
+          {
+            senderId: declinedUserId,
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+
+    const declined: UserInfo =
+      this.userService.connected_user_map.get(declinedUserId);
+    const declinee: UserInfo = this.userService.connected_user_map.get(userId);
+
+    if (declined) {
+      declined.socket.emit("new-invite");
+    }
+    if (declinee) {
+      declinee.socket.emit("new-invite");
+    }
   }
 }

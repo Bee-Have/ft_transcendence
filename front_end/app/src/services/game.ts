@@ -22,10 +22,15 @@ const sendInvite = async (userId: number, invitedUserId: number, gameMode: strin
 	  return await axios.post(`${API_URL}/sendInvite/${userId}`, { invitedUserId, gameMode });
 }
 
+const declineInvite = async (userId: number, declinedUserId: number) => {
+	  return await axios.post(`${API_URL}/declineInvite/${userId}`, { declinedUserId });
+}
+
 export default {
   joinMatchmaking,
   leaveMatchmaking,
   getUserInvites,
   deleteUserInvites,
   sendInvite,
+  declineInvite,
 };

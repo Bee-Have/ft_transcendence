@@ -3,7 +3,7 @@ import { Public } from "src/common/decorators";
 
 import { GameService } from './game.service';
 
-import { GameMatchmakingDto, SendInviteDto } from './dto/game-invite.dto';
+import { DeclineInviteDto, GameMatchmakingDto, SendInviteDto, InviteDto } from './dto/game-invite.dto';
 
 @Public()
 @Controller('game')
@@ -27,7 +27,7 @@ export class GameController {
 	}
 
 	@Get('invites/:userId')
-	async getUserInvites(@Param('userId') userId: number) {
+	async getUserInvites(@Param('userId') userId: number): Promise<InviteDto[]> {
 		console.log('get user invites: ', userId)
 		return await this.gameService.getUserInvites(userId);
 	}
@@ -45,5 +45,14 @@ export class GameController {
 	) {
 		console.log('send invite: ', invitedUserDto.invitedUserId, invitedUserDto.gameMode)
 		return await this.gameService.sendInvite(userId, invitedUserDto);
+	}
+
+	@Post('declineInvite/:userId')
+	async declineInvite(
+		@Param('userId') userId: number,
+		@Body() declineInviteDto: DeclineInviteDto
+	) {
+		console.log('decline invite: ', declineInviteDto.declinedUserId)
+		return await this.gameService.declineInvite(userId, declineInviteDto.declinedUserId);
 	}
 }

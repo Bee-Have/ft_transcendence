@@ -37,47 +37,6 @@ function GamePopupList() {
     return () => {
       socket?.off("new-invite", fetchInvites);
     };
-    // setPopupList([
-    //   {
-    //     emitter: {
-    //       id: 1,
-    //       username: "emitter1",
-    //       userstatus: UserStatus.online,
-    //       photo: "",
-    //     },
-    //     gameMode: "classic",
-    //   },
-    //   {
-    //     emitter: {
-    //       id: 3,
-    //       username: "emitter2",
-    //       userstatus: UserStatus.online,
-    //       photo: "",
-    //     },
-    //     receiver: {
-    //       id: 4,
-    //       username: "receiver2",
-    //       userstatus: UserStatus.online,
-    //       photo: "",
-    //     },
-    //     gameMode: "retro",
-    //   },
-    //   {
-    //     emitter: {
-    //       id: userId,
-    //       username: "emitter2",
-    //       userstatus: UserStatus.online,
-    //       photo: "",
-    //     },
-    //     receiver: {
-    //       id: 4,
-    //       username: "receiver2",
-    //       userstatus: UserStatus.online,
-    //       photo: "",
-    //     },
-    //     gameMode: "timed",
-    //   },
-    // ]);
   }, []);
 
   if (gamePopup.isVisible === false || popupList.length === 0) return null;
@@ -89,25 +48,25 @@ function GamePopupList() {
           return (
             <MatchmakingPopup
               key={key}
-              emitter={popupList[key].emitter}
+              sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
             />
           );
-        } else if (popupList[key].emitter.id === userId) {
+        } else if (popupList[key].sender.id === userId) {
           return (
             <InvitingPopup
               key={key}
-              emitter={popupList[key].emitter}
+              sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
             />
           );
-        } else if (popupList[key].emitter.id !== userId) {
+        } else if (popupList[key].sender.id !== userId) {
           return (
             <InvitedPopup
               key={key}
-              emitter={popupList[key].emitter}
+              sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
             />

@@ -1,7 +1,7 @@
 import { Friend } from "src/pages/global/friend.dto";
 
 interface GamePopupProps {
-  emitter: Friend;
+  sender: Friend;
   receiver?: Friend;
   gameMode: string;
 }

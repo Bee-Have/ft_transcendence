@@ -3,8 +3,8 @@ import { UserStatus } from "src/user/gateway/dto/userStatus.dto";
 
 export class GameMatchmakingDto {
 	@IsNotEmpty()
-	@IsNumber()
-	userId: number;
+	@IsString()
+	gameMode: string;
 }
 
 export class SendInviteDto {

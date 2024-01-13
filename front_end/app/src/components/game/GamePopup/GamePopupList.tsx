@@ -23,7 +23,6 @@ function GamePopupList() {
       gameService
         .getUserInvites(userId)
         .then((res) => {
-          console.log("user invites res: ", res);
           setPopupList(res.data);
         })
         .catch((err) => {

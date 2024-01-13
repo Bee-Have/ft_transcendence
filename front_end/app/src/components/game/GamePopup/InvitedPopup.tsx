@@ -23,7 +23,6 @@ function InvitedPopup({ sender, receiver, gameMode }: GamePopupProps) {
     gameService
       .declineInvite(userId, sender.id)
       .then((res) => {
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);

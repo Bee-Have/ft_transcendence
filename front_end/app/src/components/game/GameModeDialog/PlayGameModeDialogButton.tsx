@@ -51,7 +51,6 @@ function GameModeDialog(props: GameModeDialogProps) {
     gameService
       .deleteUserInvites(userId)
       .then((res) => {
-        console.log(res);
         navigate("/game/" + selectedMode + "?multi=false");
       })
       .catch((err) => {
@@ -60,11 +59,9 @@ function GameModeDialog(props: GameModeDialogProps) {
   };
 
   const joinMatchmakingQueue = () => {
-    console.log("launching matchmaking");
     gameService
       .joinMatchmaking(userId, selectedMode)
       .then((res) => {
-        console.log(res);
         handleClose();
       })
       .catch((err) => {

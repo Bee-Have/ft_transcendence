@@ -44,7 +44,6 @@ function GameModeDialog(props: GameModeDialogProps) {
     gameService
       .sendInvite(userId, user.id, selectedMode)
       .then((res) => {
-        console.log(res);
 		handleClose();
       })
       .catch((err) => {

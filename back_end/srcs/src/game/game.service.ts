@@ -42,8 +42,6 @@ export class GameService {
       return gameInvites[0].senderId;
     }
 
-    console.log("matchmaking: ", userId);
-
     const newGameInvite = await this.prisma.gameInvite.create({
       data: {
         senderId: userId,
@@ -85,8 +83,6 @@ export class GameService {
 
   async getUserInvites(userId: number): Promise<InviteDto[]> {
     let result: InviteDto[] = [];
-
-    console.log("getUserInvites: ", userId);
 
     const gameInvite = await this.prisma.gameInvite.findMany({
       where: {
@@ -145,7 +141,6 @@ export class GameService {
         : undefined;
     });
 
-    console.log("gameInvites: ", result);
     return result;
   }
 
@@ -222,7 +217,6 @@ export class GameService {
   }
 
   async declineInvite(userId: number, declinedUserId: number) {
-    console.log(`declineInvite: ${userId} -> ${declinedUserId}`);
     await this.prisma.gameInvite.deleteMany({
       where: {
         OR: [

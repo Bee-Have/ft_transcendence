@@ -9,13 +9,13 @@ import CheckIcon from "@mui/icons-material/Check";
 import styles from "./GamePopup.module.css";
 
 function InvitationStatusComponent({
-  gamePopupPros,
+  gamePopupProps,
   launchMatch,
 }: {
-  gamePopupPros: GamePopupProps;
+  gamePopupProps: GamePopupProps;
   launchMatch?: () => void;
 }) {
-  if (gamePopupPros.sender.id === userId) {
+  if (gamePopupProps.sender.id === userId) {
     return <CircularProgress className={styles.CircularProgress} />;
   } else {
     return <CheckIcon className={styles.ApproveButton} onClick={launchMatch} />;

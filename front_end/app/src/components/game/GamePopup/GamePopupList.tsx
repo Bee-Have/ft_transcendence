@@ -44,35 +44,11 @@ function GamePopupList() {
     <div className={styles.PopupList}>
       {Object.keys(popupList).map((key) => {
         if (popupList[key].receiver === undefined) {
-          return (
-            <MatchmakingPopup
-              key={key}
-              sender={popupList[key].sender}
-              receiver={popupList[key].receiver}
-              gameMode={popupList[key].gameMode}
-              acceptedInvite={popupList[key].acceptedInvite}
-            />
-          );
+          return <MatchmakingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id === userId) {
-          return (
-            <InvitingPopup
-              key={key}
-              sender={popupList[key].sender}
-              receiver={popupList[key].receiver}
-              gameMode={popupList[key].gameMode}
-              acceptedInvite={popupList[key].acceptedInvite}
-            />
-          );
+          return <InvitingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id !== userId) {
-          return (
-            <InvitedPopup
-              key={key}
-              sender={popupList[key].sender}
-              receiver={popupList[key].receiver}
-              gameMode={popupList[key].gameMode}
-              acceptedInvite={popupList[key].acceptedInvite}
-            />
-          );
+          return <InvitedPopup key={key} gamePopupProps={popupList[key]} />;
         } else {
           return null;
         }

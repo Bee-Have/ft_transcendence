@@ -17,11 +17,10 @@ import InvitationStatusComponent from "./InvitationStatusComponent";
 
 // receiver will be ignored since you wont know your opponent
 function MatchmakingPopup({
-  sender,
-  receiver,
-  gameMode,
-  acceptedInvite,
-}: GamePopupProps) {
+  gamePopupProps,
+}: {
+  gamePopupProps: GamePopupProps;
+}) {
   const closePopup = () => {
     // send an axios call to the backend to cancel the matchmaking
     // emit a socket event to refetch the popups
@@ -37,18 +36,11 @@ function MatchmakingPopup({
     <Card className={styles.CardPopup}>
       <CardContent>
         <div className={styles.InteractiveContent}>
-          <InvitationStatusComponent
-            gamePopupPros={{
-              sender: sender,
-              receiver: receiver,
-              gameMode: gameMode,
-              acceptedInvite: acceptedInvite,
-            }}
-          />
+          <InvitationStatusComponent gamePopupProps={gamePopupProps} />
           <CloseIcon className={styles.CancelButton} onClick={closePopup} />
           <UnknownUser className={styles.UserIcon} />
         </div>
-        <div className={styles.GameMode}>{gameMode}</div>
+        <div className={styles.GameMode}>{gamePopupProps.gameMode}</div>
       </CardContent>
     </Card>
   );

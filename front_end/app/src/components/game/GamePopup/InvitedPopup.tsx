@@ -16,17 +16,12 @@ import { userId } from "src/pages/global/userId";
 import InvitationStatusComponent from "./InvitationStatusComponent";
 
 // receiver will be ignored since you wont know your opponent
-function InvitedPopup({
-  sender,
-  receiver,
-  gameMode,
-  acceptedInvite,
-}: GamePopupProps) {
-  if (receiver === undefined) return null;
+function InvitedPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
+  if (gamePopupProps.receiver === undefined) return null;
 
   const declineInvite = () => {
     gameService
-      .declineInvite(userId, sender.id)
+      .declineInvite(userId, gamePopupProps.sender.id)
       .then((res) => {})
       .catch((err) => {
         console.log(err);
@@ -37,7 +32,7 @@ function InvitedPopup({
 
   const launchMatch = () => {
     gameService
-      .acceptInvite(userId, sender.id)
+      .acceptInvite(userId, gamePopupProps.sender.id)
       .then((res) => {})
       .catch((err) => {
         console.log(err);
@@ -51,18 +46,13 @@ function InvitedPopup({
       <CardContent>
         <div className={styles.InteractiveContent}>
           <InvitationStatusComponent
-            gamePopupPros={{
-              sender: sender,
-              receiver: receiver,
-              gameMode: gameMode,
-              acceptedInvite: acceptedInvite,
-            }}
+            gamePopupProps={gamePopupProps}
             launchMatch={launchMatch}
           />
           <CloseIcon className={styles.CancelButton} onClick={declineInvite} />
-          <InteractiveAvatar user={sender} />
+          <InteractiveAvatar user={gamePopupProps.sender} />
         </div>
-        <div className={styles.GameMode}>{gameMode}</div>
+        <div className={styles.GameMode}>{gamePopupProps.gameMode}</div>
       </CardContent>
     </Card>
   );

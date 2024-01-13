@@ -3,8 +3,6 @@ import React from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 
-import CircularProgress from "@mui/material/CircularProgress";
-
 import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./GamePopup.module.css";
@@ -15,15 +13,21 @@ import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
+import InvitationStatusComponent from "./InvitationStatusComponent";
+
 // receiver will be ignored since you wont know your opponent
-function InvitingPopup({ sender, receiver, gameMode, acceptedInvite }: GamePopupProps) {
+function InvitingPopup({
+  sender,
+  receiver,
+  gameMode,
+  acceptedInvite,
+}: GamePopupProps) {
   if (receiver === undefined) return null;
 
   const cancelInvite = () => {
     gameService
       .declineInvite(userId, receiver.id)
-      .then((res) => {
-      })
+      .then((res) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -35,7 +39,14 @@ function InvitingPopup({ sender, receiver, gameMode, acceptedInvite }: GamePopup
     <Card className={styles.CardPopup}>
       <CardContent>
         <div className={styles.InteractiveContent}>
-          <CircularProgress className={styles.CircularProgress} />
+          <InvitationStatusComponent
+            gamePopupPros={{
+              sender: sender,
+              receiver: receiver,
+              gameMode: gameMode,
+              acceptedInvite: acceptedInvite,
+            }}
+          />
           <CloseIcon className={styles.CancelButton} onClick={cancelInvite} />
           <InteractiveAvatar user={receiver} />
         </div>

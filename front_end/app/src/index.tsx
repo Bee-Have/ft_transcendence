@@ -1,22 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-import { GamePopupProvider } from './context/GamePopupContext';
+import { GamePopupProvider } from "./context/GamePopupContext";
+import { ErrorProvider } from "./context/ErrorContext";
+import { ErrorSnackbar } from "./components/alert/ErrorSnackbar";
 
 import { StyledEngineProvider } from "@mui/material/styles";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
     <StyledEngineProvider injectFirst>
-	  <GamePopupProvider>
-		<App />
-	  </GamePopupProvider>
+      <ErrorProvider>
+        <ErrorSnackbar />
+        <GamePopupProvider>
+          <App />
+        </GamePopupProvider>
+      </ErrorProvider>
     </StyledEngineProvider>
   </React.StrictMode>
 );

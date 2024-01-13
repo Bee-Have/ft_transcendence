@@ -22,8 +22,8 @@ function GamePopupList() {
     const fetchInvites = () => {
       gameService
         .getUserInvites(userId)
-        .then((res) => {
-          setPopupList(res.data);
+        .then((list) => {
+          setPopupList(list);
         })
         .catch((err) => {
           console.log(err);

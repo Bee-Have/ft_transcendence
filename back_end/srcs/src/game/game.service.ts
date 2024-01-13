@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, HttpException, Injectable } from "@nestjs/common";
 import { equal } from "assert";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserInfo, UserStatus } from "src/user/gateway/dto/userStatus.dto";
@@ -7,6 +7,7 @@ import { UserService } from "src/user/user.service";
 import {
   GameMatchmakingDto,
   SendInviteDto,
+  AcceptInviteDto,
   InviteDto,
 } from "./dto/game-invite.dto";
 
@@ -18,7 +19,6 @@ export class GameService {
   ) {}
 
   async joinMatchmaking(userId: number, gameMode: string) {
-    // Get invitation without receiver and the same game mode
     const gameInvites = await this.prisma.gameInvite.findMany({
       where: {
         receiver: null,
@@ -214,7 +214,7 @@ export class GameService {
       invitee.userstatus === UserStatus.ingamesolo ||
       invitee.userstatus === UserStatus.offline
     )
-      return { msg: "User is not available" };
+      throw new HttpException("Users are not both available", 417);
 
     const gameInvite = await this.prisma.gameInvite.findMany({
       where: {
@@ -231,7 +231,9 @@ export class GameService {
       },
     });
 
-    if (gameInvite.length > 0) return { msg: "Invite already sent" };
+    if (gameInvite.length > 0) {
+      throw new HttpException("Invite already exist", 409);
+    }
 
     const newGameInvite = await this.prisma.gameInvite.create({
       data: {

@@ -18,6 +18,10 @@ import { Friend } from "../../../pages/global/friend.dto";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
 
@@ -31,6 +35,7 @@ export interface GameModeDialogProps {
 
 function GameModeDialog(props: GameModeDialogProps) {
   const { onClose, selectedMode, open, updateGameMode, user } = props;
+  const errorContext = useErrorContext();
 
   const handleClose = () => {
     onClose(selectedMode);
@@ -44,10 +49,10 @@ function GameModeDialog(props: GameModeDialogProps) {
     gameService
       .sendInvite(userId, user.id, selectedMode)
       .then((res) => {
-		handleClose();
+        handleClose();
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
   };
 

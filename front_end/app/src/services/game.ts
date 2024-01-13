@@ -3,28 +3,49 @@ import axios from "axios";
 const API_URL = "http://localhost:3001/game";
 
 const joinMatchmaking = async (userId: number, gameMode: string) => {
-  return await axios.post(`${API_URL}/matchmaking/${userId}`, { gameMode });
+  return await axios
+    .post(`${API_URL}/matchmaking/${userId}`, { gameMode })
+    .then((res) => res.data);
 };
 
 const leaveMatchmaking = async (userId: number) => {
-  return await axios.get(`${API_URL}/matchmaking/leave/${userId}`);
+  return await axios
+    .get(`${API_URL}/matchmaking/leave/${userId}`)
+    .then((res) => res.data);
 };
 
 const getUserInvites = async (userId: number) => {
-  return await axios.get(`${API_URL}/invites/${userId}`);
+  return await axios
+    .get(`${API_URL}/invites/${userId}`)
+    .then((res) => res.data);
 };
 
 const deleteUserInvites = async (userId: number) => {
-  return await axios.post(`${API_URL}/deleteInvites/${userId}`);
-}
+  return await axios
+    .post(`${API_URL}/deleteInvites/${userId}`)
+    .then((res) => res.data);
+};
 
-const sendInvite = async (userId: number, invitedUserId: number, gameMode: string) => {
-	  return await axios.post(`${API_URL}/sendInvite/${userId}`, { invitedUserId, gameMode });
-}
+const sendInvite = async (
+  userId: number,
+  invitedUserId: number,
+  gameMode: string
+) => {
+  return await axios
+    .post(`${API_URL}/sendInvite/${userId}`, {
+      invitedUserId,
+      gameMode,
+    })
+    .then((res) => res.data);
+};
 
 const declineInvite = async (userId: number, declinedUserId: number) => {
-	  return await axios.post(`${API_URL}/declineInvite/${userId}`, { declinedUserId });
-}
+  return await axios
+    .post(`${API_URL}/declineInvite/${userId}`, {
+      declinedUserId,
+    })
+    .then((res) => res.data);
+};
 
 export default {
   joinMatchmaking,

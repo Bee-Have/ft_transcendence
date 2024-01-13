@@ -16,7 +16,7 @@ import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
 // receiver will be ignored since you wont know your opponent
-function MatchmakingPopup({ sender, receiver, gameMode }: GamePopupProps) {
+function MatchmakingPopup({ sender, receiver, gameMode, acceptedInvite }: GamePopupProps) {
   const closePopup = () => {
     // send an axios call to the backend to cancel the matchmaking
     // emit a socket event to refetch the popups

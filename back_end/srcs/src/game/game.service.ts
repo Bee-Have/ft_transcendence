@@ -111,6 +111,7 @@ export class GameService {
           },
         },
         gameMode: true,
+        acceptedInvite: true,
       },
     });
 
@@ -126,19 +127,20 @@ export class GameService {
           photo: process.env.BACKEND_URL + "/user/image/" + invite.sender.id,
         },
         gameMode: invite.gameMode,
+        acceptedInvite: invite.acceptedInvite,
       });
       result[result.length - 1].receiver = invite.receiver
-        ? {
-            id: invite.receiver.id,
-            username: invite.receiver.username,
-            userstatus: this.userService.connected_user_map.get(
-              invite.receiver.id
-            )?.userstatus,
-            photo:
-              process.env.BACKEND_URL + "/user/image/" + invite.receiver.id,
-          }
+      ? {
+        id: invite.receiver.id,
+        username: invite.receiver.username,
+        userstatus: this.userService.connected_user_map.get(
+          invite.receiver.id
+          )?.userstatus,
+          photo:
+          process.env.BACKEND_URL + "/user/image/" + invite.receiver.id,
+        }
         : undefined;
-    });
+      });
 
     return result;
   }
@@ -301,9 +303,9 @@ export class GameService {
       },
     });
 
-    // const player: UserInfo = this.userService.connected_user_map.get(userId);
-    // player?.socket.emit("user-status", UserStatus.ingame);
-    // acceptedUser?.socket.emit("user-status", UserStatus.ingame);
+    const player: UserInfo = this.userService.connected_user_map.get(userId);
+    player?.socket.emit("new-invite");
+    acceptedUser?.socket.emit("new-invite");
 
   }
 }

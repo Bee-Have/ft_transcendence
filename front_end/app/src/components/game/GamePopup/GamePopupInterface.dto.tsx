@@ -4,6 +4,7 @@ interface GamePopupProps {
   sender: Friend;
   receiver?: Friend;
   gameMode: string;
+  acceptedInvite: boolean;
 }
 
 export default GamePopupProps;

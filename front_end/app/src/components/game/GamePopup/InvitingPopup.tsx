@@ -16,7 +16,7 @@ import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
 // receiver will be ignored since you wont know your opponent
-function InvitingPopup({ sender, receiver, gameMode }: GamePopupProps) {
+function InvitingPopup({ sender, receiver, gameMode, acceptedInvite }: GamePopupProps) {
   if (receiver === undefined) return null;
 
   const cancelInvite = () => {

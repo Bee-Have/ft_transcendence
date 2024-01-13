@@ -50,6 +50,7 @@ function GamePopupList() {
               sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
+              acceptedInvite={popupList[key].acceptedInvite}
             />
           );
         } else if (popupList[key].sender.id === userId) {
@@ -59,6 +60,7 @@ function GamePopupList() {
               sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
+              acceptedInvite={popupList[key].acceptedInvite}
             />
           );
         } else if (popupList[key].sender.id !== userId) {
@@ -68,6 +70,7 @@ function GamePopupList() {
               sender={popupList[key].sender}
               receiver={popupList[key].receiver}
               gameMode={popupList[key].gameMode}
+              acceptedInvite={popupList[key].acceptedInvite}
             />
           );
         } else {

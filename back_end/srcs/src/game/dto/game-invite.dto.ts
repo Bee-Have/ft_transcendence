@@ -23,6 +23,12 @@ export class DeclineInviteDto {
 	declinedUserId: number;
 }
 
+export class AcceptInviteDto {
+	@IsNotEmpty()
+	@IsNumber()
+	acceptedUserId: number;
+}
+
 export class InviteDto {
 	sender: {id: number, username: string, userstatus: UserStatus, photo: string};
 	receiver?: {id: number, username: string, userstatus: UserStatus, photo: string};

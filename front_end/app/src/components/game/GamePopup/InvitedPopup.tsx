@@ -22,8 +22,7 @@ function InvitedPopup({ sender, receiver, gameMode }: GamePopupProps) {
   const declineInvite = () => {
     gameService
       .declineInvite(userId, sender.id)
-      .then((res) => {
-      })
+      .then((res) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -32,6 +31,12 @@ function InvitedPopup({ sender, receiver, gameMode }: GamePopupProps) {
   };
 
   const launchMatch = () => {
+    gameService
+      .acceptInvite(userId, sender.id)
+      .then((res) => {})
+      .catch((err) => {
+        console.log("This fcking error-> ", err);
+      });
     // send an axios call to the backend to cancel the invite and create room
     // emit a socket event to refetch the popups
   };

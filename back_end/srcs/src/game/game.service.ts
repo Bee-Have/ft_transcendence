@@ -7,7 +7,6 @@ import { UserService } from "src/user/user.service";
 import {
   GameMatchmakingDto,
   SendInviteDto,
-  AcceptInviteDto,
   InviteDto,
 } from "./dto/game-invite.dto";
 
@@ -275,5 +274,36 @@ export class GameService {
     if (declinee) {
       declinee.socket.emit("new-invite");
     }
+  }
+
+  async acceptInvite(userId: number, acceptedUserId: number) {
+    const acceptedUser: UserInfo = this.userService.connected_user_map.get(
+    acceptedUserId);
+
+    if (
+      acceptedUser.userstatus === undefined ||
+      acceptedUser.userstatus === UserStatus.offline ||
+      acceptedUser.userstatus === UserStatus.ingame ||
+      acceptedUser.userstatus === UserStatus.ingamesolo
+    ) {
+      // display error with snackbar
+      //   return (null);
+      throw new HttpException("User is not available", 408);
+    }
+
+    await this.prisma.gameInvite.updateMany({
+      where: {
+        receiverId: userId,
+        senderId: acceptedUserId,
+      },
+      data: {
+        acceptedInvite: true,
+      },
+    });
+
+    // const player: UserInfo = this.userService.connected_user_map.get(userId);
+    // player?.socket.emit("user-status", UserStatus.ingame);
+    // acceptedUser?.socket.emit("user-status", UserStatus.ingame);
+
   }
 }

@@ -56,6 +56,8 @@ model GameInvite {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
 
+    acceptedInvite Boolean @default(false)
+
     senderId Int
     sender   User @relation("SentGameInvites", fields: [senderId], references: [id])
 

@@ -13,9 +13,10 @@ import { Public } from "src/common/decorators";
 import { GameService } from "./game.service";
 
 import {
-  DeclineInviteDto,
   GameMatchmakingDto,
   SendInviteDto,
+  DeclineInviteDto,
+  AcceptInviteDto,
   InviteDto,
 } from "./dto/game-invite.dto";
 
@@ -66,6 +67,17 @@ export class GameController {
     return await this.gameService.declineInvite(
       userId,
       declineInviteDto.declinedUserId
+    );
+  }
+
+  @Post("acceptInvite/:userId")
+  async acceptInvite(
+    @Param("userId") userId: number,
+    @Body() acceptInviteDto: AcceptInviteDto
+  ) {
+    return await this.gameService.acceptInvite(
+      userId,
+      acceptInviteDto.acceptedUserId
     );
   }
 }

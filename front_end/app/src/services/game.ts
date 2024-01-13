@@ -47,6 +47,14 @@ const declineInvite = async (userId: number, declinedUserId: number) => {
     .then((res) => res.data);
 };
 
+const acceptInvite = async (userId: number, acceptedUserId: number) => {
+  return await axios
+    .post(`${API_URL}/acceptInvite/${userId}`, {
+      acceptedUserId,
+    })
+    .then((res) => res.data);
+};
+
 export default {
   joinMatchmaking,
   leaveMatchmaking,
@@ -54,4 +62,5 @@ export default {
   deleteUserInvites,
   sendInvite,
   declineInvite,
+  acceptInvite,
 };

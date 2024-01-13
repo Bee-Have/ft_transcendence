@@ -20,7 +20,10 @@ export class GameService {
   async joinMatchmaking(userId: number, gameMode: string) {
     const gameInvites = await this.prisma.gameInvite.findMany({
       where: {
-        receiver: null,
+        OR: [
+          { receiver: null, gameMode: gameMode },
+          { receiver: null, senderId: userId },
+        ],
       },
       orderBy: {
         createdAt: "asc",
@@ -30,7 +33,7 @@ export class GameService {
     if (gameInvites.length > 0) {
       gameInvites.forEach((gameInvite) => {
         if (gameInvite.senderId === userId) {
-          return userId;
+          throw new HttpException("Already in matchmaking", 409);
         }
       });
 
@@ -130,17 +133,17 @@ export class GameService {
         acceptedInvite: invite.acceptedInvite,
       });
       result[result.length - 1].receiver = invite.receiver
-      ? {
-        id: invite.receiver.id,
-        username: invite.receiver.username,
-        userstatus: this.userService.connected_user_map.get(
-          invite.receiver.id
-          )?.userstatus,
-          photo:
-          process.env.BACKEND_URL + "/user/image/" + invite.receiver.id,
-        }
+        ? {
+            id: invite.receiver.id,
+            username: invite.receiver.username,
+            userstatus: this.userService.connected_user_map.get(
+              invite.receiver.id
+            )?.userstatus,
+            photo:
+              process.env.BACKEND_URL + "/user/image/" + invite.receiver.id,
+          }
         : undefined;
-      });
+    });
 
     return result;
   }
@@ -279,8 +282,8 @@ export class GameService {
   }
 
   async acceptInvite(userId: number, acceptedUserId: number) {
-    const acceptedUser: UserInfo = this.userService.connected_user_map.get(
-    acceptedUserId);
+    const acceptedUser: UserInfo =
+      this.userService.connected_user_map.get(acceptedUserId);
 
     if (
       acceptedUser.userstatus === undefined ||
@@ -306,6 +309,5 @@ export class GameService {
     const player: UserInfo = this.userService.connected_user_map.get(userId);
     player?.socket.emit("new-invite");
     acceptedUser?.socket.emit("new-invite");
-
   }
 }

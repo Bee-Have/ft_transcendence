@@ -24,6 +24,10 @@ import styles from "./PlayGameModeDialogButton.module.css";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
 
@@ -38,6 +42,7 @@ function GameModeDialog(props: GameModeDialogProps) {
   const [isMulti, setIsMulti] = React.useState(false);
   const { onClose, selectedMode, open, updateGameMode } = props;
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
   const handleClose = () => {
     onClose(selectedMode);
@@ -64,8 +69,8 @@ function GameModeDialog(props: GameModeDialogProps) {
       .then((res) => {
         handleClose();
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
   };
 

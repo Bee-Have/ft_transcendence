@@ -37,6 +37,22 @@ export class GameService {
         }
       });
 
+      await this.prisma.gameInvite.update({
+        where: {
+          id: gameInvites[0].id,
+        },
+        data: {
+          receiverId: userId,
+          acceptedInvite: true,
+        },
+      });
+
+      const opponent: UserInfo = this.userService.connected_user_map.get(
+        gameInvites[0].senderId
+      );
+      opponent.socket.emit("new-invite");
+      const player: UserInfo = this.userService.connected_user_map.get(userId);
+      player.socket.emit("new-invite");
       // Matchmaking logic here.
       //   const opponent: UserInfo = this.userService.connected_user_map.get(gameInvites[0].senderId);
       //   opponent.socket.emit('game-found', userId);

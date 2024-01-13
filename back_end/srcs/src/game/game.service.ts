@@ -145,6 +145,33 @@ export class GameService {
   }
 
   async deleteUserInvites(userId: number) {
+    let opponentsId: number[] = [];
+    const userGameInvites = await this.prisma.gameInvite.findMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+          },
+          {
+            receiverId: userId,
+          },
+        ],
+      },
+      select: {
+        senderId: true,
+        receiverId: true,
+      },
+    });
+
+    userGameInvites.forEach((gameInvite) => {
+      if (gameInvite.senderId !== userId) {
+        opponentsId.push(gameInvite.senderId);
+      }
+      if (gameInvite.receiverId !== userId && gameInvite.receiverId !== null) {
+        opponentsId.push(gameInvite.receiverId);
+      }
+    });
+
     await this.prisma.gameInvite.deleteMany({
       where: {
         OR: [
@@ -158,11 +185,15 @@ export class GameService {
       },
     });
 
-    const player: UserInfo = this.userService.connected_user_map.get(userId);
+    opponentsId.forEach((opponentId) => {
+      const opponent: UserInfo =
+        this.userService.connected_user_map.get(opponentId);
 
-    if (player) {
-      player.socket.emit("new-invite");
-    }
+      opponent?.socket.emit("new-invite");
+    });
+
+    const player: UserInfo = this.userService.connected_user_map.get(userId);
+    player?.socket.emit("new-invite");
 
     return { userId };
   }

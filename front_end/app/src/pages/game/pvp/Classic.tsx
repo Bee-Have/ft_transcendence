@@ -7,8 +7,17 @@ import { userId } from "src/pages/global/userId";
 import { useEffectOnce } from "src/components/useEffectOnce";
 import { useNavigate } from "react-router-dom";
 
+import "../solo/Game.css";
+
+import PlayerPaddle from "src/components/game/pvp/PlayerPaddle";
+
+import Score from "src/components/game/pvp/Score";
+
 function ClassicGamePvp() {
   const navigate = useNavigate();
+
+  const [playerScore, setPlayerScore] = React.useState(0);
+  const [opponentScore, setOpponentScore] = React.useState(0);
 
   const player1Id: number = parseInt(getQueryVariable("player1") ?? "0");
   const player2Id: number = parseInt(getQueryVariable("player2") ?? "0");
@@ -18,8 +27,9 @@ function ClassicGamePvp() {
   const playerId = React.useRef<number>(0);
   const opponentId = React.useRef<number>(0);
 
+  const [startGame, setStartGame] = React.useState(false);
+
   useEffectOnce(() => {
-    console.log("gameSocket.current: ", gameSocket.current);
     if (gameSocket.current === undefined) {
       gameSocket.current = io("http://localhost:3001/game", {
         transports: ["websocket"],
@@ -29,7 +39,13 @@ function ClassicGamePvp() {
 
       gameSocket.current.on(
         "game:init",
-        (gameRoomId: string, p1: number, p2: number) => {
+        (
+          gameRoomId: string,
+          p1: number,
+          p2: number,
+          p1Score: number,
+          p2Score: number
+        ) => {
           gameId.current = gameRoomId;
           if (userId === p1) {
             playerId.current = p1;
@@ -38,6 +54,9 @@ function ClassicGamePvp() {
             playerId.current = p2;
             opponentId.current = p1;
           }
+          setPlayerScore(p1Score);
+          setOpponentScore(p2Score);
+          setStartGame(true);
         }
       );
 
@@ -54,8 +73,19 @@ function ClassicGamePvp() {
     };
   });
 
+  if (gameSocket.current === undefined || startGame === false) {
+    return <div>Waiting for game to start...</div>;
+  }
   return (
-    <div>
+    <div className="Pong-game">
+      <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
+      <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
+      <Score player={playerScore} opponent={opponentScore} />
+      <PlayerPaddle
+        gameSocket={gameSocket.current}
+        gameID={gameId.current}
+        player1Id={playerId.current}
+      />
       <h1>Player 1: {player1Id}</h1>
       <h1>Player 2: {player2Id}</h1>
       <h1>userId: {userId}</h1>

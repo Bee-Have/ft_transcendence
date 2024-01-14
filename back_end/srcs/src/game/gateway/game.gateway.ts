@@ -60,7 +60,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         userId === currentGame.player1
           ? currentGame.player2
           : currentGame.player1;
-	  this.server.to(gameId as string).emit("game:winner", winnerId);
+      this.server.to(gameId as string).emit("game:winner", winnerId);
       console.log("winner: ", winnerId);
       currentGame.gameStatus = "FINISHED";
     }
@@ -99,7 +99,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         "game:init",
         gameId,
         currentGame.player1,
-        currentGame.player2
+        currentGame.player2,
+        currentGame.player1Score,
+        currentGame.player2Score
       );
       return;
     }
@@ -113,7 +115,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       currentGame.gameStatus = "PLAYING";
       this.server
         .to(gameId)
-        .emit("game:init", gameId, currentGame.player1, currentGame.player2);
+        .emit(
+          "game:init",
+          gameId,
+          currentGame.player1,
+          currentGame.player2,
+          currentGame.player1Score,
+          currentGame.player2Score
+        );
     }
+  }
+
+  @SubscribeMessage("game:paddleMove")
+  onGamePaddleMove(@MessageBody() data: (number | string)[]) {
+    const [paddlePosition, gameId, player] = data;
+    const currentGame = this.runningGames.get(gameId as string);
+
+    if (currentGame !== undefined && player === currentGame.player1) {
+      currentGame.player1PadY = paddlePosition as number;
+    } else if (currentGame !== undefined && player === currentGame.player2) {
+      currentGame.player2PadY = paddlePosition as number;
+    }
+
+    this.server
+      .to(gameId as string)
+      .emit("game:newPaddlePosition", paddlePosition, player);
   }
 }

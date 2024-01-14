@@ -5,6 +5,9 @@ export interface GameInfo {
   player1PadY: number;
   player2PadY: number;
 
+  player1Score: number;
+  player2Score: number;
+
   gameStatus: "PREPARING" | "PLAYING" | "FINISHED";
 }
 
@@ -13,6 +16,8 @@ export const defaultGameInfo: GameInfo = {
   player2: undefined,
   player1PadY: 0,
   player2PadY: 0,
+  player1Score: 0,
+  player2Score: 0,
   gameStatus: "PREPARING",
 };
 

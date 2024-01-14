@@ -44,18 +44,18 @@ function InvitationStatusComponent({
               "/game/" +
                 gamePopupProps.gameMode +
                 "?player1=" +
-                gamePopupProps.sender.username +
+                gamePopupProps.sender.id +
                 "&player2=" +
-                gamePopupProps.receiver?.username
+                gamePopupProps.receiver?.id
             );
           else
             navigate(
               "/game/" +
                 gamePopupProps.gameMode +
                 "?player1=" +
-                gamePopupProps.receiver?.username +
+                gamePopupProps.receiver?.id +
                 "&player2=" +
-                gamePopupProps.sender.username
+                gamePopupProps.sender.id
             );
           setIsAccepted(false);
         })

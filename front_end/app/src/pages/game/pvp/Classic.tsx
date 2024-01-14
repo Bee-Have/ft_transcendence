@@ -5,8 +5,11 @@ import { io, Socket } from "socket.io-client";
 import { userId } from "src/pages/global/userId";
 
 import { useEffectOnce } from "src/components/useEffectOnce";
+import { useNavigate } from "react-router-dom";
 
 function ClassicGamePvp() {
+  const navigate = useNavigate();
+
   const player1Id: number = parseInt(getQueryVariable("player1") ?? "0");
   const player2Id: number = parseInt(getQueryVariable("player2") ?? "0");
 
@@ -37,6 +40,10 @@ function ClassicGamePvp() {
           }
         }
       );
+
+      gameSocket.current.on("game:winner", (winnerId: number) => {
+        navigate("/");
+      });
     }
 
     return () => {

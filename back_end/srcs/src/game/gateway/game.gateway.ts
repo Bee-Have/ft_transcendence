@@ -60,6 +60,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         userId === currentGame.player1
           ? currentGame.player2
           : currentGame.player1;
+	  this.server.to(gameId as string).emit("game:winner", winnerId);
       console.log("winner: ", winnerId);
       currentGame.gameStatus = "FINISHED";
     }

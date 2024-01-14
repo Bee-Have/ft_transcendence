@@ -4,21 +4,48 @@ import { io, Socket } from "socket.io-client";
 
 import { userId } from "src/pages/global/userId";
 
+import { useEffectOnce } from "src/components/useEffectOnce";
+
 function ClassicGamePvp() {
   const player1Id: number = parseInt(getQueryVariable("player1") ?? "0");
   const player2Id: number = parseInt(getQueryVariable("player2") ?? "0");
 
   const gameSocket = React.useRef<Socket>();
+  const gameId = React.useRef<string>("");
+  const playerId = React.useRef<number>(0);
+  const opponentId = React.useRef<number>(0);
 
-  React.useEffect(() => {
+  useEffectOnce(() => {
+    console.log("gameSocket.current: ", gameSocket.current);
     if (gameSocket.current === undefined) {
       gameSocket.current = io("http://localhost:3001/game", {
         transports: ["websocket"],
       });
 
       gameSocket.current.emit("game:join", player1Id, player2Id, userId);
+
+      gameSocket.current.on(
+        "game:init",
+        (gameRoomId: string, p1: number, p2: number) => {
+          gameId.current = gameRoomId;
+          if (userId === p1) {
+            playerId.current = p1;
+            opponentId.current = p2;
+          } else {
+            playerId.current = p2;
+            opponentId.current = p1;
+          }
+        }
+      );
     }
-  }, []);
+
+    return () => {
+      if (gameSocket.current !== undefined) {
+        gameSocket.current.emit("game:unmount", gameId.current, userId);
+        gameSocket.current.removeAllListeners();
+      }
+    };
+  });
 
   return (
     <div>

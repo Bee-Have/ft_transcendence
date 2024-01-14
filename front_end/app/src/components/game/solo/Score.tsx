@@ -1,5 +1,5 @@
 import React from "react";
-import "./Score.css";
+import "src/components/game/Score.css";
 
 import { socket } from "src/pages/global/websocket";
 import { UserStatus } from "src/pages/global/friend.dto";

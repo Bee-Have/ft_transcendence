@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 import "../solo/Game.css";
 
-import PlayerPaddle from "src/components/game/pvp/PlayerPaddle";
+import PlayerPad from "src/components/game/pvp/PlayerPad";
+import OpponentPad from "src/components/game/pvp/OpponentPad";
 
 import Score from "src/components/game/pvp/Score";
 
@@ -81,14 +82,15 @@ function ClassicGamePvp() {
       <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
       <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
       <Score player={playerScore} opponent={opponentScore} />
-      <PlayerPaddle
+      <PlayerPad
         gameSocket={gameSocket.current}
         gameID={gameId.current}
         player1Id={playerId.current}
       />
-      <h1>Player 1: {player1Id}</h1>
-      <h1>Player 2: {player2Id}</h1>
-      <h1>userId: {userId}</h1>
+      <OpponentPad
+        gameSocket={gameSocket.current}
+        player2Id={opponentId.current}
+      />
     </div>
   );
 }

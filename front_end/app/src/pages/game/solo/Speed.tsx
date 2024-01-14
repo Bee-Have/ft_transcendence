@@ -1,11 +1,11 @@
 import React from "react";
 import "./Game.css";
-import { GamePad, OpponentPad } from "../../../components/game/GamePad";
-import Ball from "../../../components/game/SpeedBall";
-import Score from "../../../components/game/Score";
-import GameOverComponent from "../../../components/game/GameOverComponent";
+import { GamePad, OpponentPad } from "src/components/game/solo/GamePad";
+import Ball from "src/components/game/solo/SpeedBall";
+import Score from "src/components/game/solo/Score";
+import GameOverComponent from "src/components/game/GameOverComponent";
 
-import { gameOverAnimation } from "../../../components/game/animations/gameOverAnimation";
+import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
 
 const WINNING_SCORE = 5;
 

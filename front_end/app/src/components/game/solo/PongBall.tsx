@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import "./PongBall.css";
-import StartGameAnimation from "./animations/startGameAnimation";
+import "src/components/game/PongBall.css";
+import StartGameAnimation from "src/components/game/animations/startGameAnimation";
 
-const INITIAL_VELOCITY = 0.08;
+const INITIAL_VELOCITY = 0.04;
 
 function randomNumberBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -10,10 +10,10 @@ function randomNumberBetween(min: number, max: number) {
 
 function doesBoxesCollide(box1: DOMRect, box2: DOMRect) {
   return (
-    box1.right >= box2.left &&
-    box1.top <= box2.bottom &&
-    box1.bottom >= box2.top &&
-    box1.left <= box2.right
+    box1?.right >= box2?.left &&
+    box1?.top <= box2?.bottom &&
+    box1?.bottom >= box2?.top &&
+    box1?.left <= box2?.right
   );
 }
 
@@ -24,6 +24,7 @@ function BallRoutine({
 }) {
   const [Position, setPosition] = React.useState({ x: 50, y: 50 });
   const Direction = React.useRef({ x: 0.5, y: 0.5 });
+  const Velocity = React.useRef(INITIAL_VELOCITY);
   const BounceCount = React.useRef(0);
 
   const requestRef = React.useRef(0);
@@ -33,6 +34,7 @@ function BallRoutine({
 
   const resetBall = () => {
     // reset ball position/velocity
+    Velocity.current = INITIAL_VELOCITY;
     BounceCount.current = 0;
     setPosition({ x: 50, y: 50 });
     Direction.current.y = 0;
@@ -57,11 +59,14 @@ function BallRoutine({
       .getElementById("OpponentPad")
       ?.getBoundingClientRect() as DOMRect;
 
+    if (ballRect === null || playerRect === null || opponentRect === null)
+      return;
+
     let currentPaddle =
-      ballRect.x < window.innerWidth / 2 ? playerRect : opponentRect;
+      ballRect?.x < window.innerWidth / 2 ? playerRect : opponentRect;
     let isLeftSide = currentPaddle === playerRect ? true : false;
 
-    const paddleBorderRatio = (playerRect.right / window.innerWidth) * 100; //?
+    const paddleBorderRatio = (playerRect?.right / window.innerWidth) * 100; //?
 
     const windowWidthRatio = window.innerHeight / window.innerWidth;
     const ballRadius = 1; //! This value is half of the ball's css diameter.
@@ -95,6 +100,9 @@ function BallRoutine({
     } else if (doesBoxesCollide(currentPaddle, ballRect)) {
       // Ball collides with paddle
       BounceCount.current += 1;
+      Velocity.current =
+        Velocity.current + Velocity.current / (BounceCount.current + 10);
+      if (Velocity.current > 0.08) Velocity.current = 0.08;
 
       let newDirection = Direction.current.x < 0 ? 1 : -1;
 
@@ -125,8 +133,8 @@ function BallRoutine({
 
       setPosition((prevState) => ({
         // multiply by deltaTime to ensure constant speed no matter the computer refresh rate
-        x: prevState.x + Direction.current.x * INITIAL_VELOCITY * deltaTime,
-        y: prevState.y + Direction.current.y * INITIAL_VELOCITY * deltaTime,
+        x: prevState.x + Direction.current.x * Velocity.current * deltaTime,
+        y: prevState.y + Direction.current.y * Velocity.current * deltaTime,
       }));
     }
     previousTimeRef.current = time;

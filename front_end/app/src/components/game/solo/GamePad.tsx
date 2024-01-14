@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import "./GamePad.css";
+import "src/components/game/GamePad.css";
 
 function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);

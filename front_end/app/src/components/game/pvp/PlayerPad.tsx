@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import React from "react";
-import "../GamePad.css";
+import "src/components/game/GamePad.css";
 import { Socket } from "socket.io-client";
 
 import { userId } from "src/pages/global/userId";

@@ -23,8 +23,8 @@ export class UserController {
 		return await this.userService.getUserIdByName(username)
 	}
 	
-	@Get('profile')
-	getProfile(@GetCurrentUser('sub') userId: number) : Promise<any> {
+	@Get('profile/:id')
+	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
 		return this.userService.getUserProfil(userId)
 	}
 

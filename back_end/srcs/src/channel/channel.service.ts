@@ -581,7 +581,7 @@ export class ChannelService {
 			return channel.channelName
 		}
 		catch (e) {
-			throw new InternalServerErrorException('Error getting channel Name')
+			throw new NotFoundException('Channel not found')
 		}
 	}
 
@@ -595,7 +595,7 @@ export class ChannelService {
 			return channel.mode
 		}
 		catch (e) {
-			throw new InternalServerErrorException('Error getting channel Mode')
+			throw new NotFoundException('Channel not found')
 		}
 	}
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import Menu from '../../components/menu';
-import axios from 'axios';
+import ChannelList from 'src/components/channelList';
 import '../../css/channel.css';
 import { BACKEND_URL } from '../global/env';
+import axios from 'axios';
 import { Input } from '@mui/material';
 
 
@@ -65,12 +65,11 @@ const Channel = ({ channel, popChannel }: any) => {
 				</div> }
 			<div className="owner">
 				<img className="ownerimg" src={BACKEND_URL + '/channel/badge/' + channel.id} />
-				<p className='ownerUsername'>{channel.ownerUsername}</p>
 			</div>
 			<div className='channelInfo'>
 				<p className='channelName'>{channel.channelName}</p>
-				<p className='channelMode'>mode: {channel.mode}</p>
-				<p className='channelMode'>member: {channel.members}</p>
+				<p className='channelMode'>{channel.mode}</p>
+				<p className='channelMode'>{channel.members} {channel.members === 1 ? "member" : "members"}</p>
 			</div>
 		</div>
 	);
@@ -207,11 +206,11 @@ const Channels: React.FC = () => {
 	}
 
 	return (
-		<div className='content'>
-			<Menu />
-			<div>
+		<>
+			<ChannelList />
+			<div className="channel-content-wrapper">
 				<CreateChannel />
-				<div className='printCard'>
+				<div className='channel-box-wrapper'>
 					{
 						Object.keys(channelList).map((i) => (
 							<Channel key={i} channel={channelList[i]} popChannel={popChannel} />
@@ -219,7 +218,7 @@ const Channels: React.FC = () => {
 					}
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

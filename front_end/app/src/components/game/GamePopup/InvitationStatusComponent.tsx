@@ -8,7 +8,14 @@ import CheckIcon from "@mui/icons-material/Check";
 
 import styles from "./GamePopup.module.css";
 
-import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { useNavigate } from "react-router-dom";
+
+import gameService from "src/services/game";
+
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+// import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
 function InvitationStatusComponent({
   gamePopupProps,
@@ -17,7 +24,9 @@ function InvitationStatusComponent({
   gamePopupProps: GamePopupProps;
   launchMatch?: () => void;
 }) {
+  const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = React.useState<boolean>(false);
+  const errorContext = useErrorContext();
 
   React.useEffect(() => {
     if (gamePopupProps.acceptedInvite === true) {
@@ -25,24 +34,37 @@ function InvitationStatusComponent({
     }
   }, [gamePopupProps.acceptedInvite]);
 
-  if (isAccepted === true) {
-    return (
-      <CountdownCircleTimer
-        isPlaying
-        duration={5}
-        colors={["#00FF00", "#FF0000"]}
-        colorsTime={[5, 0]}
-        strokeLinecap="square"
-        trailColor="#abc"
-        onComplete={() => {
-          console.log("done");
-        }}
-        size={60}
-      >
-        {({ remainingTime }) => remainingTime}
-      </CountdownCircleTimer>
-    );
-  }
+  React.useEffect(() => {
+    if (isAccepted === true) {
+      gameService
+        .deleteUserInvites(userId)
+        .then((res) => {
+          if (userId == gamePopupProps.sender.id)
+            navigate(
+              "/game/" +
+                gamePopupProps.gameMode +
+                "?player1=" +
+                gamePopupProps.sender.username +
+                "&player2=" +
+                gamePopupProps.receiver?.username
+            );
+          else
+            navigate(
+              "/game/" +
+                gamePopupProps.gameMode +
+                "?player1=" +
+                gamePopupProps.receiver?.username +
+                "&player2=" +
+                gamePopupProps.sender.username
+            );
+          setIsAccepted(false);
+        })
+        .catch((err: Error | AxiosError) => {
+          errorContext.newError?.(errorHandler(err));
+        });
+    }
+  }, [isAccepted]);
+
   if (gamePopupProps.sender.id === userId) {
     return <CircularProgress className={styles.CircularProgress} />;
   } else {

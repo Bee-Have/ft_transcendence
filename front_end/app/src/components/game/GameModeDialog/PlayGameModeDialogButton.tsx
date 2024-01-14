@@ -56,7 +56,7 @@ function GameModeDialog(props: GameModeDialogProps) {
     gameService
       .deleteUserInvites(userId)
       .then((res) => {
-        navigate("/game/" + selectedMode + "?multi=false");
+        navigate("/game/training/" + selectedMode);
       })
       .catch((err) => {
         console.log(err);

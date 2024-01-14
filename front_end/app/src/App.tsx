@@ -13,10 +13,13 @@ import MatchHistory from "./pages/match-history/matchHistory";
 import Chat from "./pages/chat/chat";
 import EditProfil from "./pages/profil/editProfil";
 
-import ClassicGame from "./pages/game/Classic";
-import TimedGame from "./pages/game/Timed";
-import SpeedGame from "./pages/game/Speed";
-import RetroGame from "./pages/game/Retro";
+import ClassicGame from "./pages/game/solo/Classic";
+import ClassicGamePvp from "./pages/game/pvp/Classic";
+import TimedGame from "./pages/game/solo/Timed";
+import SpeedGame from "./pages/game/solo/Speed";
+import RetroGame from "./pages/game/solo/Retro";
+
+import RedirectInvalidURL from "./pages/game/RedirectInvalidURL";
 
 import GamePopupList from "src/components/game/GamePopup/GamePopupList";
 
@@ -32,7 +35,7 @@ const App: React.FC = () => {
   return (
     <>
       <BrowserRouter>
-      <GamePopupList />
+        <GamePopupList />
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/profil" element={<Profil />} />
@@ -43,12 +46,13 @@ const App: React.FC = () => {
           <Route path="/profil/edit-Profil" element={<EditProfil />} />
           <Route path="/chat" element={<Chat />} />
 
-          <Route path="/game/classic" element={<ClassicGame />} />
-          <Route path="/game/timed" element={<TimedGame />} />
-          <Route path="/game/speed" element={<SpeedGame />} />
-          <Route path="/game/retro" element={<RetroGame />} />
+          <Route path="/game/training/classic" element={<ClassicGame />} />
+          <Route path="/game/classic" element={<ClassicGamePvp />} />
+          <Route path="/game/training/timed" element={<TimedGame />} />
+          <Route path="/game/training/speed" element={<SpeedGame />} />
+          <Route path="/game/training/retro" element={<RetroGame />} />
 
-          <Route path="*" element={<p>404 Not found</p>} />
+          <Route path="*" element={<RedirectInvalidURL />} />
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
         </Routes>
       </BrowserRouter>

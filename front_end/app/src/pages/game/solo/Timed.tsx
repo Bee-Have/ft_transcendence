@@ -1,14 +1,11 @@
 import React from "react";
 import "./Game.css";
-import { GamePad, OpponentPad } from "../../components/game/GamePad";
-import Ball from "../../components/game/PongBall";
-import Score from "../../components/game/Score";
-import GameOverComponent from "../../components/game/GameOverComponent";
+import { GamePad, OpponentPad } from "../../../components/game/GamePad";
+import Ball from "../../../components/game/PongBall";
+import Score from "../../../components/game/Score";
+import GameOverComponent from "../../../components/game/GameOverComponent";
 
-import RedirectInvalidURL from "./RedirectInvalidURL";
-
-import { gameOverAnimation } from "../../components/game/animations/gameOverAnimation";
-import { getQueryVariable } from "./getQueryVariable";
+import { gameOverAnimation } from "../../../components/game/animations/gameOverAnimation";
 
 import Card from "@mui/material/Card";
 
@@ -56,16 +53,12 @@ function TimedGame() {
   const [gameOver, setGameOver] = React.useState(false);
   const [winner, setWinner] = React.useState("");
 
-  let isMulti = getQueryVariable("multi");
-
   const endGame = () => {
     setWinner(playerScore > opponentScore ? "player" : "opponent");
     if (playerScore === opponentScore) setWinner("everyone");
     gameOverAnimation(playerScore >= opponentScore ? "player" : "opponent");
     setTimeout(() => setGameOver(true), 2100);
   };
-
-  if (isMulti !== "false") return <RedirectInvalidURL />;
 
   if (gameOver === true) {
     return (

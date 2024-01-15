@@ -146,7 +146,7 @@ function scoreGoal(
 
   if (
     currentGame.player1Score >= currentGame.maxScore ||
-    currentGame.player1Score >= currentGame.maxScore
+    currentGame.player2Score >= currentGame.maxScore
   ) {
     const winnerId =
       currentGame.player1Score >= currentGame.maxScore

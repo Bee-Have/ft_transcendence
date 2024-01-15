@@ -11,6 +11,7 @@ interface BallInfo {
 }
 
 const INITIAL_VELOCITY = 0.04;
+const MAX_VELOCITY = 0.08;
 const DELTA_TIME = 1000 / 60;
 
 const defaultBallInfo: BallInfo = {
@@ -27,7 +28,7 @@ interface GameInfo {
   player1PadY: number;
   player2PadY: number;
 
-  Ball: BallInfo;
+  ball: BallInfo;
   intervalId?: ReturnType<typeof setInterval>;
 
   player1Score: number;
@@ -42,7 +43,7 @@ const defaultGameInfo: GameInfo = {
   player2: undefined,
   player1PadY: 0,
   player2PadY: 0,
-  Ball: { ...defaultBallInfo },
+  ball: { ...defaultBallInfo },
   intervalId: undefined,
   player1Score: 0,
   player2Score: 0,
@@ -70,5 +71,6 @@ export {
   UserGameId,
   JoinGameDto,
   INITIAL_VELOCITY,
+  MAX_VELOCITY,
   DELTA_TIME,
 };

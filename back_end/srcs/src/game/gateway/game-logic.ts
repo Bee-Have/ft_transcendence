@@ -4,7 +4,8 @@ import {
   BallInfo,
   defaultBallInfo,
   DELTA_TIME,
-  INITIAL_VELOCITY
+  INITIAL_VELOCITY,
+  MAX_VELOCITY,
 } from "./game-info.dto";
 
 import { Socket, Server } from "socket.io";
@@ -18,14 +19,14 @@ function clamp(num: number, min: number, max: number) {
 }
 
 function initBall() {
-//   const ball: BallInfo = { ...defaultBallInfo };
-  let  ball: BallInfo;
-	ball = {
-		bounceCount: 0,
-		velocity: INITIAL_VELOCITY,
-		position: { x: 50, y: 50 },
-		direction: { x: 0, y: 0 },
-	  }
+  //   const ball: BallInfo = { ...defaultBallInfo };
+  let ball: BallInfo;
+  ball = {
+    bounceCount: 0,
+    velocity: INITIAL_VELOCITY,
+    position: { x: 50, y: 50 },
+    direction: { x: 0, y: 0 },
+  };
 
   let heading: number;
   let absoluteCosinus: number;
@@ -42,33 +43,68 @@ function initBall() {
 }
 
 function ballRoutine(server: Server, currentGame: GameInfo, gameId: string) {
-  const nextBall: BallInfo = { ...currentGame.Ball };
+  const nextBall: BallInfo = { ...currentGame.ball };
   nextBall.position.x += nextBall.direction.x * nextBall.velocity * DELTA_TIME;
   nextBall.position.y += nextBall.direction.y * nextBall.velocity * DELTA_TIME;
 
   nextBall.position.x = clamp(nextBall.position.x, 1, 99);
   nextBall.position.y = clamp(nextBall.position.y, 1, 99);
 
+  const nextBallRight = nextBall.position.x + 1;
+  const nextBallLeft = nextBall.position.x - 1;
+  const nextBallTop = nextBall.position.y - 1;
+  const nextBallBottom = nextBall.position.y + 1;
+
   const currentPad: vec2 =
     nextBall.direction.x < 0
       ? { x: 5, y: currentGame.player1PadY }
       : { x: 95, y: currentGame.player2PadY };
+  const padRight = currentPad.x + 1;
+  const padLeft = currentPad.x - 1;
+  const padTop = currentPad.y - 5;
+  const padBottom = currentPad.y + 5;
+
   const scorerId =
     nextBall.direction.x < 0 ? currentGame.player2 : currentGame.player1;
 
-  if (nextBall.position.y - 1 <= 0 || nextBall.position.y + 1 >= 100)
-    nextBall.direction.y *= -1;
+  if (nextBallTop <= 0 || nextBallBottom >= 100) nextBall.direction.y *= -1;
 
-  if (nextBall.position.x - 1 <= 0 || nextBall.position.x + 1 >= 100) {
+  if (nextBallLeft <= 0 || nextBallRight >= 100) {
     scoreGoal(server, currentGame, gameId, scorerId);
-    return;
+	nextBall.position = { x: 50, y: 50 };
+  } else if (
+    ((padRight >= nextBallLeft && nextBall.direction.x < 0) ||
+      (padLeft <= nextBallRight && nextBall.direction.x > 0)) &&
+    padTop <= nextBallBottom &&
+    padBottom >= nextBallTop
+  ) {
+    let collidePoint = nextBall.position.y - currentPad.y;
+    collidePoint /= 5;
+
+    const angleRad = (collidePoint * Math.PI) / 4;
+
+    nextBall.direction.x = Math.cos(angleRad);
+    nextBall.direction.y = Math.sin(angleRad);
+
+    if (nextBall.position.x > 50) {
+      nextBall.direction.x *= -1;
+    }
+
+    nextBall.bounceCount += 1;
+    nextBall.velocity =
+      nextBall.velocity + nextBall.velocity / (nextBall.bounceCount + 10);
+    nextBall.velocity = clamp(
+      nextBall.velocity,
+      INITIAL_VELOCITY,
+      MAX_VELOCITY
+    );
   }
 
-  currentGame.Ball = nextBall;
+  currentGame.ball = nextBall;
 
   server
     .to(gameId)
-    .emit("game:updateBall", currentGame.Ball.position, currentGame.player2);
+    .emit("game:updateBall", currentGame.ball.position, currentGame.player2);
 }
 
 function startBallRoutine(
@@ -82,7 +118,7 @@ function startBallRoutine(
   )
     return;
 
-  currentGame.Ball = initBall();
+  currentGame.ball = initBall();
 
   currentGame.intervalId = setInterval(() => {
     ballRoutine(server, currentGame, gameId);

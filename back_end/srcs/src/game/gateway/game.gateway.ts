@@ -54,6 +54,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const currentGame = this.runningGames.get(gameId as string);
 
     this.connectedUsers.delete(client.id);
+    client.disconnect();
 
     if (currentGame === undefined) return;
 
@@ -81,7 +82,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log("winner: ", currentGame.winnerId);
       currentGame.gameStatus = "FINISHED";
     }
-    client.disconnect();
   }
 
   @SubscribeMessage("game:join")

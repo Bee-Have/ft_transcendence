@@ -17,7 +17,7 @@ const OpponentPaddle = ({
 
   useEffectOnce(() => {
     if (paddleElem.current === null) {
-      paddleElem.current = document.getElementById("opponent-paddle");
+      paddleElem.current = document.getElementById("OpponentPad");
       gameSocket.on("game:newPaddlePosition", (newPaddlePosition, playerId) => {
         if (playerId === player2Id) {
           setPaddlePosition(newPaddlePosition);
@@ -33,7 +33,7 @@ const OpponentPaddle = ({
     );
   });
 
-  return <div className="OpponentPad" id="opponent-paddle"></div>;
+  return <div className="OpponentPad" id="OpponentPad"></div>;
 };
 
 export default OpponentPaddle;

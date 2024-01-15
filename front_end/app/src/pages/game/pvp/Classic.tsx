@@ -5,7 +5,6 @@ import { io, Socket } from "socket.io-client";
 import { userId } from "src/pages/global/userId";
 
 import { useEffectOnce } from "src/components/useEffectOnce";
-import { useNavigate } from "react-router-dom";
 
 import "../solo/Game.css";
 
@@ -14,9 +13,10 @@ import Ball from "src/components/game/pvp/PongBall";
 import PlayerPad from "src/components/game/pvp/PlayerPad";
 import OpponentPad from "src/components/game/pvp/OpponentPad";
 
-function ClassicGamePvp() {
-  const navigate = useNavigate();
+import GameOverComponent from "src/components/game/GameOverComponent";
+import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
 
+function ClassicGamePvp() {
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
 
@@ -29,6 +29,8 @@ function ClassicGamePvp() {
   const opponentId = React.useRef<number>(0);
 
   const [startGame, setStartGame] = React.useState(false);
+  const [gameOver, setGameOver] = React.useState(false);
+  const [winner, setWinner] = React.useState("");
 
   useEffectOnce(() => {
     if (gameSocket.current === undefined) {
@@ -70,10 +72,10 @@ function ClassicGamePvp() {
       });
 
       gameSocket.current.on("game:winner", (winnerId: number) => {
-        if (userId !== playerId.current && userId !== opponentId.current)
-          navigate("/");
-        else if (userId === winnerId) navigate("/game/win");
-        else navigate("/game/lose");
+		gameSocket.current?.emit("game:unmount", gameId.current, userId);
+        setWinner(winnerId === playerId.current ? "player" : "opponent");
+        gameOverAnimation(winnerId === playerId.current ? "player" : "opponent");
+        setTimeout(() => setGameOver(true), 2100);
       });
     }
 
@@ -85,6 +87,15 @@ function ClassicGamePvp() {
     };
   });
 
+  if (gameOver === true) {
+    return (
+      <GameOverComponent
+        winner={winner}
+        playerScore={playerScore}
+        opponentScore={opponentScore}
+      />
+    );
+  }
   if (gameSocket.current === undefined || startGame === false) {
     return <div>Waiting for game to start...</div>;
   }
@@ -93,7 +104,9 @@ function ClassicGamePvp() {
       <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
       <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
       <Score player={playerScore} opponent={opponentScore} />
-      <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
+      {winner === "" && (
+        <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
+      )}
       <PlayerPad
         gameSocket={gameSocket.current}
         gameID={gameId.current}

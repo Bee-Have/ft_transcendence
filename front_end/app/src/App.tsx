@@ -22,8 +22,6 @@ import RetroGame from "./pages/game/solo/Retro";
 import RedirectInvalidURL from "./pages/game/RedirectInvalidURL";
 
 import GamePopupList from "src/components/game/GamePopup/GamePopupList";
-import WinningPage from "./pages/game/pvp/WinningPage";
-import LosingPage from "./pages/game/pvp/LosingPage";
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -53,9 +51,6 @@ const App: React.FC = () => {
           <Route path="/game/training/timed" element={<TimedGame />} />
           <Route path="/game/training/speed" element={<SpeedGame />} />
           <Route path="/game/training/retro" element={<RetroGame />} />
-
-		  <Route path="/game/win" element={<WinningPage />} />
-		  <Route path="/game/lose" element={<LosingPage />} />
 
           <Route path="*" element={<RedirectInvalidURL />} />
           {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}

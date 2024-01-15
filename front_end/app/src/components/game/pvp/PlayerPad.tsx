@@ -25,7 +25,7 @@ const PlayerPaddle = ({
 
   useEffectOnce(() => {
     if (paddleElem.current === null) {
-      paddleElem.current = document.getElementById("player-paddle");
+      paddleElem.current = document.getElementById("GamePad");
 
       if (userId === player1Id) {
         document.addEventListener("mousemove", (e) => {
@@ -62,7 +62,7 @@ const PlayerPaddle = ({
     }
   });
 
-  return <div className="GamePad" id="player-paddle"></div>;
+  return <div className="GamePad" id="GamePad"></div>;
 };
 
 export default PlayerPaddle;

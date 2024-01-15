@@ -1,83 +1,104 @@
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Button } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userId } from 'src/pages/global/userId';
-import '../css/chat.css';
+// import { userId } from 'src/pages/global/userId';
+// import '../css/chat.css';
 import { BACKEND_URL } from 'src/pages/global/env';
+// import '../css/channel.css';
+import { userId } from 'src/pages/global/userId';
+import '../css/channel.css';
 
-
-interface CardProps {
-	photo: string;
-}
-
-const GroupPicture: React.FC<CardProps> = ({ photo }) => {
-	return (
-		<div className="PP">
-			<img src={photo} alt={'test'} className="group-image" />
-		</div>
-	);
-};
-
-const Channel = ({ channel }: any) => {
+const Channel = ({ channel, selectedId }: { channel: ChannelProps, selectedId: number }) => {
 
 	const navigate = useNavigate()
 
-	const [isHover, setIsHover] = useState(false)
-
-	const handleMouseOver = () => {
-		setIsHover(true);
-	};
-
-	const handleMouseOut = () => {
-		setIsHover(false);
-	};
-
 	return (
-		<Button
-			className="PP"
-			onMouseOver={handleMouseOver}
-			onMouseOut={handleMouseOut}
-			onClick={() => { navigate("/channel/" + channel.id) }}>
+		<li
+			className="channel-bar-button"
+			onClick={() => { navigate("/chat/channel/" + channel.id) }}>
 			<img
-				src={BACKEND_URL + '/user/image/' + channel.ownerId}
-				alt={'test'}
-				className="group-image"
+				src={BACKEND_URL + '/channel/badge/' + channel.id}
+				alt={channel.name}
+				className={ selectedId === channel.id ? "channel-badge selected": "channel-badge"}
 			/>
-			{isHover && <div className="channel-show-name">{channel.name}</div>}
-		</Button>
+			<div className="channel-show-name">{channel.name}</div>
+		</li>
 	)
-
 }
 
-const ChannelList: React.FC = () => {
-	const [channels, setChannels] = useState([])
+const HomeButton = ({ navigate }: any) => {
+	return (
+		<li
+			className="channel-bar-button"
+			onClick={() => { navigate("/chat") }}>
+			<img
+				src={BACKEND_URL + '/user/image/' + userId}
+				alt={userId + " image"}
+				className="channel-badge"
+			/>
+			<div className="channel-show-name">Chat</div>
+		</li>
+	)
+}
+
+interface ChannelProps {
+	name: string
+	mode: "PUBLIC" | "PRIVATE" | "PROTECTED"
+	id: number
+	role: "NONADMIN" | "OWNER" | "ADMIN"
+	ownerId: number
+}
+
+const ChannelList = ({update}: {update: boolean}) => {
+	const [channels, setChannels] = useState<ChannelProps[]>([])
+	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
+
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		axios.get(BACKEND_URL + '/channel', {withCredentials: true})
+		axios.get(BACKEND_URL + '/channel', { withCredentials: true })
 			.then((res: any) => {
 				setChannels(res.data)
-				console.log(res.data)
 			})
 			.catch((e) => console.log(e))
-	}, [])
+	}, [update])
 
+	console.log(window.location.pathname)
+
+	useEffect(()=> {
+		const id = window.location.pathname.split('/')
+		if (id[3]){
+			const i = Number(id[3])
+			if (!isNaN(i))
+				setSelectedChannelId(i)
+			else
+				setSelectedChannelId(-1)
+		}
+
+	}, [window.location.pathname, selectedChannelId])
 
 	return (
-		<div className="channelList">
-			<center>
-				<GroupPicture photo={BACKEND_URL + '/user/image/' + userId} />
+		<nav className='channel-list-bar'>
+			<div className="channel-list-bar-ul">
+				<HomeButton navigate={navigate} />
 				<div className="separator"></div>
 				{
 					Object.keys(channels).map((index) => (
-						<Channel key={index} channel={channels[index]} />
+						<Channel 
+							key={index}
+							channel={channels[index]}
+							selectedId={selectedChannelId} />
 					))
 				}
-				<Button onClick={() => navigate('/channel')}> <AddCircleOutlineIcon style={{ fontSize: '4em' }} className='add' /> </Button>
-			</center>
-		</div>
+				<li
+					className="channel-bar-button"
+					onClick={() => { navigate("/chat/channel") }}>
+					<AddCircleOutlineIcon className="channel-badge channel-add-cross" />
+					<div className="channel-show-name">Create/Add</div>
+				</li>
+			</div>
+		</nav>
 	);
 };
 

@@ -53,9 +53,14 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 		setPopUp(true);
 	};
 
+	const handle_submit = () => {
+		console.log("test");
+	}
+
 	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
 	.then( function (response)
 	{
+//		console.log(response.data);
 		setRealName(response.data.username);
 		if (response.data.nickname == null)
 			setNickName(response.data.username);
@@ -87,7 +92,7 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 			</div>
 			<Menu/>
 			<div className='profil'>
-				<form action="" method="POST">
+				<form onSubmit={handle_submit}>
 					<center>
 						<Avatar
 							className='avatar'

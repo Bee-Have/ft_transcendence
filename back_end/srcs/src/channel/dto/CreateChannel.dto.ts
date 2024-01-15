@@ -15,7 +15,7 @@ export function RespectPasswordPolicy (password: string) {
 
 export class CreateChannelDto {
 	
-	@Length(3, 10)
+	@Length(3, 50)
 	@IsString()
 	name: string
 

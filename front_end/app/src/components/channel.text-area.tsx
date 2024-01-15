@@ -4,6 +4,7 @@ import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { socket } from '../pages/global/websocket';
 import { BACKEND_URL } from 'src/pages/global/env';
+import { useNavigate } from 'react-router';
 
 interface ChannelMessageProps {
 	id: number,
@@ -37,6 +38,8 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
+	const navigate = useNavigate()
+
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
 	}, [messages]);
@@ -49,6 +52,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 			})
 			.catch((e) => {
 				console.log(e)
+				navigate("/" + e.response.status)
 			})
 	}, [currentChannelId])
 

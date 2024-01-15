@@ -1,72 +1,287 @@
+.channel-box-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+}
 
 .channel-box {
-	width: 90%;
-	height: 150px;
+	min-width: 400px;
+	min-height: 150px;
+	max-width: 400px;
+	max-height: 150px;
 	background-color: #f0f0f0;
 	border: 5px solid #ccc;
-	margin: 10px;
+	border-radius: 10px;
+	margin: auto;
+	margin-top: 20px;
 	display: flex;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	position: relative;
+	min-width: 320;
 }
 
 .channel-box:hover {
-	background-color: rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0.05);
 	color: aliceblue;
 	cursor: pointer;
 }
 
-
 .channel-box .owner {
-	margin: 5px;
-	width: 15%;
+	width: 30%;
 	height: 100%;
 	text-align: center;
+	display: block;
+	margin: auto;
 }
 
-.channel-box  .owner .ownerUsername {
+.channel-box .owner .ownerUsername {
 	text-align: center;
 }
 
 .channel-box .owner .ownerimg {
-	width: 100px;
-	height: 100px;
+	width: 80px;
+	height: 80px;
 	object-fit: cover;
 	border-radius: 50%;
 }
 
-
 .channel-box .channelInfo {
-	width: 90%;
-	height: 100%;
+	width: 70%;
+	height: 150px;
+	text-align: center;
+	padding-top: 10px;
 }
 
 .channel-box .channelInfo .channelName {
-	width: 89%;
-	text-align: center;
-	height: 40%;
+	height: 50px;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: nowrap;
+	white-space: normal;
+	word-wrap: break-word;
+	padding: 0px 10px 0px 10px;
+	align-items: center;
+	font-size: large;
+	color: black;
 }
 
 .channel-box .channelInfo .channelMode {
+	margin-bottom: 0;
 	text-align: center;
+	color: rgba(0, 0, 0, 0.63);
+}
+
+/* CHANNEL FORM */
+
+.channel-content-wrapper {
+	min-height: 100vh;
+	max-height: 100vh;
+	position: relative;
+	background-color: rgb(170, 170, 170);
+	left: 80px;
+	width: calc(100% - 80px);
+	margin: 0;
+	padding: 0;
+	overflow-y: auto;
+}
+
+.channel-content-wrapper::-webkit-scrollbar {
+	width: 10px;
+}
+.channel-content-wrapper::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+.channel-content-wrapper::-webkit-scrollbar-thumb {
+	background: #888;
+}
+.channel-content-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
 
 .channel-form {
-	justify-content: center;
-	text-align: center;
-	display: block;
-	width: 80%;
-	height: auto;
-	color: black;
-	border: 2px solid black;
+	width: 400px;
+	margin: auto;
+	margin-bottom: 10px;
+	margin-top: 20px;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	box-sizing: border-box;
 }
 
-.channel-form .button {
-	color: aqua;
-	text-align: center;
+.channel-form label {
+	display: block;
+	margin-bottom: 8px;
+}
 
+.channel-form input,
+select {
+	width: 100%;
+	padding: 8px;
+	margin-bottom: 12px;
+	box-sizing: border-box;
+}
+
+.channel-form button {
+	background-color: #4caf50;
+	color: white;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.channel-formbutton:hover {
+	background-color: #459000;
+}
+
+/* CHANNEL_LIST */
+
+.channel-list-bar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	overflow-y: auto;
+	width: 100%;
+}
+
+.channel-list-bar::-webkit-scrollbar {
+	display: none;
+}
+
+.channel-list-bar-ul {
+	background-color: grey;
+	min-height: 100vh;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+}
+
+.channel-bar-button {
+	width: 80px;
+	height: 80px;
+	display: block;
+	position: relative;
+}
+
+.channel-badge {
+	width: 65px;
+	height: 65px;
+	border-radius: 50%;
+	display: block;
+	object-fit: cover;
+	margin: 7.5px;
+}
+
+.selected {
+	border: 2px solid rgb(204, 148, 43);
+	border-radius: 30%;
+}
+
+.channel-badge:hover {
+	cursor: pointer;
+}
+
+.channel-badge:hover+.channel-show-name {
+	display: block;
+}
+
+.channel-show-name {
+	position: relative;
+	top: -40px;
+	left: 200%;
+	width: 150px;
+	display: none;
+	text-align: center;
+	transform: translate(-50%, -50%);
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 10px;
+	border-radius: 10px;
+	z-index: 30;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+.separator {
+	width: 60px;
+	height: 5px;
+	background-color: rgb(180, 180, 180);
+	margin-left: 10px;
+	border-radius: 25%;
+}
+
+.channel-add-cross {
+	color: whitesmoke;
+}
+
+
+
+.channel-password-overlay {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.9);
+	/* z-index: 1000; */
+}
+
+.channel-password-wrap {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.channel-password-input {
+	/* position: relative; */
+	/* top: 10px;/ */
+	width: 50%;
+	height: 30%;
+	margin-top: 45px;
+	color: black;
+	background-color: white;
+	/* margin: 0 auto */
+}
+
+.channel-password-button {
+	position: relative;
+	top: -44px;
+	left: 25%;
+	width: 25%;
+	height: 30%;
+}
+
+.channel-show-password-button {
+	position: relative;
+	border: 2px solid white;
+	top: -130px;
+	width: fit-content;
+	left: 77%;
+	color: white;
+}
+
+.password-submit-message {
+	animation-name: myAnimation;
+	animation-duration: 4000ms;
+	animation-fill-mode: forwards;
+	position: absolute;
+	color: red
+}
+
+@keyframes myAnimation {
+	0% {
+		position: absolute;
+		color: red;
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		display: none;
+		opacity: 0;
+	}
 }

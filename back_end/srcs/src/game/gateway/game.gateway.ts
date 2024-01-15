@@ -60,23 +60,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (userId !== currentGame.player1 && userId !== currentGame.player2)
       return;
 
-    if (currentGame.gameStatus === "FINISHED") {
-      // Need to change their status back to online.
+    if (currentGame.intervalId !== undefined) {
+      clearInterval(currentGame.intervalId);
+      currentGame.intervalId = undefined;
+    }
 
+    if (currentGame.gameStatus === "FINISHED") {
       this.runningGames.delete(gameId as string);
     } else {
-      if (currentGame.intervalId !== undefined) {
-        clearInterval(currentGame.intervalId);
-        currentGame.intervalId = undefined;
+      if (userId === currentGame.player1) {
+        currentGame.winnerId = currentGame.player2;
+      } else if (userId === currentGame.player2) {
+        currentGame.winnerId = currentGame.player1;
       }
 
-      const winnerId =
-        userId === currentGame.player1
-          ? currentGame.player2
-          : currentGame.player1;
       this.gameService.createMatchHistoryItem(currentGame);
-      this.server.to(gameId as string).emit("game:winner", winnerId);
-      console.log("winner: ", winnerId);
+      this.server
+        .to(gameId as string)
+        .emit("game:winner", currentGame.winnerId);
+      console.log("winner: ", currentGame.winnerId);
       currentGame.gameStatus = "FINISHED";
     }
     client.disconnect();
@@ -139,7 +141,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           currentGame.player2Score
         );
       setTimeout(
-        () => startBallRoutine(this.gameService, this.server, currentGame, gameId),
+        () =>
+          startBallRoutine(this.gameService, this.server, currentGame, gameId),
         1000
       );
     }

@@ -330,13 +330,6 @@ export class GameService {
   }
 
   async createMatchHistoryItem(gameInfo: GameInfo) {
-    let winnerId: number | null = null;
-
-    if (gameInfo.player1Score > gameInfo.player2Score)
-      winnerId = gameInfo.player1;
-    else if (gameInfo.player1Score < gameInfo.player2Score)
-      winnerId = gameInfo.player2;
-
     await this.prisma.matchHistoryItem.create({
       data: {
         player1Id: gameInfo.player1,
@@ -344,7 +337,7 @@ export class GameService {
         player2Id: gameInfo.player2,
         player2Score: gameInfo.player2Score,
         gameMode: gameInfo.gamemode,
-        winnerId: winnerId,
+        winnerId: gameInfo.winnerId,
       },
     });
   }

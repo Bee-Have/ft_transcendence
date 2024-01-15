@@ -157,13 +157,13 @@ function scoreGoal(
     currentGame.player1Score >= currentGame.maxScore ||
     currentGame.player2Score >= currentGame.maxScore
   ) {
-    const winnerId =
+    currentGame.winnerId =
       currentGame.player1Score >= currentGame.maxScore
         ? currentGame.player1
         : currentGame.player2;
 
     gameService.createMatchHistoryItem(currentGame);
-    server.to(gameId).emit("game:winner", winnerId);
+    server.to(gameId).emit("game:winner", currentGame.winnerId);
     currentGame.gameStatus = "FINISHED";
   } else {
     setTimeout(() => {

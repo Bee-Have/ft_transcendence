@@ -39,21 +39,28 @@ interface GameInfo {
 
   gamemode: "classic" | "timed" | "speed" | "retro";
   gameStatus: "PREPARING" | "PLAYING" | "FINISHED";
+
+  winnerId?: number;
 }
 
 const defaultGameInfo: GameInfo = {
   player1: undefined,
   player2: undefined,
+
   player1PadY: 0,
   player2PadY: 0,
+  
   ball: { ...defaultBallInfo },
   intervalId: undefined,
+
   player1Score: 0,
   player2Score: 0,
   maxScore: 5,
 
   gamemode: "classic",
   gameStatus: "PREPARING",
+
+  winnerId: undefined,
 };
 
 interface UserGameId {

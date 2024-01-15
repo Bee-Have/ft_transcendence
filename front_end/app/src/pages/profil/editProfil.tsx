@@ -29,10 +29,10 @@ Mais on pourrait tout à fait réduire le langage de l arithmétique en supprima
 Cela nous donnerait une autre théorie arithmétique, mais essentiellement équivalente sur toutes ses propriétés élémentaires."
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [printPopUp, setPopUp] = useState<boolean>(false);
-	const [FAActive, setFAActive] = useState<boolean>(false);
+	const [FAActive, setFAActive] = useState<boolean>(ReadCookie("TfaEnable") === "true");
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
 
-	const SelectorImage = (event: ChangeEvent<HTMLInputElement>) => 
+	const SelectorImage = (event: ChangeEvent<HTMLInputElement>) =>
 	{
 		const file = event.target.files?.[0];
 		if (file)

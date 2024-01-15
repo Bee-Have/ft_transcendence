@@ -9,6 +9,7 @@ import { BlockedUser } from "./dto/blocked-user.dto";
 import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
+import { userEditProfileDto } from "./dto/userEditProfile.dto";
 const qrcode = require('qrcode')
 var sizeOf = require('buffer-image-size');
 
@@ -60,6 +61,14 @@ export class UserService {
 		//besoin de : achievement
 
 		const trimuser = plainToInstance(userProfileDto, user, { excludeExtraneousValues: true })
+
+		return trimuser
+	}
+
+	async getUserEditProfil(userId: number) {
+		const user = await this.getUser(userId)
+
+		const trimuser = plainToInstance(userEditProfileDto, user, { excludeExtraneousValues: true })
 
 		return trimuser
 	}

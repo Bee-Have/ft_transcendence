@@ -23,6 +23,11 @@ export class UserController {
 		return await this.userService.getUserIdByName(username)
 	}
 	
+	@Get('profile/edit')
+	async getEditProfile(@GetCurrentUser('sub') userId: number) : Promise<any> {
+		return this.userService.getUserEditProfil(userId)
+	}
+
 	@Get('profile/:id')
 	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
 		return this.userService.getUserProfil(userId)

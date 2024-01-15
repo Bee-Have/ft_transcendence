@@ -9,11 +9,17 @@ import {
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 import {
+  vec2,
+  BallInfo,
+  defaultBallInfo,
   GameInfo,
   defaultGameInfo,
   UserGameId,
   JoinGameDto,
+  INITIAL_VELOCITY,
 } from "./game-info.dto";
+
+import { initBall, ballRoutine } from "./game-logic";
 
 @WebSocketGateway({ transports: ["websocket"], namespace: "game" })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -56,6 +62,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       this.runningGames.delete(gameId as string);
     } else {
+      if (currentGame.intervalId !== undefined) {
+        clearInterval(currentGame.intervalId);
+        currentGame.intervalId = undefined;
+      }
+
       const winnerId =
         userId === currentGame.player1
           ? currentGame.player2
@@ -123,6 +134,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           currentGame.player1Score,
           currentGame.player2Score
         );
+      setTimeout(() => this.onGameLaunchBallRoutine(gameId, client), 1000);
     }
   }
 
@@ -140,5 +152,28 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server
       .to(gameId as string)
       .emit("game:newPaddlePosition", paddlePosition, player);
+  }
+
+  @SubscribeMessage("game:launchBallRoutine")
+  onGameLaunchBallRoutine(
+    @MessageBody() gameId: string,
+    @ConnectedSocket() client: Socket
+  ) {
+    const currentGame = this.runningGames.get(gameId);
+    const userId = this.connectedUsers.get(client.id)?.userId;
+
+    if (
+      currentGame === undefined ||
+      currentGame.intervalId !== undefined ||
+      (userId !== currentGame.player1 && userId !== currentGame.player2)
+    )
+      return;
+
+    currentGame.Ball = initBall();
+    const deltaTime = 1000 / 60;
+
+    currentGame.intervalId = setInterval(() => {
+      ballRoutine(currentGame);
+    }, deltaTime);
   }
 }

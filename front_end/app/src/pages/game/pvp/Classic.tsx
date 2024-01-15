@@ -9,10 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 import "../solo/Game.css";
 
+import Score from "src/components/game/pvp/Score";
+import Ball from "src/components/game/pvp/PongBall";
 import PlayerPad from "src/components/game/pvp/PlayerPad";
 import OpponentPad from "src/components/game/pvp/OpponentPad";
 
-import Score from "src/components/game/pvp/Score";
 
 function ClassicGamePvp() {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ function ClassicGamePvp() {
       <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
       <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
       <Score player={playerScore} opponent={opponentScore} />
+	  <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
       <PlayerPad
         gameSocket={gameSocket.current}
         gameID={gameId.current}

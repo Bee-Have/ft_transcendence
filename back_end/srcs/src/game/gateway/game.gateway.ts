@@ -19,7 +19,7 @@ import {
   INITIAL_VELOCITY,
 } from "./game-info.dto";
 
-import { initBall, ballRoutine } from "./game-logic";
+import { initBall, ballRoutine, startBallRoutine } from "./game-logic";
 
 @WebSocketGateway({ transports: ["websocket"], namespace: "game" })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -134,7 +134,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           currentGame.player1Score,
           currentGame.player2Score
         );
-      setTimeout(() => this.onGameLaunchBallRoutine(gameId, client), 1000);
+      setTimeout(() => startBallRoutine(this.server, currentGame, gameId, userId), 1000);
     }
   }
 
@@ -153,27 +153,5 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .to(gameId as string)
       .emit("game:newPaddlePosition", paddlePosition, player);
   }
-
-  @SubscribeMessage("game:launchBallRoutine")
-  onGameLaunchBallRoutine(
-    @MessageBody() gameId: string,
-    @ConnectedSocket() client: Socket
-  ) {
-    const currentGame = this.runningGames.get(gameId);
-    const userId = this.connectedUsers.get(client.id)?.userId;
-
-    if (
-      currentGame === undefined ||
-      currentGame.intervalId !== undefined ||
-      (userId !== currentGame.player1 && userId !== currentGame.player2)
-    )
-      return;
-
-    currentGame.Ball = initBall();
-    const deltaTime = 1000 / 60;
-
-    currentGame.intervalId = setInterval(() => {
-      ballRoutine(currentGame);
-    }, deltaTime);
-  }
 }
+

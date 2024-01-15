@@ -14,7 +14,6 @@ import Ball from "src/components/game/pvp/PongBall";
 import PlayerPad from "src/components/game/pvp/PlayerPad";
 import OpponentPad from "src/components/game/pvp/OpponentPad";
 
-
 function ClassicGamePvp() {
   const navigate = useNavigate();
 
@@ -62,6 +61,14 @@ function ClassicGamePvp() {
         }
       );
 
+      gameSocket.current.on("game:updateScore", (scorerId: number) => {
+        if (scorerId === playerId.current) {
+          setPlayerScore((prevState) => prevState + 1);
+        } else if (scorerId === opponentId.current) {
+          setOpponentScore((prevState) => prevState + 1);
+        }
+      });
+
       gameSocket.current.on("game:winner", (winnerId: number) => {
         navigate("/");
       });
@@ -83,7 +90,7 @@ function ClassicGamePvp() {
       <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
       <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
       <Score player={playerScore} opponent={opponentScore} />
-	  <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
+      <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
       <PlayerPad
         gameSocket={gameSocket.current}
         gameID={gameId.current}

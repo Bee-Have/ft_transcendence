@@ -31,6 +31,7 @@ interface GameInfo {
 
   player1Score: number;
   player2Score: number;
+  maxScore: number;
 
   gameStatus: "PREPARING" | "PLAYING" | "FINISHED";
 }
@@ -44,6 +45,7 @@ const defaultGameInfo: GameInfo = {
   intervalId: undefined,
   player1Score: 0,
   player2Score: 0,
+  maxScore: 5,
   gameStatus: "PREPARING",
 };
 

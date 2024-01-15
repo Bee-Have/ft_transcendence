@@ -26,7 +26,7 @@ const Ball = ({
     if (ballElem.current === null) {
       ballElem.current = document.getElementById("PongBall");
       gameSocket.on(
-        "game:ball-update",
+        "game:updateBall",
         (ballUpdate: vec2, player2Id: number) => {
           if (player2Id === userId) {
             ballUpdate.x = 100 - ballUpdate.x;

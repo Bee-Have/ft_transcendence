@@ -134,7 +134,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           currentGame.player1Score,
           currentGame.player2Score
         );
-      setTimeout(() => startBallRoutine(this.server, currentGame, gameId, userId), 1000);
+      setTimeout(() => startBallRoutine(this.server, currentGame, gameId), 1000);
     }
   }
 

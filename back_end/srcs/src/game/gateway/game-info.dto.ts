@@ -11,6 +11,7 @@ interface BallInfo {
 }
 
 const INITIAL_VELOCITY = 0.04;
+const DELTA_TIME = 1000 / 60;
 
 const defaultBallInfo: BallInfo = {
   bounceCount: 0,
@@ -69,4 +70,5 @@ export {
   UserGameId,
   JoinGameDto,
   INITIAL_VELOCITY,
+  DELTA_TIME,
 };

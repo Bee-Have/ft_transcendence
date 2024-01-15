@@ -1,4 +1,11 @@
-import { GameInfo, BallInfo, defaultBallInfo } from "./game-info.dto";
+import {
+  vec2,
+  GameInfo,
+  BallInfo,
+  defaultBallInfo,
+  DELTA_TIME,
+  INITIAL_VELOCITY
+} from "./game-info.dto";
 
 import { Socket, Server } from "socket.io";
 
@@ -6,8 +13,19 @@ function randomNumberBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
+function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}
+
 function initBall() {
-  const ball: BallInfo = { ...defaultBallInfo };
+//   const ball: BallInfo = { ...defaultBallInfo };
+  let  ball: BallInfo;
+	ball = {
+		bounceCount: 0,
+		velocity: INITIAL_VELOCITY,
+		position: { x: 50, y: 50 },
+		direction: { x: 0, y: 0 },
+	  }
 
   let heading: number;
   let absoluteCosinus: number;
@@ -23,33 +41,52 @@ function initBall() {
   return ball;
 }
 
-function ballRoutine(
-  server: Server,
-  currentGame: GameInfo,
-  gameId: string,
-  userId: number
-) {
-  console.log("ballRoutine");
+function ballRoutine(server: Server, currentGame: GameInfo, gameId: string) {
+  const nextBall: BallInfo = { ...currentGame.Ball };
+  nextBall.position.x += nextBall.direction.x * nextBall.velocity * DELTA_TIME;
+  nextBall.position.y += nextBall.direction.y * nextBall.velocity * DELTA_TIME;
+
+  nextBall.position.x = clamp(nextBall.position.x, 1, 99);
+  nextBall.position.y = clamp(nextBall.position.y, 1, 99);
+
+  const currentPad: vec2 =
+    nextBall.direction.x < 0
+      ? { x: 5, y: currentGame.player1PadY }
+      : { x: 95, y: currentGame.player2PadY };
+  const scorerId =
+    nextBall.direction.x < 0 ? currentGame.player2 : currentGame.player1;
+
+  if (nextBall.position.y - 1 <= 0 || nextBall.position.y + 1 >= 100)
+    nextBall.direction.y *= -1;
+
+  if (nextBall.position.x - 1 <= 0 || nextBall.position.x + 1 >= 100) {
+    scoreGoal(server, currentGame, gameId, scorerId);
+    return;
+  }
+
+  currentGame.Ball = nextBall;
+
+  server
+    .to(gameId)
+    .emit("game:updateBall", currentGame.Ball.position, currentGame.player2);
 }
 
 function startBallRoutine(
   server: Server,
   currentGame: GameInfo,
-  gameId: string,
-  userId: number
+  gameId: string
 ) {
   if (
     currentGame.intervalId !== undefined ||
-    (userId !== currentGame.player1 && userId !== currentGame.player2)
+    currentGame.gameStatus === "FINISHED"
   )
     return;
 
   currentGame.Ball = initBall();
-  const deltaTime = 1000 / 60;
 
   currentGame.intervalId = setInterval(() => {
-    ballRoutine(server, currentGame, gameId, userId);
-  }, deltaTime);
+    ballRoutine(server, currentGame, gameId);
+  }, DELTA_TIME);
 }
 
 function scoreGoal(
@@ -83,7 +120,7 @@ function scoreGoal(
     currentGame.gameStatus = "FINISHED";
   } else {
     setTimeout(() => {
-      startBallRoutine(server, currentGame, gameId, scorerId);
+      startBallRoutine(server, currentGame, gameId);
     }, 1000);
   }
 }

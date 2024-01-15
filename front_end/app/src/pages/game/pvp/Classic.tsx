@@ -70,7 +70,10 @@ function ClassicGamePvp() {
       });
 
       gameSocket.current.on("game:winner", (winnerId: number) => {
-        navigate("/");
+        if (userId !== playerId.current && userId !== opponentId.current)
+          navigate("/");
+        else if (userId === winnerId) navigate("/game/win");
+        else navigate("/game/lose");
       });
     }
 

@@ -6,6 +6,8 @@
 	right: 0px;
 	bottom: 0px;
 	margin: auto;
+
+	overflow: hidden;
 }
 
 .Pong-game > * {

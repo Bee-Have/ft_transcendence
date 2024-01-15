@@ -7,6 +7,10 @@ import { userId } from "src/pages/global/userId";
 
 import { useEffectOnce } from "src/components/useEffectOnce";
 
+function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max);
+}
+
 const PlayerPaddle = ({
   gameSocket,
   gameID,
@@ -25,7 +29,9 @@ const PlayerPaddle = ({
 
       if (userId === player1Id) {
         document.addEventListener("mousemove", (e) => {
-          setPlayerPosition((e.y / window.innerHeight) * 100);
+          setPlayerPosition(
+            clamp((e.clientY / window.innerHeight) * 100, 5, 95)
+          );
         });
 
         return () => {

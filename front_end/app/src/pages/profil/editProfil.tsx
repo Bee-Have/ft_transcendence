@@ -21,12 +21,7 @@ const EditProfil: React.FC = () =>
 	const navigate = useNavigate();
 	const [realName, setRealName] = useState("Default");
 	const [nickName, setNickName] = useState("Default");
-	const description = "En mathématiques, on définit une notion à partir de notions antérieurement définies.\n\
-Les notions de bases étant les symboles non logiques du langage considéré, dont l'usage est défini par les axiomes de la théorie.\n\
-Se pose la question de la différence entre une définition et un axiome.\n\
-Pour exemple, dans l'arithmétique de Peano, l'addition et la multiplication sont des symboles du langage et leur fonctionnement est régi par des axiomes.\n\
-Mais on pourrait tout à fait réduire le langage de l arithmétique en supprimant les symboles « + » et « * » et les définir à partir de 0 et de la fonction successeur d'une manière similaire.\n\
-Cela nous donnerait une autre théorie arithmétique, mais essentiellement équivalente sur toutes ses propriétés élémentaires."
+	const [description, setDescription] = useState("")
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [printPopUp, setPopUp] = useState<boolean>(false);
 	const [FAActive, setFAActive] = useState<boolean>(false);
@@ -57,21 +52,23 @@ Cela nous donnerait une autre théorie arithmétique, mais essentiellement équi
 		console.log("test");
 	}
 
-	axios.get(`http://localhost:3001/user/profile/${ReadCookie("userId")}`, {withCredentials: true})
-	.then( function (response)
+	axios.get("http://localhost:3001/user/profile/edit", {withCredentials: true})
+	.then(function (response)
 	{
-//		console.log(response.data);
+		console.log(response.data);
 		setRealName(response.data.username);
 		if (response.data.nickname == null)
 			setNickName(response.data.username);
 		else
 			setNickName(response.data.nickname);
-		setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
-	})
-	.catch(err => {
+		
+		setFAActive(response.data.isTwoFAEnable);
+		setDescription(response.data.description);
+		
+			setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
+	}).catch(err => {
 		console.log(err);
-		//throw err;
-	});
+	})
 
 	useEffect(() => {
 	}, [])

@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import  React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import  React, { useEffect, useState } from 'react';
 
 import  './App.css';
 import  './bootstrap/css/bootstrap.css';
@@ -10,7 +10,7 @@ import  Profil      	from './pages/profil/profil';
 import  FriendList  	from './pages/friend-list/FriendsList';
 import	Blocked			from './pages/blocked/blockedMabriel';
 import	MatchHistory	from './pages/match-history/matchHistory';
-import	Chat 			from './pages/chat/chat';
+// import	Chat 			from './pages/chat/chat';
 import	EditProfil		from './pages/profil/editProfil';
 
 import Channel from './pages/channel/channel';
@@ -20,6 +20,8 @@ import ClassicGame from "./pages/game/Classic";
 import TimedGame from "./pages/game/Timed";
 import SpeedGame from "./pages/game/Speed";
 import RetroGame from "./pages/game/Retro";
+import ChannelList from './components/channelList';
+import Chat from './pages/chat/chat';
 
 
 const App: React.FC = () => {
@@ -31,6 +33,13 @@ const App: React.FC = () => {
 			window.removeEventListener('message', handleMessage);
 		};
 	}, []);
+
+	const [update, setUpdate] = useState<boolean>(false)
+
+	const onUpdate = () => {
+		setUpdate(!update)
+	}
+
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -41,9 +50,13 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/profil/edit-Profil" element={<EditProfil />} />
-				<Route path="/chat" element={<Chat />} />
-				<Route path="/channel/:id" Component={Channel} />
-				<Route path="/channel" Component={Channels} />
+				<Route path="/chat" element={<><ChannelList update={update} /><Outlet/></>}>
+					<Route path="" element={<Chat />}/>
+					<Route path="channel" element={<Channels onUpdate={onUpdate}/>} />
+					<Route path="channel/:id" element={<Channel/>} />
+				</Route>
+				{/* <Route path="/channel/:id" Component={Channel} /> */}
+				{/* <Route path="/channel" Component={Channels} /> */}
 				<Route path="/game/classic" element={<ClassicGame />} />
 				<Route path="/game/timed" element={<TimedGame />} />
 				<Route path="/game/speed" element={<SpeedGame />} />

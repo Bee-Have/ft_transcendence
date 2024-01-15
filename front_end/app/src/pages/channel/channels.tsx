@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
-import ChannelList from 'src/components/channelList';
+import { Input } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 import '../../css/channel.css';
 import { BACKEND_URL } from '../global/env';
-import axios from 'axios';
-import { Input } from '@mui/material';
-import { useNavigate } from 'react-router';
 
+interface ChannelProps {
+	channelName: string
+	mode: "PUBLIC" | "PROTECTED"
+	id: number
+	ownerId: number
+	ownerUsername: string
+	members: number
+}
 
-const Channel = ({ channel, popChannel }: any) => {
+const Channel = ({ channel, onUpdate }: {channel: ChannelProps, onUpdate: any}) => {
 
 	const navigate = useNavigate()
 
@@ -31,7 +38,7 @@ const Channel = ({ channel, popChannel }: any) => {
 
 	const joinPublic = () => {
 		axios.post(BACKEND_URL + '/channel/join/public', { channelId: channel.id }, { withCredentials: true })
-			.then(() => navigate("/channel/" + channel.id))
+			.then(() => { onUpdate(); navigate("/chat/channel/" + channel.id)})
 			.catch((e) => console.log(e.response.data))
 	}
 
@@ -59,7 +66,7 @@ const Channel = ({ channel, popChannel }: any) => {
 		axios.post(BACKEND_URL + "/channel/join/protected",
 			{ channelId: channel.id, password },
 			{ withCredentials: true })
-			.then(() => navigate("/channel/" + channel.id))
+			.then(() => { onUpdate(); navigate("/chat/channel/" + channel.id)})
 			.catch((e) => setPasswordMessage(e.response.data.message))
 	}
 
@@ -88,6 +95,7 @@ const Channel = ({ channel, popChannel }: any) => {
 			</div>}
 			<div className="owner">
 				<img
+					alt={channel.channelName + " badge"}
 					className="ownerimg"
 					src={BACKEND_URL + '/channel/badge/' + channel.id} />
 			</div>
@@ -106,7 +114,7 @@ const Channel = ({ channel, popChannel }: any) => {
 	);
 };
 
-const CreateChannel = () => {
+const CreateChannel = ({onUpdate}: any) => {
 	const [name, setName] = useState('');
 	const [mode, setMode] = useState('PUBLIC');
 	const [password, setPassword] = useState('');
@@ -145,7 +153,8 @@ const CreateChannel = () => {
 			{ name, password, passwordConfirm, mode },
 			{ withCredentials: true })
 			.then((res: any) => {
-				navigate("/channel/" + res.data.channelId)
+				onUpdate();
+				navigate("/chat/channel/" + res.data.channelId)
 				// if (file)
 				// 	axios.postForm(BACKEND_URL + '/channel/upload/badge/' + res.data.channelId,
 				// 		{ 'badge': file },
@@ -201,16 +210,7 @@ const CreateChannel = () => {
 	);
 };
 
-interface ChannelProps {
-	channelName: string
-	mode: "PUBLIC" | "PROTECTED"
-	id: number
-	ownerId: number
-	ownerUsername: string
-	members: number
-}
-
-const Channels: React.FC = () => {
+const Channels = ({ onUpdate }: any) => {
 	const [channelList, setChannelList] = useState<ChannelProps[]>([])
 
 	useEffect(() => {
@@ -221,29 +221,26 @@ const Channels: React.FC = () => {
 			.catch(error => console.log(error))
 	}, [])
 
-	const popChannel = (channelId: number) => {
-		const channels = new Array()
-		for (const channel of channelList) {
-			if (channel.id !== channelId)
-				channels.push(channel)
-		}
-		setChannelList(channels)
-	}
+	// const popChannel = (channelId: number) => {
+	// 	const channels = []
+	// 	for (const channel of channelList) {
+	// 		if (channel.id !== channelId)
+	// 			channels.push(channel)
+	// 	}
+	// 	setChannelList(channels)
+	// }
 
 	return (
-		<>
-			<ChannelList />
-			<div className="channel-content-wrapper">
-				<CreateChannel />
-				<div className='channel-box-wrapper'>
-					{
-						Object.keys(channelList).map((i) => (
-							<Channel key={i} channel={channelList[i]} popChannel={popChannel} />
-						))
-					}
-				</div>
+		<div className="channel-content-wrapper">
+			<CreateChannel onUpdate={onUpdate}/>
+			<div className='channel-box-wrapper'>
+				{
+					Object.keys(channelList).map((i) => (
+						<Channel key={i} channel={channelList[i]} onUpdate={onUpdate} />
+					))
+				}
 			</div>
-		</>
+		</div>
 	);
 };
 

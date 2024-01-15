@@ -16,7 +16,7 @@ const Channel = ({ channel, selectedId }: { channel: ChannelProps, selectedId: n
 	return (
 		<li
 			className="channel-bar-button"
-			onClick={() => { navigate("/channel/" + channel.id) }}>
+			onClick={() => { navigate("/chat/channel/" + channel.id) }}>
 			<img
 				src={BACKEND_URL + '/channel/badge/' + channel.id}
 				alt={channel.name}
@@ -27,7 +27,7 @@ const Channel = ({ channel, selectedId }: { channel: ChannelProps, selectedId: n
 	)
 }
 
-const Home = ({ navigate }: any) => {
+const HomeButton = ({ navigate }: any) => {
 	return (
 		<li
 			className="channel-bar-button"
@@ -50,10 +50,11 @@ interface ChannelProps {
 	ownerId: number
 }
 
-const ChannelList: React.FC = () => {
+const ChannelList = ({update}: {update: boolean}) => {
 	const [channels, setChannels] = useState<ChannelProps[]>([])
-	const navigate = useNavigate()
 	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
+
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel', { withCredentials: true })
@@ -61,14 +62,14 @@ const ChannelList: React.FC = () => {
 				setChannels(res.data)
 			})
 			.catch((e) => console.log(e))
-	}, [])
+	}, [update])
 
 	console.log(window.location.pathname)
 
 	useEffect(()=> {
 		const id = window.location.pathname.split('/')
-		if (id[2]){
-			const i = Number(id[2])
+		if (id[3]){
+			const i = Number(id[3])
 			if (!isNaN(i))
 				setSelectedChannelId(i)
 			else
@@ -80,16 +81,19 @@ const ChannelList: React.FC = () => {
 	return (
 		<nav className='channel-list-bar'>
 			<div className="channel-list-bar-ul">
-				<Home navigate={navigate} />
+				<HomeButton navigate={navigate} />
 				<div className="separator"></div>
 				{
 					Object.keys(channels).map((index) => (
-						<Channel key={index} channel={channels[index]} selectedId={selectedChannelId} />
+						<Channel 
+							key={index}
+							channel={channels[index]}
+							selectedId={selectedChannelId} />
 					))
 				}
 				<li
 					className="channel-bar-button"
-					onClick={() => { navigate("/channel") }}>
+					onClick={() => { navigate("/chat/channel") }}>
 					<AddCircleOutlineIcon className="channel-badge channel-add-cross" />
 					<div className="channel-show-name">Create/Add</div>
 				</li>

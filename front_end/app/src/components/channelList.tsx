@@ -9,7 +9,7 @@ import { BACKEND_URL } from 'src/pages/global/env';
 import { userId } from 'src/pages/global/userId';
 import '../css/channel.css';
 
-const Channel = ({ channel }: { channel: ChannelProps }) => {
+const Channel = ({ channel, selectedId }: { channel: ChannelProps, selectedId: number }) => {
 
 	const navigate = useNavigate()
 
@@ -20,7 +20,7 @@ const Channel = ({ channel }: { channel: ChannelProps }) => {
 			<img
 				src={BACKEND_URL + '/channel/badge/' + channel.id}
 				alt={channel.name}
-				className="channel-badge"
+				className={ selectedId === channel.id ? "channel-badge selected": "channel-badge"}
 			/>
 			<div className="channel-show-name">{channel.name}</div>
 		</li>
@@ -53,6 +53,7 @@ interface ChannelProps {
 const ChannelList: React.FC = () => {
 	const [channels, setChannels] = useState<ChannelProps[]>([])
 	const navigate = useNavigate()
+	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel', { withCredentials: true })
@@ -62,6 +63,19 @@ const ChannelList: React.FC = () => {
 			.catch((e) => console.log(e))
 	}, [])
 
+	console.log(window.location.pathname)
+
+	useEffect(()=> {
+		const id = window.location.pathname.split('/')
+		if (id[2]){
+			const i = Number(id[2])
+			if (!isNaN(i))
+				setSelectedChannelId(i)
+			else
+				setSelectedChannelId(-1)
+		}
+
+	}, [window.location.pathname, selectedChannelId])
 
 	return (
 		<nav className='channel-list-bar'>
@@ -70,7 +84,7 @@ const ChannelList: React.FC = () => {
 				<div className="separator"></div>
 				{
 					Object.keys(channels).map((index) => (
-						<Channel key={index} channel={channels[index]} />
+						<Channel key={index} channel={channels[index]} selectedId={selectedChannelId} />
 					))
 				}
 				<li

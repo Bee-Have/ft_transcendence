@@ -1,13 +1,14 @@
 import { Avatar, List, ListItemButton } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ChannelTextArea from 'src/components/channel.text-area';
 // import	ChannelPeople from './ChannelPeople';
 // import	TextArea from './textArea';
 import axios from 'axios';
 import ChannelList from 'src/components/channelList';
-import { userId } from '../global/userId';
 import { BACKEND_URL } from '../global/env';
+import { userId } from '../global/userId';
+import '../../css/channel.css';
 
 interface MemberProps {
 	userId: number,
@@ -23,27 +24,32 @@ const ChannelMembers = ({ channelId }: { channelId: number }) => {
 
 	const [channelMembers, setChannelMembers] = useState<MemberProps[]>([])
 
+	const navigate = useNavigate()
+
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel/members/' + channelId, {withCredentials: true})
 			.then((res): any => {
 				setChannelMembers(res.data)
 			})
-			.catch(e => console.log(e))
+			.catch( (e: any) => {
+				console.log(e)
+				navigate("/" + e.response.status)
+			})
 	}, [channelId])
 
 	return (
 		<>
-		<div className='channelName'>{channelMembers[0]?.channelName}</div>
+		<div className=''>{channelMembers[0]?.channelName}</div>
 		<List>
-			<div className="friend" >
+			<div className="" >
 				{channelMembers.map((member, index) => (
 					<ListItemButton key={index} >
 						<Avatar
-							className="avatar"
+							className=""
 							alt={member.username}
 							src={BACKEND_URL + '/user/image/' + member.userId}
 							sx={{width: 60, height: 60}} />
-						<div className="name">{member.username}<span className='role'>{member.role === "NONADMIN" ? "VILLAGERS" : member.role }</span></div>
+						<div className="">{member.username}<span className=''>{member.role === "NONADMIN" ? "VILLAGERS" : member.role }</span></div>
 					</ListItemButton>
 				))}
 
@@ -59,13 +65,13 @@ const Channel: React.FC = () => {
 	const { id } = useParams()
 
 	return (
-		<div className="chat">
+		<>
 			<ChannelList />
-			<div className="channelPeople">
+			<div className="channel-content-wrapper">
 				<ChannelMembers channelId={Number(id)} />
 				<ChannelTextArea currentChannelId={Number(id)} userId={userId} />
 			</div>
-		</div>
+		</>
 	);
 };
 

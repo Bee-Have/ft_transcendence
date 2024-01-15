@@ -111,10 +111,10 @@ const CreateChannel = () => {
 	const [mode, setMode] = useState('PUBLIC');
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
-	const [file, setFile] = useState(null)
+	// const [file, setFile] = useState(null)
 	const [errorMessage, setErrorMessage] = useState<null | string>(null)
-	const [badgeUpload, setbadgeUpload] = useState<null | string>(null)
-	const [channelMessage, setchannelMessage] = useState<null | string>(null)
+
+	const navigate = useNavigate()
 
 	const handleNameChange = (e: any) => {
 		setName(e.target.value);
@@ -122,8 +122,6 @@ const CreateChannel = () => {
 
 	const handleModeChange = (e: any) => {
 		setErrorMessage(null)
-		setchannelMessage(null)
-		setbadgeUpload(null)
 		setMode(e.target.value);
 	};
 
@@ -135,27 +133,25 @@ const CreateChannel = () => {
 		setPasswordConfirm(e.target.value);
 	};
 
-	const handleFileChange = (e: any) => {
-		setFile(e.target.files[0])
-	}
+	// const handleFileChange = (e: any) => {
+	// 	setFile(e.target.files[0])
+	// }
 
 	const handleSubmit = (e: any) => {
 		e.preventDefault()
 		setErrorMessage(null)
-		setchannelMessage(null)
-		setbadgeUpload(null)
 
 		axios.post(BACKEND_URL + '/channel',
 			{ name, password, passwordConfirm, mode },
 			{ withCredentials: true })
 			.then((res: any) => {
-				setchannelMessage('channel Created')
-				if (file)
-					axios.postForm(BACKEND_URL + '/channel/upload/badge/' + res.data.channelId,
-						{ 'badge': file },
-						{ withCredentials: true })
-						.then(() => setbadgeUpload('badge upload success'))
-						.catch((e) => setErrorMessage(e.response.data.message))
+				navigate("/channel/" + res.data.channelId)
+				// if (file)
+				// 	axios.postForm(BACKEND_URL + '/channel/upload/badge/' + res.data.channelId,
+				// 		{ 'badge': file },
+				// 		{ withCredentials: true })
+				// 		.then(() => setbadgeUpload('badge upload success'))
+				// 		.catch((e) => setErrorMessage(e.response.data.message))
 			})
 			.catch((e) => setErrorMessage(e.response.data.message))
 	}
@@ -193,14 +189,12 @@ const CreateChannel = () => {
 							</label>
 						</div>
 					)}
-					<label>
+					{/* <label>
 						Badge:
 						<input type="file" onChange={handleFileChange} />
-					</label>
+					</label> */}
 					<button type="submit" className='button'>Create</button><br></br>
 					{errorMessage && <><span>{errorMessage}</span><br /></>}
-					{channelMessage && <><span>{channelMessage}</span><br /></>}
-					{badgeUpload && <span>{badgeUpload}</span>}
 				</div>
 			</form>
 		</div>

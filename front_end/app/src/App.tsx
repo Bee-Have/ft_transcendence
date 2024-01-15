@@ -48,7 +48,8 @@ const App: React.FC = () => {
 				<Route path="/game/timed" element={<TimedGame />} />
 				<Route path="/game/speed" element={<SpeedGame />} />
 				<Route path="/game/retro" element={<RetroGame />} />
-				<Route path="*" element={<p>404 Not found</p> } />
+				<Route path="/403" element={<p>403 Forbidden</p>} />
+				<Route path="*" element={<p>404 Not found</p>} />
 				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
 			</Routes>
 		</BrowserRouter>

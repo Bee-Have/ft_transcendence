@@ -75,17 +75,34 @@
 
 .channel-content-wrapper {
 	min-height: 100vh;
+	max-height: 100vh;
 	position: relative;
+	background-color: rgb(170, 170, 170);
 	left: 80px;
 	width: calc(100% - 80px);
 	margin: 0;
 	padding: 0;
+	overflow-y: auto;
+}
+
+.channel-content-wrapper::-webkit-scrollbar {
+	width: 10px;
+}
+.channel-content-wrapper::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+.channel-content-wrapper::-webkit-scrollbar-thumb {
+	background: #888;
+}
+.channel-content-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
 
 .channel-form {
 	width: 400px;
 	margin: auto;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
+	margin-top: 20px;
 	padding: 20px;
 	border: 1px solid #ccc;
 	border-radius: 5px;
@@ -125,7 +142,7 @@ select {
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	overflow-y: scroll;
+	overflow-y: auto;
 	width: 100%;
 }
 
@@ -139,7 +156,6 @@ select {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-
 }
 
 .channel-bar-button {
@@ -156,6 +172,11 @@ select {
 	display: block;
 	object-fit: cover;
 	margin: 7.5px;
+}
+
+.selected {
+	border: 2px solid rgb(204, 148, 43);
+	border-radius: 30%;
 }
 
 .channel-badge:hover {
@@ -254,9 +275,11 @@ select {
 		color: red;
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	100% {
 		display: none;
 		opacity: 0;

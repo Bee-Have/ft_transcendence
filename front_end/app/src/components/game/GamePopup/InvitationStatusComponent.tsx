@@ -36,31 +36,27 @@ function InvitationStatusComponent({
 
   React.useEffect(() => {
     if (isAccepted === true) {
+      let gameUrl =
+        "/game/" +
+        gamePopupProps.gameMode +
+        "?player1=" +
+        (userId === gamePopupProps.sender.id
+          ? gamePopupProps.sender.id
+          : gamePopupProps.receiver?.id) +
+        "&player2=" +
+        (userId === gamePopupProps.sender.id
+          ? gamePopupProps.receiver?.id
+          : gamePopupProps.sender.id);
+
+      navigate(gameUrl);
       gameService
         .deleteUserInvites(userId)
         .then((res) => {
-          if (userId == gamePopupProps.sender.id)
-            navigate(
-              "/game/" +
-                gamePopupProps.gameMode +
-                "?player1=" +
-                gamePopupProps.sender.id +
-                "&player2=" +
-                gamePopupProps.receiver?.id
-            );
-          else
-            navigate(
-              "/game/" +
-                gamePopupProps.gameMode +
-                "?player1=" +
-                gamePopupProps.receiver?.id +
-                "&player2=" +
-                gamePopupProps.sender.id
-            );
           setIsAccepted(false);
         })
         .catch((err: Error | AxiosError) => {
           errorContext.newError?.(errorHandler(err));
+          navigate("/");
         });
     }
   }, [isAccepted]);

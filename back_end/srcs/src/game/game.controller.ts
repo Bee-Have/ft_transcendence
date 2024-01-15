@@ -80,4 +80,9 @@ export class GameController {
       acceptInviteDto.acceptedUserId
     );
   }
+
+  @Get("matchHistory/:userId")
+  async getMatchHistory(@Param("userId") userId: number) {
+	return await this.gameService.getMatchHistory(userId);
+  }
 }

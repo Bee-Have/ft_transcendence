@@ -20,9 +20,12 @@ import {
 } from "./game-info.dto";
 
 import { initBall, ballRoutine, startBallRoutine } from "./game-logic";
+import { GameService } from "../game.service";
 
 @WebSocketGateway({ transports: ["websocket"], namespace: "game" })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private gameService: GameService) {}
+
   @WebSocketServer()
   private server!: Server;
 
@@ -71,6 +74,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         userId === currentGame.player1
           ? currentGame.player2
           : currentGame.player1;
+      this.gameService.createMatchHistoryItem(currentGame);
       this.server.to(gameId as string).emit("game:winner", winnerId);
       console.log("winner: ", winnerId);
       currentGame.gameStatus = "FINISHED";
@@ -134,7 +138,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           currentGame.player1Score,
           currentGame.player2Score
         );
-      setTimeout(() => startBallRoutine(this.server, currentGame, gameId), 1000);
+      setTimeout(
+        () => startBallRoutine(this.gameService, this.server, currentGame, gameId),
+        1000
+      );
     }
   }
 
@@ -154,4 +161,3 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .emit("game:newPaddlePosition", paddlePosition, player);
   }
 }
-

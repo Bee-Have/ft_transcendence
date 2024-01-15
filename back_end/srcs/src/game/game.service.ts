@@ -10,6 +10,8 @@ import {
   InviteDto,
 } from "./dto/game-invite.dto";
 
+import { GameInfo, MatchHistoryItemDto } from "./gateway/game-info.dto";
+
 @Injectable()
 export class GameService {
   constructor(
@@ -325,5 +327,89 @@ export class GameService {
     const player: UserInfo = this.userService.connected_user_map.get(userId);
     player?.socket.emit("new-invite");
     acceptedUser?.socket.emit("new-invite");
+  }
+
+  async createMatchHistoryItem(gameInfo: GameInfo) {
+    let winnerId: number | null = null;
+
+    if (gameInfo.player1Score > gameInfo.player2Score)
+      winnerId = gameInfo.player1;
+    else if (gameInfo.player1Score < gameInfo.player2Score)
+      winnerId = gameInfo.player2;
+
+    await this.prisma.matchHistoryItem.create({
+      data: {
+        player1Id: gameInfo.player1,
+        player1Score: gameInfo.player1Score,
+        player2Id: gameInfo.player2,
+        player2Score: gameInfo.player2Score,
+        gameMode: gameInfo.gamemode,
+        winnerId: winnerId,
+      },
+    });
+  }
+
+  async getMatchHistory(userId: number) {
+    let result: MatchHistoryItemDto[] = [];
+
+    const matchHistory = await this.prisma.matchHistoryItem.findMany({
+      where: {
+        OR: [
+          {
+            player1Id: userId,
+          },
+          {
+            player2Id: userId,
+          },
+        ],
+      },
+      orderBy: {
+        id: "desc",
+      },
+      select: {
+        winnerId: true,
+        player1: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        player1Score: true,
+        player2: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        player2Score: true,
+        gameMode: true,
+      },
+    });
+
+    if (matchHistory === undefined || matchHistory.length == 0) return result;
+
+    matchHistory.forEach((match) => {
+      result.push({
+        winnerId: match.winnerId,
+        p1: {
+          id: match.player1.id,
+          username: match.player1.username,
+          userstatus: this.userService.connected_user_map.get(match.player1.id)
+            ?.userstatus,
+          photo: process.env.BACKEND_URL + "/user/image/" + match.player1.id,
+        },
+        p1Score: match.player1Score,
+        p2: {
+          id: match.player2.id,
+          username: match.player2.username,
+          userstatus: this.userService.connected_user_map.get(match.player2.id)
+            ?.userstatus,
+          photo: process.env.BACKEND_URL + "/user/image/" + match.player2.id,
+        },
+        p2Score: match.player2Score,
+        gameMode: match.gameMode,
+      });
+    });
+    return result;
   }
 }

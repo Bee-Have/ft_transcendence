@@ -8,6 +8,8 @@ import {
   MAX_VELOCITY,
 } from "./game-info.dto";
 
+import { GameService } from "../game.service";
+
 import { Socket, Server } from "socket.io";
 
 function randomNumberBetween(min: number, max: number) {
@@ -42,7 +44,12 @@ function initBall() {
   return ball;
 }
 
-function ballRoutine(server: Server, currentGame: GameInfo, gameId: string) {
+function ballRoutine(
+  gameService: GameService,
+  server: Server,
+  currentGame: GameInfo,
+  gameId: string
+) {
   const nextBall: BallInfo = { ...currentGame.ball };
   nextBall.position.x += nextBall.direction.x * nextBall.velocity * DELTA_TIME;
   nextBall.position.y += nextBall.direction.y * nextBall.velocity * DELTA_TIME;
@@ -70,8 +77,8 @@ function ballRoutine(server: Server, currentGame: GameInfo, gameId: string) {
   if (nextBallTop <= 0 || nextBallBottom >= 100) nextBall.direction.y *= -1;
 
   if (nextBallLeft <= 0 || nextBallRight >= 100) {
-    scoreGoal(server, currentGame, gameId, scorerId);
-	nextBall.position = { x: 50, y: 50 };
+    scoreGoal(gameService, server, currentGame, gameId, scorerId);
+    nextBall.position = { x: 50, y: 50 };
   } else if (
     ((padRight >= nextBallLeft && nextBall.direction.x < 0) ||
       (padLeft <= nextBallRight && nextBall.direction.x > 0)) &&
@@ -108,6 +115,7 @@ function ballRoutine(server: Server, currentGame: GameInfo, gameId: string) {
 }
 
 function startBallRoutine(
+  gameService: GameService,
   server: Server,
   currentGame: GameInfo,
   gameId: string
@@ -121,11 +129,12 @@ function startBallRoutine(
   currentGame.ball = initBall();
 
   currentGame.intervalId = setInterval(() => {
-    ballRoutine(server, currentGame, gameId);
+    ballRoutine(gameService, server, currentGame, gameId);
   }, DELTA_TIME);
 }
 
 function scoreGoal(
+  gameService: GameService,
   server: Server,
   currentGame: GameInfo,
   gameId: string,
@@ -152,11 +161,13 @@ function scoreGoal(
       currentGame.player1Score >= currentGame.maxScore
         ? currentGame.player1
         : currentGame.player2;
+
+    gameService.createMatchHistoryItem(currentGame);
     server.to(gameId).emit("game:winner", winnerId);
     currentGame.gameStatus = "FINISHED";
   } else {
     setTimeout(() => {
-      startBallRoutine(server, currentGame, gameId);
+      startBallRoutine(gameService, server, currentGame, gameId);
     }, 1000);
   }
 }

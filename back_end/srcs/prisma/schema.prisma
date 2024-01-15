@@ -49,11 +49,14 @@ model User {
     sentGameInvites     GameInvite[] @relation("SentGameInvites")
     receivedGameInvites GameInvite[] @relation("ReceivedGameInvites")
 
+    matchHistoryP1 MatchHistoryItem[] @relation("MatchHistoryP1")
+    matchHistoryP2 MatchHistoryItem[] @relation("MatchHistoryP2")
+
     @@map("users")
 }
 
 model GameInvite {
-    id Int @id @default(autoincrement())
+    id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
 
     acceptedInvite Boolean @default(false)
@@ -64,9 +67,25 @@ model GameInvite {
     receiverId Int?
     receiver   User? @relation("ReceivedGameInvites", fields: [receiverId], references: [id])
 
-	gameMode String @default("classic")
+    gameMode String @default("classic")
 
-	@@index([senderId, receiverId])
+    @@index([senderId, receiverId])
+}
+
+model MatchHistoryItem {
+    id Int @id @default(autoincrement())
+
+	winnerId Int?
+
+    player1Id Int
+    player1   User @relation("MatchHistoryP1", fields: [player1Id], references: [id])
+    player1Score Int @default(0)
+
+    player2Id Int
+    player2   User @relation("MatchHistoryP2", fields: [player2Id], references: [id])
+    player2Score Int @default(0)
+
+    gameMode String @default("classic")
 }
 
 model Channel {

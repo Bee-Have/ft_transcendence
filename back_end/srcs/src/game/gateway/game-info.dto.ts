@@ -1,3 +1,5 @@
+import { UserStatus } from "src/user/gateway/dto/userStatus.dto";
+
 interface vec2 {
   x: number;
   y: number;
@@ -35,6 +37,7 @@ interface GameInfo {
   player2Score: number;
   maxScore: number;
 
+  gamemode: "classic" | "timed" | "speed" | "retro";
   gameStatus: "PREPARING" | "PLAYING" | "FINISHED";
 }
 
@@ -48,6 +51,8 @@ const defaultGameInfo: GameInfo = {
   player1Score: 0,
   player2Score: 0,
   maxScore: 5,
+
+  gamemode: "classic",
   gameStatus: "PREPARING",
 };
 
@@ -62,6 +67,25 @@ interface JoinGameDto {
   userId: number;
 }
 
+class MatchHistoryItemDto {
+  winnerId: number | null;
+  p1: {
+    id: number;
+    username: string;
+    userstatus: UserStatus;
+    photo: string;
+  };
+  p1Score: number;
+  p2: {
+    id: number;
+    username: string;
+    userstatus: UserStatus;
+    photo: string;
+  };
+  p2Score: number;
+  gameMode: string;
+}
+
 export {
   vec2,
   BallInfo,
@@ -73,4 +97,5 @@ export {
   INITIAL_VELOCITY,
   MAX_VELOCITY,
   DELTA_TIME,
+  MatchHistoryItemDto,
 };

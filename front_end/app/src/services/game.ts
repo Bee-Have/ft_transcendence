@@ -55,6 +55,12 @@ const acceptInvite = async (userId: number, acceptedUserId: number) => {
     .then((res) => res.data);
 };
 
+const getMatchHistory = async (userId: number) => {
+  return await axios
+    .get(`${API_URL}/matchHistory/${userId}`)
+    .then((res) => res.data);
+};
+
 export default {
   joinMatchmaking,
   leaveMatchmaking,
@@ -63,4 +69,5 @@ export default {
   sendInvite,
   declineInvite,
   acceptInvite,
+  getMatchHistory,
 };

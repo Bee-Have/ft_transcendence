@@ -172,4 +172,4 @@ function scoreGoal(
   }
 }
 
-export { initBall, ballRoutine, startBallRoutine };
+export { startBallRoutine };

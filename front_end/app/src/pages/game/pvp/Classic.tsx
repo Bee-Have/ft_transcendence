@@ -16,6 +16,9 @@ import OpponentPad from "src/components/game/pvp/OpponentPad";
 import GameOverComponent from "src/components/game/GameOverComponent";
 import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
 
+import { socket } from "src/pages/global/websocket";
+import { UserStatus } from "src/pages/global/friend.dto";
+
 function ClassicGamePvp() {
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
@@ -50,6 +53,8 @@ function ClassicGamePvp() {
           p2Score: number
         ) => {
           gameId.current = gameRoomId;
+          if (userId === p1 || userId === p2)
+            socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
           if (userId === p1) {
             playerId.current = p1;
             opponentId.current = p2;
@@ -73,6 +78,8 @@ function ClassicGamePvp() {
 
       gameSocket.current.on("game:winner", (winnerId: number) => {
 		gameSocket.current?.emit("game:unmount", gameId.current, userId);
+		if (userId === player1Id || userId === player2Id)
+			socket?.emit("update-user-status", UserStatus[UserStatus.online]);
         setWinner(winnerId === playerId.current ? "player" : "opponent");
         gameOverAnimation(winnerId === playerId.current ? "player" : "opponent");
         setTimeout(() => setGameOver(true), 2100);
@@ -82,6 +89,8 @@ function ClassicGamePvp() {
     return () => {
       if (gameSocket.current !== undefined) {
         gameSocket.current.emit("game:unmount", gameId.current, userId);
+		if (userId === player1Id || userId === player2Id)
+			socket?.emit("update-user-status", UserStatus[UserStatus.online]);
         gameSocket.current.removeAllListeners();
       }
     };

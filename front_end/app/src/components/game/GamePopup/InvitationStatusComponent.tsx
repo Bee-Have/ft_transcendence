@@ -10,13 +10,6 @@ import styles from "./GamePopup.module.css";
 
 import { useNavigate } from "react-router-dom";
 
-import gameService from "src/services/game";
-
-import { useErrorContext } from "src/context/ErrorContext";
-import { errorHandler } from "src/context/errorHandler";
-import { AxiosError } from "axios";
-// import { CountdownCircleTimer } from "react-countdown-circle-timer";
-
 function InvitationStatusComponent({
   gamePopupProps,
   launchMatch,
@@ -26,7 +19,6 @@ function InvitationStatusComponent({
 }) {
   const navigate = useNavigate();
   const [isAccepted, setIsAccepted] = React.useState<boolean>(false);
-  const errorContext = useErrorContext();
 
   React.useEffect(() => {
     if (gamePopupProps.acceptedInvite === true) {
@@ -49,15 +41,7 @@ function InvitationStatusComponent({
           : gamePopupProps.sender.id);
 
       navigate(gameUrl);
-      gameService
-        .deleteUserInvites(userId)
-        .then((res) => {
-          setIsAccepted(false);
-        })
-        .catch((err: Error | AxiosError) => {
-          errorContext.newError?.(errorHandler(err));
-          navigate("/");
-        });
+      setIsAccepted(false);
     }
   }, [isAccepted]);
 

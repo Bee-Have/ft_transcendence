@@ -19,7 +19,9 @@ import {
   INITIAL_VELOCITY,
 } from "./game-info.dto";
 
-import { initBall, ballRoutine, startBallRoutine } from "./game-logic";
+import { UserStatus } from "src/user/gateway/dto/userStatus.dto";
+
+import { startBallRoutine } from "./game-logic";
 import { GameService } from "../game.service";
 
 @WebSocketGateway({ transports: ["websocket"], namespace: "game" })
@@ -71,8 +73,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       if (userId === currentGame.player1) {
         currentGame.winnerId = currentGame.player2;
+        currentGame.player1Score = -42;
       } else if (userId === currentGame.player2) {
         currentGame.winnerId = currentGame.player1;
+        currentGame.player2Score = -42;
       }
 
       this.gameService.createMatchHistoryItem(currentGame);
@@ -130,6 +134,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) {
       console.log("!!!!game start!!!!");
       currentGame.gameStatus = "PLAYING";
+      this.gameService.deleteUserInvites(currentGame.player1);
+      this.gameService.deleteUserInvites(currentGame.player2);
       this.server
         .to(gameId)
         .emit(

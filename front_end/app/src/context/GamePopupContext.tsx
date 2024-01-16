@@ -2,7 +2,9 @@ import { createContext, useContext, useState } from "react";
 import React from "react";
 
 import { socket } from "src/pages/global/websocket";
-import { UserStatus } from "src/pages/global/friend.dto";
+import { UserStatus, UserStatusEventDto } from "src/pages/global/friend.dto";
+
+import { useEffectOnce } from "src/components/useEffectOnce";
 
 interface GamePopupContextProps {
   isVisible: boolean;
@@ -25,12 +27,12 @@ export const GamePopupProvider = ({
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
-  React.useEffect(() => {
-    const togglePopup = (data: UserStatus) => {
+  useEffectOnce(() => {
+    const togglePopup = (data: UserStatusEventDto) => {
       if (
-        data === UserStatus.offline ||
-        data === UserStatus.ingame ||
-        data === UserStatus.ingamesolo
+        data.userstatus === UserStatus.offline ||
+        data.userstatus === UserStatus.ingame ||
+        data.userstatus === UserStatus.ingamesolo
       ) {
         setIsVisible(false);
       } else {
@@ -43,7 +45,7 @@ export const GamePopupProvider = ({
     return () => {
       socket?.off("user-status", togglePopup);
     };
-  }, []);
+  });
 
   return (
     <GamePopupContext.Provider value={{ isVisible, setIsVisible }}>

@@ -35,3 +35,10 @@ export class InviteDto {
 	gameMode: string;
 	acceptedInvite: boolean;
 }
+
+export class RunningGameDto {
+	player1Id: number;
+	player2Id: number;
+
+	gameMode: string;
+}

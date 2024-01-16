@@ -72,6 +72,15 @@ model GameInvite {
     @@index([senderId, receiverId])
 }
 
+model RunningGame {
+	id        Int      @id @default(autoincrement())
+
+    player1Id  Int @default(0)
+    player2Id  Int @default(0)
+
+    gameMode String @default("classic")
+}
+
 model MatchHistoryItem {
     id Int @id @default(autoincrement())
 

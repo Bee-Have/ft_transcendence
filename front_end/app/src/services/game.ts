@@ -61,6 +61,12 @@ const getMatchHistory = async (userId: number) => {
     .then((res) => res.data);
 };
 
+const getUserCurrentGame = async (userId: number) => {
+  return await axios
+	.get(`${API_URL}/runningGame/${userId}`)
+	.then((res) => res.data);
+}
+
 export default {
   joinMatchmaking,
   leaveMatchmaking,
@@ -70,4 +76,5 @@ export default {
   declineInvite,
   acceptInvite,
   getMatchHistory,
+  getUserCurrentGame,
 };

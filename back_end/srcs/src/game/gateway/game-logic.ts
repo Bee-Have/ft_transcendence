@@ -162,6 +162,7 @@ function scoreGoal(
         ? currentGame.player1
         : currentGame.player2;
 
+	gameService.deleteRunningGame(scorerId);
     gameService.createMatchHistoryItem(currentGame);
     server.to(gameId).emit("game:winner", currentGame.winnerId);
     currentGame.gameStatus = "FINISHED";

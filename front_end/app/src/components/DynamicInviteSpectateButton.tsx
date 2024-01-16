@@ -16,7 +16,7 @@ function InviteSpectateButton({ user }: InviteSpectateButtonProps) {
   const navigate = useNavigate();
 
   const handleSpectate = () => {
-    navigate("/game/" + user.username);
+    navigate("/game/redirect?player1=" + user.id);
   };
 
   if (

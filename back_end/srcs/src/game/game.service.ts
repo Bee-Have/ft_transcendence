@@ -8,6 +8,7 @@ import {
   GameMatchmakingDto,
   SendInviteDto,
   InviteDto,
+  RunningGameDto,
 } from "./dto/game-invite.dto";
 
 import { GameInfo, MatchHistoryItemDto } from "./gateway/game-info.dto";
@@ -330,16 +331,21 @@ export class GameService {
   }
 
   async createMatchHistoryItem(gameInfo: GameInfo) {
-    await this.prisma.matchHistoryItem.create({
-      data: {
-        player1Id: gameInfo.player1,
-        player1Score: gameInfo.player1Score,
-        player2Id: gameInfo.player2,
-        player2Score: gameInfo.player2Score,
-        gameMode: gameInfo.gamemode,
-        winnerId: gameInfo.winnerId,
-      },
-    });
+	try {
+
+		await this.prisma.matchHistoryItem.create({
+			data: {
+				player1Id: gameInfo.player1,
+				player1Score: gameInfo.player1Score,
+				player2Id: gameInfo.player2,
+				player2Score: gameInfo.player2Score,
+				gameMode: gameInfo.gamemode,
+				winnerId: gameInfo.winnerId,
+			},
+		});
+	} catch (e) {
+		throw new HttpException("Error creating match history item", 500);
+	}
   }
 
   async getMatchHistory(userId: number) {
@@ -404,5 +410,54 @@ export class GameService {
       });
     });
     return result;
+  }
+
+  async registerRunningGame(newGame: RunningGameDto) {
+    await this.prisma.runningGame.create({
+      data: {
+        player1Id: newGame.player1Id,
+        player2Id: newGame.player2Id,
+        gameMode: newGame.gameMode,
+      },
+    });
+  }
+
+  async deleteRunningGame(userId: number) {
+	await this.prisma.runningGame.deleteMany({
+	  where: {
+		OR: [
+		  {
+			player1Id: userId,
+		  },
+		  {
+			player2Id: userId,
+		  },
+		],
+	  },
+	});
+  }
+
+  async getRunningGame(userId: number): Promise<RunningGameDto> {
+    const runningGame = await this.prisma.runningGame.findFirst({
+      where: {
+        OR: [
+          {
+            player1Id: userId,
+          },
+          {
+            player2Id: userId,
+          },
+        ],
+      },
+      select: {
+        player1Id: true,
+        player2Id: true,
+        gameMode: true,
+      },
+    });
+
+    if (runningGame === undefined) return null;
+
+    return runningGame;
   }
 }

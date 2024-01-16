@@ -85,4 +85,9 @@ export class GameController {
   async getMatchHistory(@Param("userId") userId: number) {
 	return await this.gameService.getMatchHistory(userId);
   }
+
+  @Get("runningGame/:userId")
+  async getRunningGame(@Param("userId") userId: number) {
+	return await this.gameService.getRunningGame(userId);
+  }
 }

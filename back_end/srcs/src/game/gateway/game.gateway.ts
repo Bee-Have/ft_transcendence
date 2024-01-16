@@ -79,6 +79,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         currentGame.player2Score = -42;
       }
 
+      this.gameService.deleteRunningGame(userId);
       this.gameService.createMatchHistoryItem(currentGame);
       this.server
         .to(gameId as string)
@@ -136,6 +137,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       currentGame.gameStatus = "PLAYING";
       this.gameService.deleteUserInvites(currentGame.player1);
       this.gameService.deleteUserInvites(currentGame.player2);
+      this.gameService.registerRunningGame({
+        player1Id: currentGame.player1,
+        player2Id: currentGame.player2,
+        gameMode: currentGame.gamemode,
+      });
       this.server
         .to(gameId)
         .emit(

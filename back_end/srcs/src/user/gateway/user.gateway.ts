@@ -89,7 +89,7 @@ export class UserGateway {
 			if (data === key)
 				user.updateStatus(UserStatus[key])
 		}
-		// this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 		client.emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 

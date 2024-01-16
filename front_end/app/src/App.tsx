@@ -13,6 +13,8 @@ import MatchHistory from "./pages/match-history/matchHistory";
 import Chat from "./pages/chat/chat";
 import EditProfil from "./pages/profil/editProfil";
 
+import RedirectGame from "./pages/game/RedirectGame";
+
 import ClassicGame from "./pages/game/solo/Classic";
 import ClassicGamePvp from "./pages/game/pvp/Classic";
 import TimedGame from "./pages/game/solo/Timed";
@@ -46,6 +48,8 @@ const App: React.FC = () => {
           <Route path="/profil/edit-Profil" element={<EditProfil />} />
           <Route path="/chat" element={<Chat />} />
 
+		  <Route path="/game/redirect" element={<RedirectGame />} />
+
           <Route path="/game/training/classic" element={<ClassicGame />} />
           <Route path="/game/classic" element={<ClassicGamePvp />} />
           <Route path="/game/training/timed" element={<TimedGame />} />
@@ -53,7 +57,6 @@ const App: React.FC = () => {
           <Route path="/game/training/retro" element={<RetroGame />} />
 
           <Route path="*" element={<RedirectInvalidURL />} />
-          {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
         </Routes>
       </BrowserRouter>
     </>

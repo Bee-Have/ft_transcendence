@@ -1,5 +1,5 @@
 import React from "react";
-import { getQueryVariable } from "../getQueryVariable";
+import { getQueryVariable } from "src/pages/game/getQueryVariable";
 import { io, Socket } from "socket.io-client";
 
 import { userId } from "src/pages/global/userId";
@@ -77,11 +77,13 @@ function ClassicGamePvp() {
       });
 
       gameSocket.current.on("game:winner", (winnerId: number) => {
-		gameSocket.current?.emit("game:unmount", gameId.current, userId);
-		if (userId === player1Id || userId === player2Id)
-			socket?.emit("update-user-status", UserStatus[UserStatus.online]);
+        gameSocket.current?.emit("game:unmount", gameId.current, userId);
+        if (userId === player1Id || userId === player2Id)
+          socket?.emit("update-user-status", UserStatus[UserStatus.online]);
         setWinner(winnerId === playerId.current ? "player" : "opponent");
-        gameOverAnimation(winnerId === playerId.current ? "player" : "opponent");
+        gameOverAnimation(
+          winnerId === playerId.current ? "player" : "opponent"
+        );
         setTimeout(() => setGameOver(true), 2100);
       });
     }
@@ -89,8 +91,8 @@ function ClassicGamePvp() {
     return () => {
       if (gameSocket.current !== undefined) {
         gameSocket.current.emit("game:unmount", gameId.current, userId);
-		if (userId === player1Id || userId === player2Id)
-			socket?.emit("update-user-status", UserStatus[UserStatus.online]);
+        if (userId === player1Id || userId === player2Id)
+          socket?.emit("update-user-status", UserStatus[UserStatus.online]);
         gameSocket.current.removeAllListeners();
       }
     };

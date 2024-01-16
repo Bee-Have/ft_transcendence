@@ -28,9 +28,8 @@ function InvitationStatusComponent({
 
   React.useEffect(() => {
     if (isAccepted === true) {
-      let gameUrl =
-        "/game/" +
-        gamePopupProps.gameMode +
+      let redirectUrl =
+        "/game/redirect"  +
         "?player1=" +
         (userId === gamePopupProps.sender.id
           ? gamePopupProps.sender.id
@@ -38,9 +37,10 @@ function InvitationStatusComponent({
         "&player2=" +
         (userId === gamePopupProps.sender.id
           ? gamePopupProps.receiver?.id
-          : gamePopupProps.sender.id);
+          : gamePopupProps.sender.id) +
+		  "&gameMode=" + gamePopupProps.gameMode;
 
-      navigate(gameUrl);
+      navigate(redirectUrl);
       setIsAccepted(false);
     }
   }, [isAccepted]);

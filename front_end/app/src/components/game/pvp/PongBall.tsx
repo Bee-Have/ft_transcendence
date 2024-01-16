@@ -3,8 +3,6 @@ import React from "react";
 import "src/components/game/PongBall.css";
 import { Socket } from "socket.io-client";
 
-import { userId } from "src/pages/global/userId";
-
 import { useEffectOnce } from "src/components/useEffectOnce";
 
 interface vec2 {
@@ -14,10 +12,10 @@ interface vec2 {
 
 const Ball = ({
   gameSocket,
-  gameID,
+  mainPlayer,
 }: {
   gameSocket: Socket;
-  gameID: string;
+  mainPlayer: number;
 }) => {
   const [ballInfo, setBallInfo] = useState<vec2>({ x: 50, y: 50 });
   const ballElem = useRef<HTMLElement | null>(null);
@@ -28,7 +26,7 @@ const Ball = ({
       gameSocket.on(
         "game:updateBall",
         (ballUpdate: vec2, player2Id: number) => {
-          if (player2Id === userId) {
+          if (player2Id === mainPlayer) {
             ballUpdate.x = 100 - ballUpdate.x;
           }
           setBallInfo(ballUpdate);

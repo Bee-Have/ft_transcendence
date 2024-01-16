@@ -23,6 +23,7 @@ function ClassicGamePvp() {
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
 
+  let mainPlayer = React.useRef<number>(userId);
   const player1Id: number = parseInt(getQueryVariable("player1") ?? "0");
   const player2Id: number = parseInt(getQueryVariable("player2") ?? "0");
 
@@ -52,18 +53,22 @@ function ClassicGamePvp() {
           p1Score: number,
           p2Score: number
         ) => {
+          if (userId !== p1 && userId !== p2) mainPlayer.current = player1Id;
+
           gameId.current = gameRoomId;
           if (userId === p1 || userId === p2)
             socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
-          if (userId === p1) {
+          if (mainPlayer.current === p1) {
             playerId.current = p1;
             opponentId.current = p2;
-          } else {
+            setPlayerScore(p1Score);
+            setOpponentScore(p2Score);
+          } else if (mainPlayer.current === p2) {
             playerId.current = p2;
             opponentId.current = p1;
+            setPlayerScore(p2Score);
+            setOpponentScore(p1Score);
           }
-          setPlayerScore(p1Score);
-          setOpponentScore(p2Score);
           setStartGame(true);
         }
       );
@@ -116,7 +121,7 @@ function ClassicGamePvp() {
       <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
       <Score player={playerScore} opponent={opponentScore} />
       {winner === "" && (
-        <Ball gameSocket={gameSocket.current} gameID={gameId.current} />
+        <Ball gameSocket={gameSocket.current} mainPlayer={mainPlayer.current} />
       )}
       <PlayerPad
         gameSocket={gameSocket.current}

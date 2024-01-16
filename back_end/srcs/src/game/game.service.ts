@@ -344,7 +344,6 @@ export class GameService {
 			},
 		});
 	} catch (e) {
-		throw new HttpException("Error creating match history item", 500);
 	}
   }
 

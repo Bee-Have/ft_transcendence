@@ -90,7 +90,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("game:join")
-  handleJoinGame(
+  async handleJoinGame(
     @MessageBody() data: JoinGameDto,
     @ConnectedSocket() client: Socket
   ) {
@@ -99,12 +99,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       player1Id = [player2Id, (player2Id = player1Id)][0];
 
     const gameId = `${player1Id}-${player2Id}`;
+    let currentGame = this.runningGames.get(gameId);
+
+	const invite = await this.gameService.getUsersSharedInvite(
+		player1Id,
+		player2Id
+	);
+
+	console.log("invite: ", invite);
+
+    if (
+      currentGame === undefined &&
+      invite === null
+    ) {
+      client.emit("game:badRequest");
+      return;
+    }
 
     this.connectedUsers.set(client.id, { userId: userId, gameId: gameId });
 
     client.join(gameId);
-
-    let currentGame = this.runningGames.get(gameId);
 
     if (currentGame === undefined) {
       currentGame = { ...defaultGameInfo };

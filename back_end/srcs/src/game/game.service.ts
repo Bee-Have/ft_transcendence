@@ -102,6 +102,27 @@ export class GameService {
     return { userId };
   }
 
+  async getUsersSharedInvite(user1Id: number, user2Id: number) {
+	const gameInvite = await this.prisma.gameInvite.findFirst({
+	  where: {
+		OR: [
+		  {
+			senderId: user1Id,
+			receiverId: user2Id,
+		  },
+		  {
+			senderId: user2Id,
+			receiverId: user1Id,
+		  },
+		],
+	  },
+	});
+
+	if (gameInvite === undefined) return null;
+
+	return gameInvite;
+  }
+
   async getUserInvites(userId: number): Promise<InviteDto[]> {
     let result: InviteDto[] = [];
 

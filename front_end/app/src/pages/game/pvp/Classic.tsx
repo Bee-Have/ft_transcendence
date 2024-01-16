@@ -19,7 +19,11 @@ import { gameOverAnimation } from "src/components/game/animations/gameOverAnimat
 import { socket } from "src/pages/global/websocket";
 import { UserStatus } from "src/pages/global/friend.dto";
 
+import { useNavigate } from "react-router-dom";
+
 function ClassicGamePvp() {
+  const navigate = useNavigate();
+
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
 
@@ -43,6 +47,10 @@ function ClassicGamePvp() {
       });
 
       gameSocket.current.emit("game:join", player1Id, player2Id, userId);
+
+      gameSocket.current.on("game:badRequest", () => {
+        navigate("/game/badRequest");
+      });
 
       gameSocket.current.on(
         "game:init",

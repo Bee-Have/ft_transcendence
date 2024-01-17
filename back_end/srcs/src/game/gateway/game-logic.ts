@@ -44,6 +44,22 @@ function initBall() {
   return ball;
 }
 
+interface Box {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+function doesBoxesCollide(box1: Box, box2: Box) {
+  return (
+    box1?.right >= box2?.left &&
+    box1?.top <= box2?.bottom &&
+    box1?.bottom >= box2?.top &&
+    box1?.left <= box2?.right
+  );
+}
+
 function ballRoutine(
   gameService: GameService,
   server: Server,
@@ -57,36 +73,37 @@ function ballRoutine(
   nextBall.position.x = clamp(nextBall.position.x, 1, 99);
   nextBall.position.y = clamp(nextBall.position.y, 1, 99);
 
-  const nextBallRight = nextBall.position.x + 1;
-  const nextBallLeft = nextBall.position.x - 1;
-  const nextBallTop = nextBall.position.y - 1;
-  const nextBallBottom = nextBall.position.y + 1;
+  const nextBallBox: Box = {
+    left: nextBall.position.x - 1,
+    right: nextBall.position.x + 1,
+    top: nextBall.position.y - 1,
+    bottom: nextBall.position.y + 1,
+  };
 
   const currentPad: vec2 =
     nextBall.direction.x < 0
       ? { x: 5, y: currentGame.player1PadY }
       : { x: 95, y: currentGame.player2PadY };
-  const padRight = currentPad.x + 1;
-  const padLeft = currentPad.x - 1;
-  const padTop = currentPad.y - 5;
-  const padBottom = currentPad.y + 5;
+
+  const padBox: Box = {
+    left: currentPad.x - 1,
+    right: currentPad.x + 1,
+    top: currentPad.y - 5,
+    bottom: currentPad.y + 5,
+  };
 
   const scorerId =
     nextBall.direction.x < 0 ? currentGame.player2 : currentGame.player1;
 
-  if (nextBallTop <= 0 || nextBallBottom >= 100) nextBall.direction.y *= -1;
+  if (nextBallBox.top <= 0 || nextBallBox.bottom >= 100)
+    nextBall.direction.y *= -1;
 
-  if (nextBallLeft <= 0 || nextBallRight >= 100) {
+  if (nextBallBox.left <= 0 || nextBallBox.right >= 100) {
     scoreGoal(gameService, server, currentGame, gameId, scorerId);
     nextBall.position = { x: 50, y: 50 };
-  } else if (
-    ((padRight >= nextBallLeft && nextBall.direction.x < 0) ||
-      (padLeft <= nextBallRight && nextBall.direction.x > 0)) &&
-    padTop <= nextBallBottom &&
-    padBottom >= nextBallTop
-  ) {
-    let collidePoint = nextBall.position.y - currentPad.y;
-    collidePoint /= 5;
+  } else if (doesBoxesCollide(padBox, nextBallBox) === true) {
+    let collidePoint = nextBall.position.y - (currentPad.y + 10);
+    collidePoint /= 10;
 
     const angleRad = (collidePoint * Math.PI) / 4;
 
@@ -162,7 +179,7 @@ function scoreGoal(
         ? currentGame.player1
         : currentGame.player2;
 
-	gameService.deleteRunningGame(scorerId);
+    gameService.deleteRunningGame(scorerId);
     gameService.createMatchHistoryItem(currentGame);
     server.to(gameId).emit("game:winner", currentGame.winnerId);
     currentGame.gameStatus = "FINISHED";

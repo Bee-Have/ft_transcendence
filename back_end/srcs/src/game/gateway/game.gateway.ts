@@ -101,17 +101,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameId = `${player1Id}-${player2Id}`;
     let currentGame = this.runningGames.get(gameId);
 
-	const invite = await this.gameService.getUsersSharedInvite(
-		player1Id,
-		player2Id
-	);
+    const invite = await this.gameService.getUsersSharedInvite(
+      player1Id,
+      player2Id
+    );
 
-	console.log("invite: ", invite);
-
-    if (
-      currentGame === undefined &&
-      invite === null
-    ) {
+    if (currentGame === undefined && invite === null) {
       client.emit("game:badRequest");
       return;
     }

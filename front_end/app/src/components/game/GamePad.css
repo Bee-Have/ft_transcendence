@@ -16,7 +16,7 @@
 	
 	position: absolute;
 	top: calc(var(--position) * 1vh);
-	transform: translate(-50%, -50%);
+	transform: translate(50%, -50%);
 	right: 5vw;
 	
 	height: 10vh;

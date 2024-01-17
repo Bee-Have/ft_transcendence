@@ -43,6 +43,7 @@ interface GameInfo {
   maxScore: number;
 
   gamemode: "classic" | "timed" | "speed" | "retro";
+  dueTime?: number;
   gameStatus: "PREPARING" | "PLAYING" | "FINISHED";
 
   winnerId?: number;

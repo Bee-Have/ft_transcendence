@@ -184,12 +184,17 @@ function scoreGoal(
 
   if (
     currentGame.player1Score >= currentGame.maxScore ||
-    currentGame.player2Score >= currentGame.maxScore
+    currentGame.player2Score >= currentGame.maxScore ||
+    (currentGame.gamemode === "timed" &&
+      currentGame.dueTime - new Date().getTime() < 0)
   ) {
-    currentGame.winnerId =
-      currentGame.player1Score >= currentGame.maxScore
-        ? currentGame.player1
-        : currentGame.player2;
+    if (currentGame.player1Score > currentGame.player2Score) {
+      currentGame.winnerId = currentGame.player1;
+    } else if (currentGame.player1Score < currentGame.player2Score) {
+      currentGame.winnerId = currentGame.player2;
+    } else {
+      currentGame.winnerId = undefined;
+    }
 
     gameService.deleteRunningGame(scorerId);
     gameService.createMatchHistoryItem(currentGame);

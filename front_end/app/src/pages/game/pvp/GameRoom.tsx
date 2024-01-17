@@ -26,6 +26,36 @@ import { UserStatus } from "src/pages/global/friend.dto";
 
 import { useNavigate } from "react-router-dom";
 
+import Card from "@mui/material/Card";
+import styles from "../solo/Timed.module.css";
+
+function TimerCard({ duration }: { duration: number }) {
+  const [remainingTime, setRemainingTime] = React.useState(duration);
+  const [isStarted, setIsStarted] = React.useState(false);
+
+  if (isStarted === false) {
+    setIsStarted(true);
+    setInterval(() => {
+      setRemainingTime((prevState) => prevState - 1);
+    }, 1000);
+  }
+
+  React.useEffect(() => {
+    if (remainingTime <= 0) {
+      const timerCard = document.getElementById("TimerCard");
+
+      timerCard?.style.setProperty("bottom", "-200%");
+    }
+    // eslint-disable-next-line
+  }, [remainingTime]);
+
+  return (
+    <Card className={styles.TimerCard} id="TimerCard">
+      {remainingTime > 0 ? remainingTime : 0}
+    </Card>
+  );
+}
+
 function GameRoomPvp() {
   const navigate = useNavigate();
 
@@ -41,6 +71,8 @@ function GameRoomPvp() {
   const gameMode = React.useRef<string>("classic");
   const playerId = React.useRef<number>(0);
   const opponentId = React.useRef<number>(0);
+
+  const [timeLeft, setTimeLeft] = React.useState(100);
 
   const [startGame, setStartGame] = React.useState(false);
   const [gameOver, setGameOver] = React.useState(false);
@@ -66,12 +98,14 @@ function GameRoomPvp() {
           p1: number,
           p2: number,
           p1Score: number,
-          p2Score: number
+          p2Score: number,
+          remainingTime: number
         ) => {
           if (userId !== p1 && userId !== p2) mainPlayer.current = player1Id;
 
           gameId.current = gameRoomId;
           gameMode.current = mode;
+          setTimeLeft(Math.round(remainingTime / 1000));
           if (userId === p1 || userId === p2)
             socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
           if (mainPlayer.current === p1) {
@@ -101,14 +135,14 @@ function GameRoomPvp() {
         gameSocket.current?.emit("game:unmount", gameId.current, userId);
         if (userId === player1Id || userId === player2Id)
           socket?.emit("update-user-status", UserStatus[UserStatus.online]);
-        setWinner(winnerId === playerId.current ? "player" : "opponent");
+        setWinner(winnerId === opponentId.current ? "opponent" : "player");
         if (gameMode.current === "retro")
           retroGameOverAnimation(
-            winnerId === playerId.current ? "player" : "opponent"
+            winnerId === opponentId.current ? "opponent" : "player"
           );
         else
           gameOverAnimation(
-            winnerId === playerId.current ? "player" : "opponent"
+            winnerId === opponentId.current ? "opponent" : "player"
           );
         setTimeout(() => setGameOver(true), 2100);
       });
@@ -146,6 +180,7 @@ function GameRoomPvp() {
         player={playerScore}
         opponent={opponentScore}
       />
+      {gameMode.current === "timed" && <TimerCard duration={timeLeft} />}
       {winner === "" && (
         <Ball
           gameSocket={gameSocket.current}

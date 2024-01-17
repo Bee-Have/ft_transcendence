@@ -115,12 +115,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     client.join(gameId);
 
-if (currentGame === undefined) {
-	currentGame = { ...defaultGameInfo };
-	this.runningGames.set(gameId, currentGame);
-	currentGame.gamemode = invite.gameMode as "classic" | "timed" | "speed" | "retro";
-	if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
-}
+    if (currentGame === undefined) {
+      currentGame = { ...defaultGameInfo };
+      this.runningGames.set(gameId, currentGame);
+      currentGame.gamemode = invite.gameMode as
+        | "classic"
+        | "timed"
+        | "speed"
+        | "retro";
+      if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
+      if (currentGame.gamemode === "timed") {
+        currentGame.maxScore = 100;
+      }
+    }
 
     if (userId === player1Id) {
       currentGame.player1 = userId;
@@ -131,11 +138,12 @@ if (currentGame === undefined) {
       client.emit(
         "game:init",
         gameId,
-		currentGame.gamemode,
+        currentGame.gamemode,
         currentGame.player1,
         currentGame.player2,
         currentGame.player1Score,
-        currentGame.player2Score
+        currentGame.player2Score,
+        currentGame.dueTime - new Date().getTime()
       );
       return;
     }
@@ -154,16 +162,18 @@ if (currentGame === undefined) {
         player2Id: currentGame.player2,
         gameMode: currentGame.gamemode,
       });
+      currentGame.dueTime = new Date().getTime() + 60000;
       this.server
         .to(gameId)
         .emit(
           "game:init",
           gameId,
-		  currentGame.gamemode,
+          currentGame.gamemode,
           currentGame.player1,
           currentGame.player2,
           currentGame.player1Score,
-          currentGame.player2Score
+          currentGame.player2Score,
+          currentGame.dueTime - new Date().getTime()
         );
       setTimeout(
         () =>

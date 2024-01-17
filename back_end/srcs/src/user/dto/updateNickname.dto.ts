@@ -1,9 +1,9 @@
 import { IsDefined, Length } from "class-validator";
 
-export class updateUsernameDto {
+export class updateNicknameDto {
 	@Length(3, 10)
 	@IsDefined()
-	username: string
+	nickname: string
 }
 
 export class updateUserDescriptionDto {

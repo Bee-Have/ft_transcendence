@@ -15,6 +15,7 @@ import FADisable from 'src/components/2FADisable';
 import Menu from 'src/components/menu';
 import 'src/css/profil.css';
 import { ReadCookie } from 'src/components/ReadCookie';
+import { BACKEND_URL } from '../global/env';
 
 const EditProfil: React.FC = () => 
 {
@@ -48,29 +49,43 @@ const EditProfil: React.FC = () =>
 		setPopUp(true);
 	};
 
-	const handle_submit = () => {
-		console.log("test");
+	const handle_submit = (e: any) => {
+		e.preventDefault();
+		
+		axios.post(BACKEND_URL + "/user/update/description", { description }, { withCredentials: true })
+			.then( (res : any) => {})
+			.catch( (e) => console.log(e) );
+		
+		axios.post(BACKEND_URL + "/user/update/nickname", { "nickname": nickName }, { withCredentials: true })
+			.then( (res : any) => {})
+			.catch( (e) => {console.log(e)} );
+		
+		/*axios.post(BACKEND_URL + "user/upload/avatar", {profilePic}, { withCredentials: true })
+			.then( (res: any) => {
+				console.log("pic sent");
+			})
+			.catch( (e) => { console.log(e); })*/
+
+		navigate("/profil/edit-Profil");
 	}
 
-	axios.get("http://localhost:3001/user/profile/edit", {withCredentials: true})
-	.then(function (response)
-	{
-		console.log(response.data);
-		setRealName(response.data.username);
-		if (response.data.nickname == null)
-			setNickName(response.data.username);
-		else
-			setNickName(response.data.nickname);
-		
-		setFAActive(response.data.isTwoFAEnable);
-		setDescription(response.data.description);
-		
-			setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
-	}).catch(err => {
-		console.log(err);
-	})
-
 	useEffect(() => {
+		axios.get("http://localhost:3001/user/profile/edit", {withCredentials: true})
+		.then(function (response)
+		{
+			setRealName(response.data.username);
+			if (response.data.nickname == null)
+				setNickName(response.data.username);
+			else
+				setNickName(response.data.nickname);
+			
+			setFAActive(response.data.isTwoFAEnable);
+			setDescription(response.data.description);
+			
+				setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
+		}).catch(err => {
+			console.log(err);
+		})
 	}, [])
 
 	return (
@@ -101,18 +116,22 @@ const EditProfil: React.FC = () =>
 					</center>
 					<div className='information'>
 						<InputLabel htmlFor="component-simple">Nickname</InputLabel>
-						<Input value={nickName}/>
+						<Input
+							value={nickName}
+							onChange={function (e: any) {setNickName(e.target.value)}}
+							/>
 						<br/><br/>
 
 						<InputLabel htmlFor="component-simple">RealName</InputLabel>
-						<Input value={realName}/>
+						{realName}
 						<br/><br/>
 
 						<TextField
 							label="Description"
 							multiline rows={10}
-							defaultValue={description}
+							value={description}
 							style={{width: '80%'}}
+							onChange={function (e: any) { setDescription(e.target.value) }}
 							/>
 						<br/><br/>
 

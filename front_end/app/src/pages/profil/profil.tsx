@@ -14,6 +14,10 @@ const Profil: React.FC = () => {
 	const [realName, setRealName] = useState("Default");
 	const [nickName, setNickName] = useState("Default");
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
+	const [description, setDescription] = useState("Default");
+	const [wins, setWins] = useState(0);
+	const [loses, setLoses] = useState(0);
+	const [score, setScore] = useState(0);
 	const navigate = useNavigate();
 
 	const id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
@@ -28,6 +32,10 @@ const Profil: React.FC = () => {
 		else
 			setNickName(response.data.nickname);
 		setProfilePic(`http://localhost:3001/user/image/${id}`);
+		setWins(response.data.win);
+		setLoses(response.data.loose);
+		setScore(response.data.score);
+		setDescription(response.data.description);
 	})
 	.catch(err => {
 		console.log(err);
@@ -70,12 +78,11 @@ const Profil: React.FC = () => {
 					<div className='fs-2'>
 						Nickname : {nickName}<br /><br />
 						Real Name : {realName}<br /><br />
-						En mathématiques, on définit une notion à partir de notions antérieurement définies.<br />
-						Les notions de bases étant les symboles non logiques du langage considéré, dont l'usage est défini par les axiomes de la théorie.<br />
-						Se pose la question de la différence entre une définition et un axiome.<br />
-						Pour exemple, dans l'arithmétique de Peano, l'addition et la multiplication sont des symboles du langage et leur fonctionnement est régi par des axiomes.<br />
-						Mais on pourrait tout à fait réduire le langage de l arithmétique en supprimant les symboles « + » et « * » et les définir à partir de 0 et de la fonction successeur d'une manière similaire.<br />
-						Cela nous donnerait une autre théorie arithmétique, mais essentiellement équivalente sur toutes ses propriétés élémentaires.
+						Win : {wins} {'\u00A0'}{'\u00A0'} - {'\u00A0'}{'\u00A0'} Lose : {loses} <br />
+						Current ELO : {score} <br /><br />
+
+						About me : <br />
+						{ description }
 					</div>
 				</div>
 			</div>

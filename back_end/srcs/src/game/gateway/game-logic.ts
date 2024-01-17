@@ -2,6 +2,7 @@ import {
   vec2,
   GameInfo,
   BallInfo,
+  PadInfo,
   defaultBallInfo,
   DELTA_TIME,
   INITIAL_VELOCITY,
@@ -11,6 +12,8 @@ import {
 import { GameService } from "../game.service";
 
 import { Socket, Server } from "socket.io";
+
+const MAX_BOUNCE_ANGLE = 1.047197551; //? 60 degrees in radians
 
 function randomNumberBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -80,16 +83,24 @@ function ballRoutine(
     bottom: nextBall.position.y + 1,
   };
 
-  const currentPad: vec2 =
-    nextBall.direction.x < 0
-      ? { x: 5, y: currentGame.player1PadY }
-      : { x: 95, y: currentGame.player2PadY };
+  let currentPad: PadInfo;
+  if (nextBall.direction.x < 0) {
+    currentPad = {
+      position: { x: 5, y: currentGame.player1PadY },
+      size: { x: 2, y: 10 },
+    };
+  } else {
+    currentPad = {
+      position: { x: 95, y: currentGame.player2PadY },
+      size: { x: 2, y: 10 },
+    };
+  }
 
   const padBox: Box = {
-    left: currentPad.x - 1,
-    right: currentPad.x + 1,
-    top: currentPad.y - 5,
-    bottom: currentPad.y + 5,
+    left: currentPad.position.x - currentPad.size.x / 2,
+    right: currentPad.position.x + currentPad.size.x / 2,
+    top: currentPad.position.y - currentPad.size.y / 2,
+    bottom: currentPad.position.y + currentPad.size.y / 2,
   };
 
   const scorerId =
@@ -102,17 +113,15 @@ function ballRoutine(
     scoreGoal(gameService, server, currentGame, gameId, scorerId);
     nextBall.position = { x: 50, y: 50 };
   } else if (doesBoxesCollide(padBox, nextBallBox) === true) {
-    let collidePoint = nextBall.position.y - (currentPad.y + 10);
-    collidePoint /= 10;
+    const relativeIntersectY = currentPad.position.y - nextBall.position.y;
+    const normalizedRelativeIntersectionY =
+      relativeIntersectY / (currentPad.size.y / 2);
+    const bounceAngle = normalizedRelativeIntersectionY * MAX_BOUNCE_ANGLE;
 
-    const angleRad = (collidePoint * Math.PI) / 4;
+    let newDirection = nextBall.direction.x < 0 ? 1 : -1;
 
-    nextBall.direction.x = Math.cos(angleRad);
-    nextBall.direction.y = Math.sin(angleRad);
-
-    if (nextBall.position.x > 50) {
-      nextBall.direction.x *= -1;
-    }
+    nextBall.direction.x = newDirection * Math.cos(bounceAngle);
+    nextBall.direction.y = -Math.sin(bounceAngle);
 
     nextBall.bounceCount += 1;
     nextBall.velocity =

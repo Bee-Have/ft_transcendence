@@ -12,6 +12,11 @@ interface BallInfo {
   direction: vec2;
 }
 
+interface PadInfo {
+  position: vec2;
+  size: vec2;
+}
+
 const INITIAL_VELOCITY = 0.04;
 const MAX_VELOCITY = 0.08;
 const DELTA_TIME = 1000 / 60;
@@ -49,7 +54,7 @@ const defaultGameInfo: GameInfo = {
 
   player1PadY: 0,
   player2PadY: 0,
-  
+
   ball: { ...defaultBallInfo },
   intervalId: undefined,
 
@@ -96,6 +101,7 @@ class MatchHistoryItemDto {
 export {
   vec2,
   BallInfo,
+  PadInfo,
   defaultBallInfo,
   GameInfo,
   defaultGameInfo,

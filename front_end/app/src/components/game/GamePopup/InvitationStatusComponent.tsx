@@ -37,8 +37,7 @@ function InvitationStatusComponent({
         "&player2=" +
         (userId === gamePopupProps.sender.id
           ? gamePopupProps.receiver?.id
-          : gamePopupProps.sender.id) +
-		  "&gameMode=" + gamePopupProps.gameMode;
+          : gamePopupProps.sender.id)
 
       navigate(redirectUrl);
       setIsAccepted(false);

@@ -16,7 +16,7 @@ import EditProfil from "./pages/profil/editProfil";
 import RedirectGame from "./pages/game/RedirectGame";
 
 import ClassicGame from "./pages/game/solo/Classic";
-import ClassicGamePvp from "./pages/game/pvp/Classic";
+import GameRoomPvp from "./pages/game/pvp/GameRoom";
 import TimedGame from "./pages/game/solo/Timed";
 import SpeedGame from "./pages/game/solo/Speed";
 import RetroGame from "./pages/game/solo/Retro";
@@ -51,7 +51,7 @@ const App: React.FC = () => {
 		  <Route path="/game/redirect" element={<RedirectGame />} />
 
           <Route path="/game/training/classic" element={<ClassicGame />} />
-          <Route path="/game/classic" element={<ClassicGamePvp />} />
+          <Route path="/game/pvp/" element={<GameRoomPvp />} />
           <Route path="/game/training/timed" element={<TimedGame />} />
           <Route path="/game/training/speed" element={<SpeedGame />} />
           <Route path="/game/training/retro" element={<RetroGame />} />

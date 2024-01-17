@@ -115,10 +115,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     client.join(gameId);
 
-    if (currentGame === undefined) {
-      currentGame = { ...defaultGameInfo };
-      this.runningGames.set(gameId, currentGame);
-    }
+if (currentGame === undefined) {
+	currentGame = { ...defaultGameInfo };
+	this.runningGames.set(gameId, currentGame);
+	currentGame.gamemode = invite.gameMode as "classic" | "timed" | "speed" | "retro";
+}
 
     if (userId === player1Id) {
       currentGame.player1 = userId;
@@ -129,6 +130,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit(
         "game:init",
         gameId,
+		currentGame.gamemode,
         currentGame.player1,
         currentGame.player2,
         currentGame.player1Score,
@@ -156,6 +158,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         .emit(
           "game:init",
           gameId,
+		  currentGame.gamemode,
           currentGame.player1,
           currentGame.player2,
           currentGame.player1Score,

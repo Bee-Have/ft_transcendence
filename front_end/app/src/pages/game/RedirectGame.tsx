@@ -25,16 +25,15 @@ function RedirectGame() {
 
   const player1Id: string = getQueryVariable("player1") ?? "0";
   const player2Id: string = getQueryVariable("player2") ?? "0";
-  const gameMode: string = getQueryVariable("gameMode") ?? "0";
 
-  let gameUrl: string = "/game/";
+  let gameUrl: string = "/game/pvp";
 
   useEffectOnce(() => {
-    if (player1Id !== "0" && player2Id === "0" && gameMode === "0") {
+    if (player1Id !== "0" && player2Id === "0") {
       gameService
         .getUserCurrentGame(parseInt(player1Id))
         .then((response: RunningGameDto) => {
-          gameUrl += response.gameMode + "?player1=" + player1Id + "&player2=";
+          gameUrl += "?player1=" + player1Id + "&player2=";
           gameUrl +=
             response.player2Id === parseInt(player1Id)
               ? response.player1Id
@@ -43,12 +42,12 @@ function RedirectGame() {
         })
         .catch((error: Error | AxiosError<unknown, any>) => {
           errorContext.newError?.(errorHandler(error));
-		  navigate("/");
+          navigate("/");
         });
-    } else if (player1Id === "0" || player2Id === "0" || gameMode === "0") {
+    } else if (player1Id === "0" || player2Id === "0") {
       navigate("/");
     } else {
-      gameUrl += gameMode + "?player1=" + player1Id + "&player2=" + player2Id;
+      gameUrl += "?player1=" + player1Id + "&player2=" + player2Id;
       navigate(gameUrl);
     }
   });

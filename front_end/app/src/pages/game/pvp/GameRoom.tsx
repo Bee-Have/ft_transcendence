@@ -21,7 +21,7 @@ import { UserStatus } from "src/pages/global/friend.dto";
 
 import { useNavigate } from "react-router-dom";
 
-function ClassicGamePvp() {
+function GameRoomPvp() {
   const navigate = useNavigate();
 
   const [playerScore, setPlayerScore] = React.useState(0);
@@ -33,6 +33,7 @@ function ClassicGamePvp() {
 
   const gameSocket = React.useRef<Socket>();
   const gameId = React.useRef<string>("");
+  const gameMode = React.useRef<string>("classic");
   const playerId = React.useRef<number>(0);
   const opponentId = React.useRef<number>(0);
 
@@ -56,6 +57,7 @@ function ClassicGamePvp() {
         "game:init",
         (
           gameRoomId: string,
+          mode: string,
           p1: number,
           p2: number,
           p1Score: number,
@@ -64,6 +66,7 @@ function ClassicGamePvp() {
           if (userId !== p1 && userId !== p2) mainPlayer.current = player1Id;
 
           gameId.current = gameRoomId;
+		  gameMode.current = mode;
           if (userId === p1 || userId === p2)
             socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
           if (mainPlayer.current === p1) {
@@ -144,4 +147,4 @@ function ClassicGamePvp() {
   );
 }
 
-export default ClassicGamePvp;
+export default GameRoomPvp;

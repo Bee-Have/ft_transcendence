@@ -8,13 +8,18 @@ import { useEffectOnce } from "src/components/useEffectOnce";
 
 import "../solo/Game.css";
 
+import DynamicBackground from "src/components/game/pvp/DynamicBackground";
+
 import Score from "src/components/game/pvp/Score";
 import Ball from "src/components/game/pvp/PongBall";
 import PlayerPad from "src/components/game/pvp/PlayerPad";
 import OpponentPad from "src/components/game/pvp/OpponentPad";
 
 import GameOverComponent from "src/components/game/GameOverComponent";
-import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
+import {
+  gameOverAnimation,
+  retroGameOverAnimation,
+} from "src/components/game/animations/gameOverAnimation";
 
 import { socket } from "src/pages/global/websocket";
 import { UserStatus } from "src/pages/global/friend.dto";
@@ -66,7 +71,7 @@ function GameRoomPvp() {
           if (userId !== p1 && userId !== p2) mainPlayer.current = player1Id;
 
           gameId.current = gameRoomId;
-		  gameMode.current = mode;
+          gameMode.current = mode;
           if (userId === p1 || userId === p2)
             socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
           if (mainPlayer.current === p1) {
@@ -97,9 +102,14 @@ function GameRoomPvp() {
         if (userId === player1Id || userId === player2Id)
           socket?.emit("update-user-status", UserStatus[UserStatus.online]);
         setWinner(winnerId === playerId.current ? "player" : "opponent");
-        gameOverAnimation(
-          winnerId === playerId.current ? "player" : "opponent"
-        );
+        if (gameMode.current === "retro")
+          retroGameOverAnimation(
+            winnerId === playerId.current ? "player" : "opponent"
+          );
+        else
+          gameOverAnimation(
+            winnerId === playerId.current ? "player" : "opponent"
+          );
         setTimeout(() => setGameOver(true), 2100);
       });
     }
@@ -127,20 +137,31 @@ function GameRoomPvp() {
     return <div>Waiting for game to start...</div>;
   }
   return (
-    <div className="Pong-game">
-      <div className="Pong-game-left-bg" id="Pong-game-left-bg" />
-      <div className="Pong-game-right-bg" id="Pong-game-right-bg" />
-      <Score player={playerScore} opponent={opponentScore} />
+    <div
+      className={gameMode.current === "retro" ? "Pong-game-retro" : "Pong-game"}
+    >
+      <DynamicBackground gameMode={gameMode.current} />
+      <Score
+        gameMode={gameMode.current}
+        player={playerScore}
+        opponent={opponentScore}
+      />
       {winner === "" && (
-        <Ball gameSocket={gameSocket.current} mainPlayer={mainPlayer.current} />
+        <Ball
+          gameSocket={gameSocket.current}
+          gameMode={gameMode.current}
+          mainPlayer={mainPlayer.current}
+        />
       )}
       <PlayerPad
         gameSocket={gameSocket.current}
         gameID={gameId.current}
+        gameMode={gameMode.current}
         player1Id={playerId.current}
       />
       <OpponentPad
         gameSocket={gameSocket.current}
+        gameMode={gameMode.current}
         player2Id={opponentId.current}
       />
     </div>

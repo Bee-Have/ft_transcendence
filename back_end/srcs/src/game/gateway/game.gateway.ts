@@ -119,6 +119,7 @@ if (currentGame === undefined) {
 	currentGame = { ...defaultGameInfo };
 	this.runningGames.set(gameId, currentGame);
 	currentGame.gamemode = invite.gameMode as "classic" | "timed" | "speed" | "retro";
+	if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
 }
 
     if (userId === player1Id) {

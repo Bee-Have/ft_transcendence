@@ -12,9 +12,11 @@ interface vec2 {
 
 const Ball = ({
   gameSocket,
+  gameMode,
   mainPlayer,
 }: {
   gameSocket: Socket;
+  gameMode: string;
   mainPlayer: number;
 }) => {
   const [ballInfo, setBallInfo] = useState<vec2>({ x: 50, y: 50 });
@@ -40,7 +42,7 @@ const Ball = ({
     ballElem.current?.style.setProperty("--positionY", ballInfo.y.toString());
   });
 
-  return <div className="PongBall" id="PongBall"></div>;
+  return <div className={gameMode === "retro" ? "RetroPongBall" : "PongBall"} id="PongBall"></div>;
 };
 
 export default Ball;

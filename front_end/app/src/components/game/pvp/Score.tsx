@@ -1,9 +1,17 @@
 import React from "react";
 import "src/components/game/Score.css";
 
-const Score = ({ player, opponent }: { player: number; opponent: number }) => {
+const Score = ({
+  gameMode,
+  player,
+  opponent,
+}: {
+  gameMode: string;
+  player: number;
+  opponent: number;
+}) => {
   return (
-    <div className="Score">
+    <div className={gameMode === "retro" ? "RetroScore" : "Score"}>
       <div className="Player" id="player-score">
         {player}
       </div>

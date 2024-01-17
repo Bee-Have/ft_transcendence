@@ -2,12 +2,12 @@
 	--position: 50;
 	
 	position: absolute;
-	top: calc(var(--position) * 1vh);
+	top: calc(var(--position) * 1%);
 	transform: translate(-50%, -50%);
-	left: 5vw;
+	left: 5%;
 		
-	height: 10vh;
-	width: 2vh;
+	height: 10%;
+	width: 2%;
 	background-color: #ffffff;
 }
 
@@ -15,11 +15,11 @@
 	--position: 50;
 	
 	position: absolute;
-	top: calc(var(--position) * 1vh);
+	top: calc(var(--position) * 1%);
 	transform: translate(50%, -50%);
-	right: 5vw;
+	right: 5%;
 	
-	height: 10vh;
-	width: 2vh;
+	height: 10%;
+	width: 2%;
 	background-color: #ffffff;
 }

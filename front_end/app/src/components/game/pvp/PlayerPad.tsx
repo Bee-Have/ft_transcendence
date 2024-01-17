@@ -14,10 +14,12 @@ function clamp(num: number, min: number, max: number) {
 const PlayerPaddle = ({
   gameSocket,
   gameID,
+  gameMode,
   player1Id,
 }: {
   gameSocket: Socket;
   gameID: string;
+  gameMode: string;
   player1Id: number;
 }) => {
   const [playerPosition, setPlayerPosition] = useState(50);
@@ -62,7 +64,7 @@ const PlayerPaddle = ({
     }
   });
 
-  return <div className="GamePad" id="GamePad"></div>;
+  return <div className={gameMode === "retro" ? "RetroGamePad" : "GamePad"} id="GamePad"></div>;
 };
 
 export default PlayerPaddle;

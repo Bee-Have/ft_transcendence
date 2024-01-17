@@ -13,7 +13,7 @@ function RetroGamePad() {
   // setup routine on "PongStart()" creation to update mouse position
   useEffect(() => {
     // console.log(mousePos);
-    const PadElement = document.getElementById("RetroGamePad") as HTMLElement;
+    const PadElement = document.getElementById("GamePad") as HTMLElement;
     if (mousePos > 5 && mousePos < 98)
       PadElement.style.setProperty("--position", mousePos.toString());
   });
@@ -29,7 +29,7 @@ function RetroGamePad() {
     };
   }, []);
 
-  return <div className="RetroGamePad" id="RetroGamePad"></div>;
+  return <div className="RetroGamePad" id="GamePad"></div>;
 }
 
 function RetroOpponentPad() {
@@ -44,7 +44,7 @@ function RetroOpponentPad() {
   let prevBallX = React.useRef(50);
 
   function computerPlaying(delta: number) {
-    const paddleElem = document.getElementById("RetroOpponentPad") as HTMLElement;
+    const paddleElem = document.getElementById("OpponentPad") as HTMLElement;
     const ballRect = document
       .getElementById("RetroPongBall")
       ?.getBoundingClientRect() as DOMRect;
@@ -93,7 +93,7 @@ function RetroOpponentPad() {
     // eslint-disable-next-line
   }, []);
 
-  return <div className="RetroOpponentPad" id="RetroOpponentPad" />;
+  return <div className="RetroOpponentPad" id="OpponentPad" />;
 }
 
 export default RetroGamePad;

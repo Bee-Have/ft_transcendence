@@ -7,9 +7,11 @@ import { useEffectOnce } from "src/components/useEffectOnce";
 
 const OpponentPaddle = ({
   gameSocket,
+  gameMode,
   player2Id,
 }: {
   gameSocket: Socket;
+  gameMode: string;
   player2Id: number;
 }) => {
   const [paddlePosition, setPaddlePosition] = useState(50);
@@ -33,7 +35,7 @@ const OpponentPaddle = ({
     );
   });
 
-  return <div className="OpponentPad" id="OpponentPad"></div>;
+  return <div className={gameMode === "retro" ? "RetroOpponentPad" : "OpponentPad"} id="OpponentPad"></div>;
 };
 
 export default OpponentPaddle;

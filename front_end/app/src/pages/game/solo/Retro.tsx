@@ -10,7 +10,7 @@ import GameOverComponent from "../../../components/game/GameOverComponent";
 
 import { retroGameOverAnimation } from "../../../components/game/animations/gameOverAnimation";
 
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 11;
 
 function RetroGame() {
   const [playerScore, setPlayerScore] = React.useState(0);

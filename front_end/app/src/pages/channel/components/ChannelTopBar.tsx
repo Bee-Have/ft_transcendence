@@ -1,0 +1,53 @@
+import axios from "axios";
+import React from "react";
+import { useEffect, useState } from "react";
+import { BACKEND_URL } from "src/pages/global/env";
+import { socket } from "src/pages/global/websocket";
+
+
+const ChannelTopBar = ({ channelId }: { channelId: number }) => {
+
+	const [name, setName] = useState('')
+	const [imageKey, setImageKey] = useState(0);
+
+	useEffect(() => {
+		axios.get(BACKEND_URL + "/channel/info/" + channelId, { withCredentials: true })
+			.then((res) => {
+				setName(res.data.channelName)
+			})
+			.catch((e) => { console.log(e) })
+	}, [channelId])
+
+	useEffect(() => {
+		const listenNewBadge = (info: { channelId: number }) => {
+			if (channelId === info.channelId)
+				setImageKey(prev => prev + 1)
+		}
+
+		const listenNewInfo = (info: { channelName: string, mode: string, channelId: number }) => {
+			if (channelId === info.channelId)
+				setName(info.channelName)
+		}
+
+		socket?.on('new-channel-badge', listenNewBadge)
+		socket?.on('new-channel-info', listenNewInfo)
+
+		return () => {
+			socket?.off('new-channel-badge', listenNewBadge)
+			socket?.off('new-channel-info', listenNewInfo)
+		}
+
+	}, [channelId])
+
+	return (
+		<div className='channel-top-bar'>
+			<img
+				className='channel-top-bar-img'
+				alt={name + " channel badge"}
+				src={BACKEND_URL + '/channel/badge/' + channelId + `?${imageKey}`} />
+			<div className='channel-top-bar-name'>{name}</div>
+		</div>
+	);
+}
+
+export default ChannelTopBar;

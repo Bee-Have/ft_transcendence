@@ -27,7 +27,7 @@ export class ChannelService {
 					mode: "PRIVATE"
 				},
 			},
-			select:{
+			select: {
 				id: true,
 				channelName: true,
 				mode: true
@@ -133,7 +133,7 @@ export class ChannelService {
 
 		if (member.role !== "OWNER")
 			throw new ForbiddenException('You have no rigths for this channel')
-		
+
 		let password: string | null = null
 
 		if (body.mode === "PROTECTED") {
@@ -149,16 +149,27 @@ export class ChannelService {
 		else if (body.mode === "PRIVATE")
 			password = authenticator.generateSecret(60)
 
-		await this.prisma.channel.update({
-			where: {
-				id: channelId
-			},
-			data: {
-				password,
+		try {
+			await this.prisma.channel.update({
+				where: {
+					id: channelId
+				},
+				data: {
+					password,
+					channelName: body.name,
+					mode: body.mode
+				}
+			})
+
+			this.broadcastToAllChannelMembers(channelId, 'new-channel-info', {
+				channelId,
 				channelName: body.name,
 				mode: body.mode
-			}
-		})
+			})
+		}
+		catch (e) {
+			throw new InternalServerErrorException('Could not update channel')
+		}
 	}
 
 	async getAllChannels(userId: number) {
@@ -199,13 +210,23 @@ export class ChannelService {
 		const bool = await verify(channel.password, body.password)
 
 		if (bool) {
-			await this.prisma.channelMember.create({
+			const createdMember = await this.prisma.channelMember.create({
 				data: {
-					channelId: channel.id ,
+					channelId: channel.id,
 					userId,
 					role: "NONADMIN",
 					state: "REGULAR"
-				} 
+				}
+			})
+
+			this.broadcastToAllChannelMembers(channel.id, 'new-channel-member', {
+				userId,
+				memberId: createdMember.id,
+				role: createdMember.role,
+				state: createdMember.state,
+				channelId: channel.id,
+				username: await this.userService.getUsername(userId),
+				channelName: channel.channelName
 			})
 		}
 		else
@@ -223,13 +244,22 @@ export class ChannelService {
 		if (member)
 			throw new BadRequestException('You already are a member of this channel')
 
-		await this.prisma.channelMember.create({
+		const createdMember = await this.prisma.channelMember.create({
 			data: {
 				channelId: channel.id,
 				userId,
 				role: "NONADMIN",
 				state: "REGULAR"
 			}
+		})
+		this.broadcastToAllChannelMembers(channel.id, 'new-channel-member', {
+			userId,
+			memberId: createdMember.id,
+			role: createdMember.role,
+			state: createdMember.state,
+			channelId: channel.id,
+			username: await this.userService.getUsername(userId),
+			channelName: channel.channelName
 		})
 	}
 
@@ -256,69 +286,45 @@ export class ChannelService {
 		}
 	}
 
-	async leaveChannel(userId: number, channelId: number){
+	async leaveChannel(userId: number, channelId: number) {
 		const member = await this.getChannelMember(userId, channelId)
 
 		if (member.state === "BANNED" || member.state === "MUTED")
 			throw new ForbiddenException("You can't leave this channel")
-
+		this.broadcastToAllChannelMembers(channelId, 'leave-channel-member', {
+			userId,
+			memberId: member.id,
+			role: member.role,
+			state: member.state,
+			channelId,
+			username: await this.userService.getUsername(userId),
+			channelName: await this.getChannelName(channelId) 
+		})
 		if (member.role === "OWNER") {
 			try {
-			await this.prisma.channel.delete({
-				where: {
-					id: channelId
-				}
-			})}
+				await this.prisma.channel.delete({
+					where: {
+						id: channelId
+					}
+				})
+			}
 			catch (e) {
 				throw new InternalServerErrorException('Error while deleting the channel')
 			}
 		}
 		else {
 			try {
-			await this.prisma.channelMember.delete({
-				where: {
-					id: member.id
-				}
-			})}
+				await this.prisma.channelMember.delete({
+					where: {
+						id: member.id
+					}
+				})
+			}
 			catch (e) {
 				throw new InternalServerErrorException('Error while leaving the channel')
 			}
+
 		}
-	}
-
-
-	async changePrivateChannelSecret(userId: number, channelId: number) {
-		const channel = await this.getChannel(channelId)
-		const member = await this.getChannelMember(userId, channelId)
-
-		if (member.role === "NONADMIN")
-			throw new ForbiddenException('You have not the rights to update this channel')
-		if (channel.mode !== "PRIVATE")
-			throw new BadRequestException("Wrong Channel")
-
-		const secret = authenticator.generateSecret(60)
-
-		await this.prisma.channel.update({
-			where: {
-				id: channel.id
-			},
-			data: {
-				password: secret
-			}
-		})
-		return secret
-	}
-
-	async getChannelSecret(userId: number, channelId: number) {
-		const channel = await this.getChannel(channelId)
-		const member = await this.getChannelMember(userId, channelId)
-
-		if (member.role !== "OWNER")
-			throw new ForbiddenException('You have not the rights for this channel')
-		if (channel.mode !== "PRIVATE")
-			throw new BadRequestException("Wrong channel mode")
-
-		return channel.password
 	}
 
 	async createNewMessage(userId: number, message: IncomingChannelMessage) {
@@ -385,7 +391,7 @@ export class ChannelService {
 		return trim
 	}
 
-	async restrictChannelMember(userId: number, body: RestrictChannelMember) { 
+	async restrictChannelMember(userId: number, body: RestrictChannelMember) {
 		if (body.restriction === "MUTED")
 			await this.muteUser(userId, body.restrictedUserId, body.channelId)
 		if (body.restriction === "BANNED")
@@ -396,27 +402,41 @@ export class ChannelService {
 
 	async uploadBadge(userId: number, channelId: number, file: Express.Multer.File) {
 		const ownerId = await this.getChannelOwnerId(channelId)
-	
+
 		if (userId !== ownerId)
 			throw new ForbiddenException('You can not upload a badge for this channel')
-	
+
 		if (!file)
 			throw new BadRequestException("No file provided")
 
-		const dimensions = sizeOf(file.buffer)
+		let dimensions = null
+		try {
+			dimensions = sizeOf(file.buffer)
+		}
+		catch (e) {
+			throw new BadRequestException("Wrong mime type (must be jpeg)")
+		}
 
-		if (file.mimetype !== 'image/jpeg' || dimensions.type !== 'jpg')
-			throw new BadRequestException("Wrong mime type")
+		if (file.mimetype !== 'image/jpeg' || dimensions?.type !== 'jpg')
+			throw new BadRequestException("Wrong mime type (must be jpeg)")
 		if (file.size > 100000)
-			throw new BadRequestException("File too large")
+			throw new BadRequestException("File too large (must be < 100kB)")
 
 		if (dimensions.height > 700 || dimensions.height < 50 ||
 			dimensions.width > 700 || dimensions.width < 50)
-			throw new BadRequestException('Image dimensions are not valid')
+			throw new BadRequestException('Image dimensions are not valid (50-700x50-700)')
 
 		const filename = process.env.BADGE_DIRECTORY + '/' + channelId.toString() + '.jpeg'
 
-		fs.writeFileSync(filename, file.buffer)
+		try {
+			fs.writeFileSync(filename, file.buffer)
+
+			this.broadcastToAllChannelMembers(channelId, 'new-channel-badge', { channelId })
+		}
+		catch (e) {
+			throw new BadRequestException('The file could not be saved')
+		}
+
 	}
 
 	async muteUser(userId: number, mutedUserId: number, channelId: number) {
@@ -432,7 +452,7 @@ export class ChannelService {
 		})
 	}
 
-	async banUser(userId: number, bannedUserId: number, channelId: number ) {
+	async banUser(userId: number, bannedUserId: number, channelId: number) {
 		const restrictedUser = await this.userCanRestrictUser(userId, bannedUserId, channelId)
 
 		await this.prisma.channelMember.update({
@@ -445,7 +465,7 @@ export class ChannelService {
 		})
 	}
 
-	async kickUser(userId: number, kickedUserId: number, channelId: number ) {
+	async kickUser(userId: number, kickedUserId: number, channelId: number) {
 		const restrictedUser = await this.userCanRestrictUser(userId, kickedUserId, channelId)
 
 		await this.prisma.channelMember.delete({
@@ -455,8 +475,7 @@ export class ChannelService {
 		})
 	}
 
-	async userCanRestrictUser(userId: number, restrictedUserId: number, channelId: number): Promise<ChannelMember>
-	{
+	async userCanRestrictUser(userId: number, restrictedUserId: number, channelId: number): Promise<ChannelMember> {
 		const user = await this.getChannelMember(userId, channelId)
 		const restrictUser = await this.getChannelMember(restrictedUserId, channelId)
 
@@ -477,7 +496,7 @@ export class ChannelService {
 
 	async manageRole(userId: number, body: ManageChannelRole) {
 		const ownerId = await this.getChannelOwnerId(body.channelId)
-	
+
 		if (userId !== ownerId)
 			throw new ForbiddenException('You can not manage role for this channel')
 
@@ -494,7 +513,7 @@ export class ChannelService {
 				}
 			})
 		}
-		catch(e) {
+		catch (e) {
 			throw new NotFoundException('Can not found the member to update')
 		}
 	}
@@ -610,6 +629,22 @@ export class ChannelService {
 		})
 	}
 
+	async getChannelNoPassword(channelId: number) {
+		if (!await this.channelExist(channelId))
+			throw new NotFoundException('Channel not found')
+
+		return await this.prisma.channel.findUnique({
+			where: {
+				id: channelId
+			},
+			select: {
+				channelName: true,
+				mode: true,
+				id: true
+			}
+		})
+	}
+
 	async getUserIdByMemberId(memberId: number) {
 		const member = await this.prisma.channelMember.findUnique({
 			where: {
@@ -622,7 +657,7 @@ export class ChannelService {
 	async getChannelOwnerId(channelId: number) {
 		const members = await this.getMembersofChannel(channelId)
 
-		for(const member of members) {
+		for (const member of members) {
 			if (member.role === "OWNER")
 				return member.userId
 		}
@@ -641,23 +676,47 @@ export class ChannelService {
 		})
 	}
 
+	async getChannelInfo(userId: number, channelId: number) {
+		const member = await this.getChannelMember(userId, channelId)
+		return await this.getChannelNoPassword(channelId)
+	}
+
 	isMuted(channelMember: ChannelMember) {
 		if (!channelMember.muteDate)
 			return false
 		return channelMember.muteDate.getTime() > new Date().getTime()
 	}
-	
+
 	async getChannelBadge(res: Response, channelId: number) {
 		const imagePath = process.env.BADGE_DIRECTORY + '/' + channelId + '.jpeg'
 
-		if (!fs.existsSync(imagePath)){
+		if (!fs.existsSync(imagePath)) {
 			const ownerId: number = await this.getChannelOwnerId(channelId)
 
 			return this.userService.getUserImage(res, ownerId)
 
 		}
 
-		fs.createReadStream(imagePath).pipe(res)
+		try {
+			fs.createReadStream(imagePath).pipe(res)
+		}
+		catch (e) {
+			throw new InternalServerErrorException('Image could not be loaded')
+		}
+	}
+
+
+	async broadcastToAllChannelMembers(channeId: number, event: string, data: Object) {
+		const members = await this.getMembersofChannel(channeId)
+
+		for (const member of members) {
+			if (member.state === "BANNED")
+				continue
+
+			const user = this.userService.connected_user_map.get(member.userId)
+
+			user?.socket?.emit(event, data)
+		}
 	}
 
 

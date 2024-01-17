@@ -15,5 +15,6 @@ export class Conversation {
 	memberTwoId: number
 	memberTwoUsername: string
 	friendUsername: string
+	friendId: number
 	username: string
 }

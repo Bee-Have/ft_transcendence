@@ -13,14 +13,14 @@ import	MatchHistory	from './pages/match-history/matchHistory';
 // import	Chat 			from './pages/chat/chat';
 import	EditProfil		from './pages/profil/editProfil';
 
-import Channel from './pages/channel/channel';
-import Channels from './pages/channel/channels';
+import Channel from './pages/channel/Channel';
+import ChannelJoiningList from './pages/channel/ChannelJoiningList';
 
 import ClassicGame from "./pages/game/Classic";
 import TimedGame from "./pages/game/Timed";
 import SpeedGame from "./pages/game/Speed";
 import RetroGame from "./pages/game/Retro";
-import ChannelList from './components/channelList';
+import ChannelListBar  from './pages/channel/components/ChannelListBar';
 import Chat from './pages/chat/chat';
 
 
@@ -50,9 +50,9 @@ const App: React.FC = () => {
 				<Route path="/profil/blocked" element={<Blocked />} />
 				<Route path="/profil/match-history" element={<MatchHistory />} />
 				<Route path="/profil/edit-Profil" element={<EditProfil />} />
-				<Route path="/chat" element={<><ChannelList update={update} /><Outlet/></>}>
+				<Route path="/chat" element={<><ChannelListBar update={update} /><Outlet/></>}>
 					<Route path="" element={<Chat />}/>
-					<Route path="channel" element={<Channels onUpdate={onUpdate}/>} />
+					<Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate}/>} />
 					<Route path="channel/:id" element={<Channel/>} />
 				</Route>
 				{/* <Route path="/channel/:id" Component={Channel} /> */}

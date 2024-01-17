@@ -44,37 +44,12 @@ export class ChannelController {
 		await this.channelService.joinProtectedChannel(userId, body)
 	}
 
-	@Post('join/private')
-	@HttpCode(HttpStatus.OK)
-	async JoinPrivateChannel(
-		@GetCurrentUser('sub') userId: number,
-		@Body() body: JoinPrivateChannelDto,
-	) {
-		await this.channelService.JoinPrivateChannel(userId, body)
-	}
-
 	@Get('leave/:channelId')
 	async LeaveChannel(
 		@GetCurrentUser('sub') userId: number,
 		@Param('channelId', ParseIntPipe) channelId: number
 	) {
 		await this.channelService.leaveChannel(userId, channelId)
-	}
-
-	@Get('secret/update/:channelId')
-	async UpdatePrivateChannelSecret(
-		@GetCurrentUser('sub') userId: number,
-		@Param('channelId', ParseIntPipe) channelId: number
-	) {
-		return await this.channelService.changePrivateChannelSecret(userId, channelId)
-	}
-
-	@Get('secret/:channelId')
-	async GetPrivateChannelSecret(
-		@GetCurrentUser('sub') userId: number,
-		@Param('channelId', ParseIntPipe) channelId: number
-	) {
-		return await this.channelService.getChannelSecret(userId, channelId)
 	}
 
 	@Post()
@@ -90,7 +65,14 @@ export class ChannelController {
 		return await this.channelService.getAllChannels(userId)
 	}
 
-	@Get('messages/:channelId') 
+	@Get('info/:channelId') 
+	async GetChannelInfo(
+			@GetCurrentUser('sub') userId: number,
+			@Param('channelId', ParseIntPipe) channelId: number) {
+		return await this.channelService.getChannelInfo(userId, channelId)
+	}
+
+	@Get('messages/:channelId')  
 	async GetAllChannelMessages(
 		@GetCurrentUser('sub') userId: number,
 		@Param('channelId', ParseIntPipe) channelId: number) {

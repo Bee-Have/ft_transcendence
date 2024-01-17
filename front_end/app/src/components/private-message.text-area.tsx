@@ -102,7 +102,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	}
 
 	return (
-		<div className="textArea" id="test">
+		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
 					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)}/>

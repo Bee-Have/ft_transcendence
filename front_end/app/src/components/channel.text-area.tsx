@@ -5,6 +5,7 @@ import axios from 'axios';
 import { socket } from '../pages/global/websocket';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { useNavigate } from 'react-router';
+import '../css/chat.css'
 
 interface ChannelMessageProps {
 	id: number,
@@ -33,7 +34,7 @@ const Message = ({ message, isSame }: any) => {
 	)
 }
 
-const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number, userId: number}) => {
+const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 				console.log(e)
 				navigate("/" + e.response.status)
 			})
-	}, [currentChannelId])
+	}, [currentChannelId, navigate])
 
 	useEffect(() => {
 		const listenMessage = (message: ChannelMessageProps) => {
@@ -106,7 +107,7 @@ const ChannelTextArea = ({ currentChannelId, userId }: {currentChannelId: number
 	}
 
 	return (
-		<div className="textArea" id="test">
+		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
 					<Message key={index} message={message} isSame={isLastMessageSameSender(index)}/>

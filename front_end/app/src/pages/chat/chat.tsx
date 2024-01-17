@@ -6,13 +6,13 @@ import Conversations from "../../components/Conversation";
 // import ChannelList from "src/components/channelList";
 
 const Chat: React.FC = () => {
-//   const navigate = useNavigate();
+	//   const navigate = useNavigate();
 
-  return (
-    <div className="chat">
-      <Conversations />
-    </div>
-  );
+	return (
+		<div className="channel-content-wrapper">
+			<Conversations />
+		</div>
+	);
 };
 
 export default Chat;

@@ -31,13 +31,22 @@ import { BACKEND_URL } from 'src/pages/global/env';
 interface ConversationProps {
 	conversation: {
 		id: number
-		createdAt: number,
 		memberOneId: number
+		memberOneUsername: string
 		memberTwoId: number
+		memberTwoUsername: string
 		friendUsername: string
+		friendId: number
 		username: string
 	}
-	lastMessage: object
+	lastMessage: {
+		id: number
+		conversationId: number
+		senderId: number
+		createdAt: Date
+		content: string
+		isRead: boolean
+	}
 	convIsUnRead: boolean
 	userstatus: string | null
 }
@@ -89,10 +98,11 @@ const Conversation = ({ onClick, conv }: any) => {
 						<Avatar
 							className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 							alt={friendUsername}
-							src={BACKEND_URL + '/user/image/' + friendId} />
+							src={BACKEND_URL + '/user/image/' + friendId}
+							sx={{ width: 60, height: 60 }} />
 				}
 
-				<div className="name">{friendUsername}</div>
+				<div className="channel-member-list-name">{friendUsername}</div>
 			</ListItemButton>
 		</div>
 	)
@@ -104,7 +114,7 @@ const Conversation = ({ onClick, conv }: any) => {
 const Conversations: React.FC = () => {
 
 	const [convs, setConvs] = useState<ConversationProps[]>([])
-	const [showTextArea, setshowTextArea] = useState(0)
+	const [showTextArea, setshowTextArea] = useState(false)
 	const [currentChat, setCurrentChat] = useState<ConversationProps>()
 	const [createConvBool, setCreateConvBool] = useState(false)
 
@@ -134,7 +144,7 @@ const Conversations: React.FC = () => {
 	const handleclick = (e: ConversationProps) => {
 		convUpdateUnReadStatus(e.conversation.id, false)
 		setCurrentChat(e)
-		setshowTextArea(showTextArea + 1)
+		setshowTextArea(true)
 	}
 
 	const createConv = () => {
@@ -193,22 +203,31 @@ const Conversations: React.FC = () => {
 	}, [currentChat, convs])
 
 	return (
-		<div className="channelPeople">
-			<div onClick={createConv} className='privMsg'>
-				Private message +
-				{createConvBool && <TextInputWithEnterCallback onEnterPress={createConvCallBack} hideInput={hideInput} />}
+		<>
+			<div className='channel-top-bar'>
+				{showTextArea && <><img
+					className='channel-top-bar-img'
+					alt={"channel badge"}
+					src={BACKEND_URL + '/user/image/' + currentChat?.conversation.friendId} />
+					<div className='channel-top-bar-name'>{currentChat?.conversation.friendUsername}</div></>}
 			</div>
-			<List component="nav" aria-label="mailbox folders">
-				{convs ? (
-					<div>
-						{Object.keys(convs).map((i) => (
-							<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]} />
-						))}
-					</div>
-				) : null}
-			</List>
-			{showTextArea === 0 ? false : <PrivateTextArea currentChat={currentChat} userId={userId} />}
-		</div>
+			<div className="channel-member-bar">
+				<div onClick={createConv} className='privMsg'>
+					Private message +
+					{createConvBool && <TextInputWithEnterCallback onEnterPress={createConvCallBack} hideInput={hideInput} />}
+				</div>
+				<List>
+					{convs ? (
+						<div>
+							{Object.keys(convs).map((i) => (
+								<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]} />
+							))}
+						</div>
+					) : null}
+				</List>
+			</div>
+			{showTextArea && <PrivateTextArea currentChat={currentChat} userId={userId} />}
+		</>
 	);
 }
 

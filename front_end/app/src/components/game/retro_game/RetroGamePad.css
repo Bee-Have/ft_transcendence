@@ -1,12 +1,13 @@
 .RetroGamePad {
 	--position: 50;
+	
 	position: absolute;
 	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
+	transform: translate(-50%, -50%);
 	left: 5vw;
 		
-	height: 2.86vh;
-	width: 0.76vh;
+	height: 10vh;
+	width: 2vh;
 	background-color: #ffffff;
 }
 
@@ -15,10 +16,10 @@
 	
 	position: absolute;
 	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
+	transform: translate(-50%, -50%);
 	right: 5vw;
 	
-	height: 2.86vh;
-	width: 0.76vh;
+	height: 10vh;
+	width: 2vh;
 	background-color: #ffffff;
 }

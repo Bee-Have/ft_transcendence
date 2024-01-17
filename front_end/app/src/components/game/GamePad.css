@@ -2,9 +2,8 @@
 	--position: 50;
 	position: absolute;
 	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
+	transform: translate(-50%, -50%);
 	left: 5vw;
-	transform: translateX(-50%);
 
 	height: 10vh;
 	width: 2vh;
@@ -17,9 +16,8 @@
 	
 	position: absolute;
 	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
+	transform: translate(-50%, -50%);
 	right: 5vw;
-	transform: translateX(50%);
 	
 	height: 10vh;
 	width: 2vh;

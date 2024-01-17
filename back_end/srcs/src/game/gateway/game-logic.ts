@@ -154,6 +154,9 @@ function startBallRoutine(
 
   currentGame.ball = initBall();
 
+  if (currentGame.gamemode === "speed")
+    currentGame.ball.velocity = MAX_VELOCITY;
+
   currentGame.intervalId = setInterval(() => {
     ballRoutine(gameService, server, currentGame, gameId);
   }, DELTA_TIME);

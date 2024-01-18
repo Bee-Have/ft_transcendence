@@ -307,10 +307,11 @@ export class UserService {
 			const senderStatus = this.connected_user_map.get(friendReq.senderId)?.userstatus;
 
 			if (friendReq.status === 'pending') {
-			friendsRequest.push({ 
-				id: friendReq.senderId,
-				userstatus: senderStatus ? senderStatus : UserStatus.offline,
-				username: await this.getUsername(friendReq.senderId)})
+				friendsRequest.push({
+					id: friendReq.senderId,
+					userstatus: senderStatus ? senderStatus : UserStatus.offline,
+					username: await this.getUsername(friendReq.senderId)
+				})
 			}
 		}
 
@@ -379,9 +380,15 @@ export class UserService {
 		if (!file)
 			throw new BadRequestException("No file provided")
 
-		const dimensions = sizeOf(file.buffer)
+		let dimensions = null
+		try {
+			dimensions = sizeOf(file.buffer)
+		}
+		catch (e) {
+			throw new BadRequestException("Wrong mime type (must be jpeg)")
+		}
 
-		if (file.mimetype !== 'image/jpeg' || dimensions.type !== 'jpg')
+		if (file.mimetype !== 'image/jpeg' || dimensions?.type !== 'jpg')
 			throw new BadRequestException("Wrong mime type")
 		if (file.size > 100000)
 			throw new BadRequestException("File too large")

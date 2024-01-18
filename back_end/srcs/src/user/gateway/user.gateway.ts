@@ -109,7 +109,8 @@ export class UserGateway {
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {
 
-		const userId: number = Number(client.handshake.headers.id)
+		const atToken = jwtDecode(String(client.handshake?.headers?.id))
+		const userId: number = Number(atToken.sub)
 
 		const user = this.userService.connected_user_map.get(userId)
 		

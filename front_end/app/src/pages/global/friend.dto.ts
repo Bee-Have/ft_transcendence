@@ -14,7 +14,7 @@ export enum UserStatus {
 export class Friend {
 	id: number
 	username: string
-	userstatus: UserStatus
+	userstatus: UserStatus | null
 	photo: string
 }
 

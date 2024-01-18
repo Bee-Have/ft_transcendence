@@ -23,7 +23,6 @@ const EditProfil: React.FC = () =>
 	const [realName, setRealName] = useState("Default");
 	const [nickName, setNickName] = useState("Default");
 	const [description, setDescription] = useState("")
-	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [printPopUp, setPopUp] = useState<boolean>(false);
 	const [FAActive, setFAActive] = useState<boolean>(false);
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
@@ -34,7 +33,7 @@ const EditProfil: React.FC = () =>
 		if (file)
 		{
 			const imageUrl = URL.createObjectURL(file);
-			setSelectedImage(imageUrl);
+			setProfilePic(imageUrl);
 		}
 	};
 
@@ -54,17 +53,17 @@ const EditProfil: React.FC = () =>
 		
 		axios.post(BACKEND_URL + "/user/update/description", { description }, { withCredentials: true })
 			.then( (res : any) => {})
-			.catch( (e) => console.log(e) );
+			.catch( (e) => {console.log(e.request); console.log(e.response)} );
 		
 		axios.post(BACKEND_URL + "/user/update/nickname", { "nickname": nickName }, { withCredentials: true })
 			.then( (res : any) => {})
 			.catch( (e) => {console.log(e)} );
 		
-		/*axios.post(BACKEND_URL + "user/upload/avatar", {profilePic}, { withCredentials: true })
+		axios.post(BACKEND_URL + "/user/upload/avatar", { "avatar": profilePic}, { headers:{'Content-Type': 'multipart/form-data'}, withCredentials: true })
 			.then( (res: any) => {
 				console.log("pic sent");
 			})
-			.catch( (e) => { console.log(e); })*/
+			.catch( (e) => { console.log(e.request); console.log(e.response); console.log(profilePic) })
 
 		navigate("/profil/edit-Profil");
 	}
@@ -81,8 +80,10 @@ const EditProfil: React.FC = () =>
 			
 			setFAActive(response.data.isTwoFAEnable);
 			setDescription(response.data.description);
+			if (!description)
+				setDescription("");
 			
-				setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
+			setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
 		}).catch(err => {
 			console.log(err);
 		})
@@ -108,11 +109,11 @@ const EditProfil: React.FC = () =>
 					<center>
 						<Avatar
 							className='avatar'
-							src={selectedImage || profilePic || require("src/asset/default.jpg")}
+							src={profilePic || require("src/asset/default.jpg")}
 							style={{width:'100px',height: '100px' }}
 							/>
 						<br />
-						<button onClick={handleEditPicture}>Edit picture</button>
+						<button type="button" onClick={handleEditPicture}>Edit picture</button>
 					</center>
 					<div className='information'>
 						<InputLabel htmlFor="component-simple">Nickname</InputLabel>

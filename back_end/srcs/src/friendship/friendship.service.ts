@@ -10,7 +10,6 @@ export class FriendshipService {
 		if (senderId === receiverId)
 			throw new BadRequestException('Sender cant be receiver')
 
-
 		const receiver = await this.prisma.user.findUnique({
 			where: {
 				id: receiverId
@@ -29,7 +28,7 @@ export class FriendshipService {
 					where: {
 						id: senderId
 					}
-				}
+				},
 			}
 		})
 		if (friends_of_receiver.friends.length)

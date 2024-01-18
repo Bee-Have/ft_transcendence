@@ -273,6 +273,7 @@ export class PrivateMessageService {
 			...conversation, 
 			friendUsername,
 			username,
+			friendId,
 			memberOneUsername: userId < friendId ? username : friendUsername,
 			memberTwoUsername: userId < friendId ? friendUsername : username,
 		}

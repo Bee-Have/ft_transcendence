@@ -7,7 +7,7 @@ import GameOverComponent from "src/components/game/GameOverComponent";
 
 import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
 
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 5;
 
 function ClassicGame() {
   const [playerScore, setPlayerScore] = React.useState(0);

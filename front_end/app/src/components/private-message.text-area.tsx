@@ -77,7 +77,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 	}, [currentChat])
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
+		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {
 			const element = document.getElementById("test");
 			if (element) {
 				element.scrollTop = element.scrollHeight;
@@ -114,8 +114,10 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 				<Input
 					placeholder={'Send message to ' + currentChat.conversation.friendUsername}
 					style={{ width: '100%' }}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
+					value={inputValue === '\n' ? setInputValue('') : inputValue}
+					multiline={true}
+					maxRows={1}
+					onChange={(e) => {setInputValue(e.target.value); console.log(e)}}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

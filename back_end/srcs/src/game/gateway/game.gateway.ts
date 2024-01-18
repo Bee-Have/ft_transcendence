@@ -101,33 +101,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameId = `${player1Id}-${player2Id}`;
     let currentGame = this.runningGames.get(gameId);
 
-    const invite = await this.gameService.getUsersSharedInvite(
-      player1Id,
-      player2Id
-    );
-
-    if (currentGame === undefined && invite === null) {
-      client.emit("game:badRequest");
-      return;
-    }
-
-    this.connectedUsers.set(client.id, { userId: userId, gameId: gameId });
-
-    client.join(gameId);
+    const currentGameExists = currentGame !== undefined;
 
     if (currentGame === undefined) {
       currentGame = { ...defaultGameInfo };
       this.runningGames.set(gameId, currentGame);
-      currentGame.gamemode = invite.gameMode as
-        | "classic"
-        | "timed"
-        | "speed"
-        | "retro";
       if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
       if (currentGame.gamemode === "timed") {
         currentGame.maxScore = 100;
       }
     }
+
+    const invite = await this.gameService.getUsersSharedInvite(
+      player1Id,
+      player2Id
+    );
+
+    if (currentGameExists === false && invite === null) {
+      client.emit("game:badRequest");
+	  this.runningGames.delete(gameId);
+      return;
+    } else if (currentGameExists === true && invite !== null) {
+      currentGame.gamemode = invite.gameMode as
+        | "classic"
+        | "timed"
+        | "speed"
+        | "retro";
+    }
+
+    this.connectedUsers.set(client.id, { userId: userId, gameId: gameId });
+
+    client.join(gameId);
 
     if (userId === player1Id) {
       currentGame.player1 = userId;

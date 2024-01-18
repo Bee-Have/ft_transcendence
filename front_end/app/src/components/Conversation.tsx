@@ -6,13 +6,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import InteractiveUsernameConversation from 'src/pages/chat/components/InteractiveUsernameConversation';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
-import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 import { BACKEND_URL } from 'src/pages/global/env';
 import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
-import InteractiveUsername from './interactive/InteractiveUsername';
 import PrivateTextArea from './private-message.text-area';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
@@ -191,7 +190,7 @@ const Conversations: React.FC = () => {
 					className='channel-top-bar-img'
 					alt={currentChat.conversation.friendUsername + " avatar"}
 					src={BACKEND_URL + '/user/image/' + currentChat.conversation.friendId} />
-					<div className='wrappi margin-left-10px'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div></>}
+					<div className='wrappi margin-left-10px'><InteractiveUsernameConversation chat={currentChat}/></div></>}
 					<div className="left-but"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
 			</div>
 			<div className="channel-member-bar">

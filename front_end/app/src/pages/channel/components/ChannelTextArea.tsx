@@ -125,13 +125,6 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 		}
 	}, [currentChannelId])
 
-	// const listenMessage = (message: MessageProps) => {
-	// 	console.log(message)
-	// 	setMessages([...messages, message]);
-	// }
-
-	// socket?.on('new-message', listenMessage)
-
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {
 			const element = document.getElementById("test");

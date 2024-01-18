@@ -222,16 +222,10 @@
 
 
 .prompt{
-	height: 50px;
+	height: fit-content;
 	width: 90%;
 	margin: 10px auto;
 	margin-left: 20px;
-	padding-left: 2%;
-	padding-right: 2%;
-	padding-top: 5px;
-	/* bottom: 0; */
-	border-radius: 10em;
-	/* position: fixed; */
 	background-color: rosybrown;
 }
 

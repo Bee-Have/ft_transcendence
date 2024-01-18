@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Input from '@mui/material/Input';
+import { TextField } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
-import { socket } from '../pages/global/websocket';
-import { BACKEND_URL } from 'src/pages/global/env';
+import React, { useEffect, useRef, useState } from 'react';
+import InteractiveUsernameConversation from 'src/pages/chat/components/InteractiveUsernameConversation';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
-import InteractiveUsername from './interactive/InteractiveUsername';
-import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
-
+// import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
+import { BACKEND_URL } from 'src/pages/global/env';
+import { socket } from '../pages/global/websocket';
 interface MessageProps {
 	id: number,
 	createdAt: number,
@@ -30,7 +29,7 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 					{message.senderId === userId ?
 						<div className='private-message-name'>
 							{currentChat.conversation.username}
-						</div> : <div className='wrappi'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div>}
+						</div> : <div className='wrappi'><InteractiveUsernameConversation chat={currentChat} /></div>}
 				</div>}
 
 			<div className={"private-message-message-wrapper "}>
@@ -111,13 +110,13 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 				<div ref={messagesEndRef} />
 			</div>
 			<div className="prompt">
-				<Input
+				<TextField
 					placeholder={'Send message to ' + currentChat.conversation.friendUsername}
 					style={{ width: '100%' }}
 					value={inputValue === '\n' ? setInputValue('') : inputValue}
 					multiline={true}
 					maxRows={1}
-					onChange={(e) => {setInputValue(e.target.value); console.log(e)}}
+					onChange={(e) => { setInputValue(e.target.value); console.log(e) }}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

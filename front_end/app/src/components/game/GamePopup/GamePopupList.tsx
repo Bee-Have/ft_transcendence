@@ -32,7 +32,8 @@ function GamePopupList() {
 
     socket?.on("new-invite", fetchInvites);
 
-    fetchInvites();
+    if (userId !== 0)
+      fetchInvites();
     return () => {
       socket?.off("new-invite", fetchInvites);
     };

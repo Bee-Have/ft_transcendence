@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -26,10 +26,12 @@ const EditProfil: React.FC = () =>
 	const [printPopUp, setPopUp] = useState<boolean>(false);
 	const [FAActive, setFAActive] = useState<boolean>(false);
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
+	const [newProfilePic, setNewProfilePic] = useState<string | null>(null);
 
-	const SelectorImage = (event: ChangeEvent<HTMLInputElement>) => 
+	const SelectorImage = (event: any) => 
 	{
 		const file = event.target.files?.[0];
+		setNewProfilePic(event.target.files[0]);
 		if (file)
 		{
 			const imageUrl = URL.createObjectURL(file);
@@ -58,12 +60,17 @@ const EditProfil: React.FC = () =>
 		axios.post(BACKEND_URL + "/user/update/nickname", { "nickname": nickName }, { withCredentials: true })
 			.then( (res : any) => {})
 			.catch( (e) => {console.log(e)} );
-		
-		axios.post(BACKEND_URL + "/user/upload/avatar", { "avatar": profilePic}, { headers:{'Content-Type': 'multipart/form-data'}, withCredentials: true })
-			.then( (res: any) => {
-				console.log("pic sent");
-			})
-			.catch( (e) => { console.log(e.request); console.log(e.response); console.log(profilePic) })
+
+		if (newProfilePic)
+		{
+			axios.postForm(BACKEND_URL + "/user/upload/avatar", {
+				headers: {
+						'Content-Type': 'multipart/form-data'
+			  	},
+		   		"avatar": newProfilePic }, { withCredentials: true })
+			.then( (res: any) => {})
+			.catch( (e) => console.log(e.request))
+		}
 
 		navigate("/profil/edit-Profil");
 	}

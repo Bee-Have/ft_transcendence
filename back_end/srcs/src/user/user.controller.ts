@@ -175,7 +175,8 @@ export class UserController {
 	@ApiCreatedResponse({ description: 'The avatar have been uploaded successfully'})
 	@Post('upload/avatar')
 	@UseInterceptors(FileInterceptor('avatar'))
-	uploadAvatar(@UploadedFile() file: Express.Multer.File, @GetCurrentUser('sub') userId: number) {
+	uploadAvatar(@UploadedFile() file: Express.Multer.File,
+				@GetCurrentUser('sub') userId: number) {
 		this.userService.uploadAvatar(userId, file)
 	}
 

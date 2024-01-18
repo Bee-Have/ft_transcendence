@@ -21,8 +21,8 @@ import InvitationStatusComponent from "./InvitationStatusComponent";
 
 // receiver will be ignored since you wont know your opponent
 function InvitingPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
-  if (gamePopupProps.receiver === undefined) return null;
   const errorContext = useErrorContext();
+  if (gamePopupProps.receiver === undefined) return null;
 
   const cancelInvite = () => {
     gameService

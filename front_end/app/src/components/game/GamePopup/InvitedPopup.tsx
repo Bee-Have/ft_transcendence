@@ -21,8 +21,8 @@ import { AxiosError } from "axios";
 
 // receiver will be ignored since you wont know your opponent
 function InvitedPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
-  if (gamePopupProps.receiver === undefined) return null;
   const errorContext = useErrorContext();
+  if (gamePopupProps.receiver === undefined) return null;
 
   const declineInvite = () => {
     gameService

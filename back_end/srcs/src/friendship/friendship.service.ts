@@ -32,18 +32,22 @@ export class FriendshipService {
 			}
 		})
 		if (friends_of_receiver.friends.length)
-			throw new BadRequestException('Users already friends')			
-
+			throw new BadRequestException('Users already friends')
 
 		const req = await this.prisma.friendRequest.findFirst({
 			where: {
-				senderId,
-				receiverId
+				OR: [
+					{senderId, receiverId},
+					{senderId: receiverId, receiverId: senderId}
+				]
 			}
 		})
-		if (req)
+		if (req?.senderId === senderId)
 			throw new BadRequestException('Friend Request already exist')
-
+		if (req?.senderId === receiverId) {
+			await this.acceptFriendRequest(senderId, req.senderId)
+			return
+		}
 
 		const createdReq = await this.prisma.friendRequest.create({
 			data: {

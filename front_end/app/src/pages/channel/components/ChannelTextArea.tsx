@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
 import axios from 'axios';
-import { socket } from '../../global/websocket';
-import { BACKEND_URL } from 'src/pages/global/env';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { BACKEND_URL } from 'src/pages/global/env';
+import { socket } from '../../global/websocket';
 import { MemberProps } from '../types/MemberProps.types';
 
 interface ChannelMessageProps {
@@ -133,7 +133,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 	// socket?.on('new-message', listenMessage)
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
+		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {
 			const element = document.getElementById("test");
 			if (element) {
 				element.scrollTop = element.scrollHeight;
@@ -167,11 +167,14 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				<div ref={messagesEndRef} />
 			</div>
 			<div className="prompt">
-				<Input
+				<TextField
+					// className='channel-text-field'
 					placeholder={'Send message ...'}
 					style={{ width: '100%' }}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
+					value={inputValue === '\n' ? setInputValue('') : inputValue}
+					multiline={true}
+					maxRows={1}
+					onChange={(e) => {setInputValue(e.target.value); console.log(e)}}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

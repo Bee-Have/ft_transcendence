@@ -335,6 +335,7 @@ select {
 	margin: 5px;
 	margin-left: 10px;
 	border-radius: 50%;
+	object-fit: cover;
 }
 
 .channel-top-bar-name {
@@ -476,5 +477,11 @@ select {
 }
 
 .margin-cu {
-	margin: 10px;
+	margin-top: 11px;
 }
+
+.left-but {
+	margin: auto;
+	margin-right: 10px;
+}
+

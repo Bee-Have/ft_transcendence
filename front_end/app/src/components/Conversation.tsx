@@ -5,14 +5,15 @@ import { Badge } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
+import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
+import { BACKEND_URL } from 'src/pages/global/env';
 import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
-import PrivateTextArea from './private-message.text-area';
-import { BACKEND_URL } from 'src/pages/global/env';
-import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
 import InteractiveUsername from './interactive/InteractiveUsername';
-import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
+import PrivateTextArea from './private-message.text-area';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -98,7 +99,7 @@ const Conversations: React.FC = () => {
 	const [showTextArea, setshowTextArea] = useState(false)
 	const [currentChat, setCurrentChat] = useState<ConversationProps>()
 	const [createConvBool, setCreateConvBool] = useState(false)
-
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
@@ -191,6 +192,7 @@ const Conversations: React.FC = () => {
 					alt={currentChat.conversation.friendUsername + " avatar"}
 					src={BACKEND_URL + '/user/image/' + currentChat.conversation.friendId} />
 					<div className='wrappi margin-left-10px'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div></>}
+					<div className="left-but"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
 			</div>
 			<div className="channel-member-bar">
 				<div onClick={createConv} className='privMsg'>

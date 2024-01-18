@@ -449,18 +449,24 @@ export class ChannelService {
 				channelName: await this.getChannelName(body.channelId)
 		})
 
-
 		if (body.restriction === "KICKED" || body.restriction === "BANNED")
 		{	
-			this.broadcastToAllChannelMembers(body.channelId, 'leave-channel-member', {
+			const obj = {
 				userId: restrictedUser.userId,
 				memberId: restrictedUser.id,
 				role: restrictedUser.role,
-				state: restrictedUser.state,
+				state: body.restriction,
 				channelId: body.channelId,
 				username: await this.userService.getUsername(restrictedUser.userId),
-				channelName: await this.getChannelName(body.channelId)
-			})
+				channelName: await this.getChannelName(body.channelId),
+
+			}
+
+			this.broadcastToAllChannelMembers(body.channelId, 'leave-channel-member', obj)
+
+			const restricted = this.userService.connected_user_map.get(restrictedUser.userId)
+
+			restricted?.socket?.emit('leave-channel-member', obj)
 		}
 
 	}

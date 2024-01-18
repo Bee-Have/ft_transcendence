@@ -106,7 +106,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 		const listenLeaveMember = (info: MemberProps) => {
 			if (info.channelId === channelId) {
 				if (info.role === "OWNER") {
-					// navigate("/chat")
+					//TODO: REIRECT TO A PAGE THAT SAY OWNER LEAVED CHANNEL DOESNT EXIST
 					console.log("Channel Does not exist anymore, Owner Leaved")
 				}
 				else if (info.role === "ADMIN")

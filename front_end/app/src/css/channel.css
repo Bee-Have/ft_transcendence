@@ -474,3 +474,7 @@ select {
 .margin-bottom-0px {
 	margin-bottom: 0px;
 }
+
+.margin-cu {
+	margin: 10px;
+}

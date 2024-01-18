@@ -1,12 +1,14 @@
 import axios from "axios";
 import React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { BACKEND_URL } from "src/pages/global/env";
 import { socket } from "src/pages/global/websocket";
 
 
 const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 
+	const navigate = useNavigate()
 	const [name, setName] = useState('')
 	const [imageKey, setImageKey] = useState(0);
 
@@ -46,6 +48,10 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 				alt={name + " channel badge"}
 				src={BACKEND_URL + '/channel/badge/' + channelId + `?${imageKey}`} />
 			<div className='channel-top-bar-name'>{name}</div>
+			<div className="header">
+
+				<div className="margin-cu"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
+			</div>
 		</div>
 	);
 }

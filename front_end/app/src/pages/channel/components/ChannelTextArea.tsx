@@ -118,7 +118,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 		socket?.on('channel-info', listenInfo)
 
 		return () => {
-			socket?.off('new-channel-message', listenRole)
+			socket?.off('new-channel-message', listenMessage)
 			socket?.off('channel-role', listenRole)
 			socket?.off('channel-info', listenInfo)
 

@@ -33,7 +33,7 @@ const Welcome: React.FC = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
 
-    axios.get(BACKEND_URL + '/auth')
+    axios.get(BACKEND_URL + '/auth', )
     .then((res: any) => {
       window.location.replace(res.data)
     })

@@ -57,11 +57,11 @@ export class AuthService {
 		{
 			const tokens = await this.getTokens(userData.id, userData.email)
 		
-			response.cookie('TfaEnable', 'false', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('payload_cookie', tokens.payload_cookie, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
-			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
+			response.cookie('TfaEnable', 'false')
+			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
+			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
+			response.cookie('payload_cookie', tokens.payload_cookie, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
+			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
 		}
 		response.redirect(process.env.FRONT_END_URL)
 	}
@@ -137,7 +137,7 @@ export class AuthService {
 		.catch((err) => {
 			const res = {
 				message: '42 Auth API returned an error for token request', 
-				...err.response.data}
+				...err.response?.data}
 
 			throw new HttpException(res, err.response.status)
 		})

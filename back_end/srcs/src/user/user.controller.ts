@@ -200,7 +200,7 @@ export class UserController {
 
 	@ApiOperation({ description: 'Disable the TFA'})
 	@Get('tfa/disable')
-	disableTFA(@GetCurrentUser('sub') userId: number) {
-		return this.userService.disableTFA(userId)
+	async disableTFA(@GetCurrentUser('sub') userId: number) {
+		return await this.userService.disableTFA(userId)
 	}
 }

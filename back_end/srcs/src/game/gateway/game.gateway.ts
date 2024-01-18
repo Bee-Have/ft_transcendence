@@ -34,12 +34,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private runningGames = new Map<string, GameInfo>();
   private connectedUsers = new Map<string, UserGameId>();
 
-  handleConnection(@ConnectedSocket() client: Socket) {
-    console.log("game connection: ", client.id);
-  }
+  handleConnection(@ConnectedSocket() client: Socket) {}
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log("game disconnect: ", client.id);
     const userGameId = this.connectedUsers.get(client.id);
     if (userGameId === undefined) return;
 
@@ -84,7 +81,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server
         .to(gameId as string)
         .emit("game:winner", currentGame.winnerId);
-      console.log("winner: ", currentGame.winnerId);
       currentGame.gameStatus = "FINISHED";
     }
   }
@@ -119,7 +115,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (currentGameExists === false && invite === null) {
       client.emit("game:badRequest");
-	  this.runningGames.delete(gameId);
+      this.runningGames.delete(gameId);
       return;
     } else if (currentGameExists === true && invite !== null) {
       currentGame.gamemode = invite.gameMode as
@@ -138,7 +134,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else if (userId === player2Id) {
       currentGame.player2 = userId;
     } else {
-      console.log("you are not a player in this game");
       client.emit(
         "game:init",
         gameId,
@@ -157,7 +152,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       currentGame.player1 !== undefined &&
       currentGame.player2 !== undefined
     ) {
-      console.log("!!!!game start!!!!");
       currentGame.gameStatus = "PLAYING";
       this.gameService.deleteUserInvites(currentGame.player1);
       this.gameService.deleteUserInvites(currentGame.player2);

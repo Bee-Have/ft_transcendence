@@ -14,9 +14,14 @@ import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 import { socket } from "src/pages/global/websocket";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 function GamePopupList() {
   const gamePopup = useGamePopup();
   const [popupList, setPopupList] = React.useState<GamePopupProps[]>([]);
+  const errorContext = useErrorContext();
 
   React.useEffect(() => {
     const fetchInvites = () => {
@@ -25,15 +30,14 @@ function GamePopupList() {
         .then((list) => {
           setPopupList(list);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error: Error | AxiosError<unknown, any>) => {
+          errorContext.newError?.(errorHandler(error));
         });
     };
 
     socket?.on("new-invite", fetchInvites);
 
-    if (userId !== 0)
-      fetchInvites();
+    if (userId !== 0) fetchInvites();
     return () => {
       socket?.off("new-invite", fetchInvites);
     };

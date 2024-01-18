@@ -15,16 +15,21 @@ import { userId } from "src/pages/global/userId";
 
 import InvitationStatusComponent from "./InvitationStatusComponent";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 // receiver will be ignored since you wont know your opponent
 function InvitedPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
   if (gamePopupProps.receiver === undefined) return null;
+  const errorContext = useErrorContext();
 
   const declineInvite = () => {
     gameService
       .declineInvite(userId, gamePopupProps.sender.id)
       .then((res) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
     // send an axios call to the backend to cancel the invite
     // emit a socket event to refetch the popups
@@ -34,8 +39,8 @@ function InvitedPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
     gameService
       .acceptInvite(userId, gamePopupProps.sender.id)
       .then((res) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
     // send an axios call to the backend to cancel the invite and create room
     // emit a socket event to refetch the popups

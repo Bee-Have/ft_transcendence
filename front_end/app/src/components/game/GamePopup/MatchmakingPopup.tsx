@@ -8,6 +8,10 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import styles from "./GamePopup.module.css";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 import GamePopupProps from "./GamePopupInterface.dto";
 
 import gameService from "src/services/game";
@@ -21,14 +25,15 @@ function MatchmakingPopup({
 }: {
   gamePopupProps: GamePopupProps;
 }) {
+  const errorContext = useErrorContext();
   const closePopup = () => {
     // send an axios call to the backend to cancel the matchmaking
     // emit a socket event to refetch the popups
     gameService
       .leaveMatchmaking(userId)
       .then((res) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
   };
 

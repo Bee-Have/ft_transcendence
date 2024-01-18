@@ -61,10 +61,6 @@ export class GameService {
       opponent.socket.emit("new-invite");
       const player: UserInfo = this.userService.connected_user_map.get(userId);
       player.socket.emit("new-invite");
-      // Matchmaking logic here.
-      //   const opponent: UserInfo = this.userService.connected_user_map.get(gameInvites[0].senderId);
-      //   opponent.socket.emit('game-found', userId);
-      console.log("matchmaking with other: ", gameInvites[0].senderId);
       return gameInvites[0].senderId;
     }
 
@@ -383,8 +379,6 @@ export class GameService {
         loose: true,
       },
     });
-	// console.log("winner :", winner.score);
-    // console.log("loser :", loser.score);
     if (!loser || !winner) throw new NotFoundException("User Not Found");
     const estimation =
       1 / (1 + Math.pow(10, (loser.score - winner.score) / 400));
@@ -403,8 +397,6 @@ export class GameService {
       winner.win = winner.win + 1;
       loser.loose = loser.loose + 1;
     }
-    // console.log("winner new elo :", winner.score);
-    // console.log("loser new elo :", loser.score);
     await this.prisma.user.update({
       where: {
         id: winnerId,

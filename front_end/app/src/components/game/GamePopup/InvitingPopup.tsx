@@ -13,18 +13,23 @@ import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 import InvitationStatusComponent from "./InvitationStatusComponent";
 
 // receiver will be ignored since you wont know your opponent
 function InvitingPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
   if (gamePopupProps.receiver === undefined) return null;
+  const errorContext = useErrorContext();
 
   const cancelInvite = () => {
     gameService
       .declineInvite(userId, gamePopupProps.receiver?.id ?? 0)
       .then((res) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
     // send an axios call to the backend to cancel the invite
     // emit a socket event to refetch the popups

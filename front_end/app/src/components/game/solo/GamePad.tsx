@@ -12,7 +12,6 @@ function GamePad() {
 
   // setup routine on "PongStart()" creation to update mouse position
   useEffect(() => {
-    // console.log(mousePos);
     const PadElement = document.getElementById("GamePad") as HTMLElement;
     if (mousePos > 5 && mousePos < 95)
       PadElement.style.setProperty("--position", mousePos.toString());

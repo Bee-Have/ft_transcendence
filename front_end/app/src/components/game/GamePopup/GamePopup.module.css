@@ -1,43 +1,88 @@
+.PopupList {
+  display: flex;
+  flex-direction: column;
+
+  align-items: right;
+  justify-content: right;
+
+  gap: 2px;
+
+  position: absolute;
+  top: 10%;
+  right: 0px;
+  width: 230px;
+  height: 300px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  z-index: 1000;
+}
 
 .CardPopup {
-	position: absolute;
-	right: 0px;
-	width: 200px;
-	height: 110px;
-	border-radius: 10px 0px 0px 10px;
-	background-color: #D9D9D9;
+  min-width: 230px;
+  min-height: 110px;
+  width: 230px;
+  height: 110px;
+  border-radius: 10px 0px 0px 10px;
+  background-color: #d9d9d9;
 }
 
 .InteractiveContent {
-	display: flex;
-	flex-direction: row;
-	
-	justify-content: space-between;
-	align-items: center;
-	
-	gap: 10px;
-}
+  display: flex;
+  flex-direction: row;
 
-.CircularProgress {
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
 }
 
 .CancelButton {
-	width: 50px;
-	height: 50px;
-	background-color: #FF0000;
-	border-radius: 100%;
+  width: 60px;
+  height: 60px;
+  background-color: #ff0000;
+  border-radius: 100%;
+
+  cursor: pointer;
+}
+
+.CancelButton:hover {
+  color: #505050;
+  box-shadow: 0px 0px 0px 2px #505050;
+
+  cursor: pointer;
+}
+
+.ApproveButton {
+  width: 60px;
+  height: 60px;
+  background-color: #42ff00;
+  border-radius: 100%;
+
+  cursor: pointer;
+}
+
+.ApproveButton:hover {
+  color: #505050;
+  box-shadow: 0px 0px 0px 2px #505050;
+
+  cursor: pointer;
 }
 
 .UserIcon {
-	width: 50px;
-	height: 50px;
-	color: #505050;
-	background-color: #C7C7C7;
-	border-radius: 100%;
+  width: 60px;
+  height: 60px;
+  color: #505050;
+  background-color: #b9b9b9;
+  border-radius: 100%;
 }
 
 .GameMode {
-	display: flex;
-	justify-content: center;
-	bottom: 0.5px;
+  background-color: #b9b9b9;
+  display: flex;
+  justify-content: center;
+  bottom: 0.5px;
+  border-radius: 4px;
+  margin: 5px;
 }

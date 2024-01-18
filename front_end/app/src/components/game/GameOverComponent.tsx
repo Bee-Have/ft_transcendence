@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../../pages/game/Game.css";
+import "src/pages/game/solo/Game.css";
 import styles from "./GameOverComponent.module.css";
 
 import { useNavigate } from "react-router-dom";

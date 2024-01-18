@@ -12,8 +12,6 @@ import "src/css/header.css";
 
 import { useGamePopup } from "src/context/GamePopupContext";
 
-import MatchmakingPopup from "src/components/game/GamePopup/MatchmakingPopup";
-
 // interface WelcomeProps
 // {
 //   isLogged: boolean;
@@ -78,12 +76,11 @@ const Welcome: React.FC = () => {
             window.location.reload();
           })
           .catch((e) => console.log(e));
-			}
-
-		}
-		else
-			setAuthenticated(true)
-  }, [])
+      }
+    } else {
+      setAuthenticated(true);
+    }
+  }, []);
 
   const guestUser = () => {
     setGuest(true);
@@ -91,7 +88,6 @@ const Welcome: React.FC = () => {
 
   return (
     <div className="log_window">
-      {gamePopup.isVisible && <MatchmakingPopup/>}
       {/* add querry here to check if authentification token was filled */}
       {authenticated && (
         <div className="header">

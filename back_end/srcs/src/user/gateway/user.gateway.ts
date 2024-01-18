@@ -58,6 +58,8 @@ export class UserGateway {
 
 		this.userService.connected_user_map.set(userId, new UserInfo(userId, client, UserStatus.online))
 
+		client.emit('user-status', UserStatus.online);
+
 		const user_in_map = this.userService.connected_user_map.get(userId)
 
 		for (const friendId of friendsIds) {
@@ -92,6 +94,7 @@ export class UserGateway {
 				user.updateStatus(UserStatus[key])
 		}
 		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+		client.emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 	}
 
 

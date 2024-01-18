@@ -16,12 +16,19 @@ function InviteSpectateButton({ user }: InviteSpectateButtonProps) {
   const navigate = useNavigate();
 
   const handleSpectate = () => {
-    navigate("/game/" + user.username);
+    navigate("/game/redirect?player1=" + user.id);
   };
 
-  if (user.userstatus === UserStatus.ingame) {
+  if (
+    user.userstatus === UserStatus.ingame ||
+    user.userstatus === UserStatus.ingamesolo
+  ) {
     return (
-      <Button className={styles.ButtonDialogOpen} onClick={handleSpectate}>
+      <Button
+        disabled={user.userstatus === UserStatus.ingamesolo}
+        className={styles.ButtonDialogOpen}
+        onClick={handleSpectate}
+      >
         spectate
       </Button>
     );

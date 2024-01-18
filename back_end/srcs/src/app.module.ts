@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
 import { ChannelController } from './channel/channel.controller';
 import { ChannelService } from './channel/channel.service';
 import { ChannelModule } from './channel/channel.module';
+import { GameModule } from './game/game.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { ChannelModule } from './channel/channel.module';
 		AuthModule,
 		PrismaModule, 
 		UserModule,
+		GameModule,
 		PrivateMessageModule,
 		ThrottlerModule.forRoot([{ttl: 30000, limit: 3}]),
 		ChannelModule

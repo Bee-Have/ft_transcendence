@@ -1,24 +1,19 @@
 import React from "react";
 import "./Game.css";
-import { GamePad, OpponentPad } from "../../components/game/GamePad";
-import Ball from "../../components/game/SpeedBall";
-import Score from "../../components/game/Score";
-import GameOverComponent from "../../components/game/GameOverComponent";
+import { GamePad, OpponentPad } from "src/components/game/solo/GamePad";
+import Ball from "src/components/game/solo/PongBall";
+import Score from "src/components/game/solo/Score";
+import GameOverComponent from "src/components/game/GameOverComponent";
 
-import RedirectInvalidURL from "./RedirectInvalidURL";
+import { gameOverAnimation } from "src/components/game/animations/gameOverAnimation";
 
-import { gameOverAnimation } from "../../components/game/animations/gameOverAnimation";
-import { getQueryVariable } from "./getQueryVariable";
+const WINNING_SCORE = 1;
 
-const WINNING_SCORE = 5;
-
-function SpeedGame() {
+function ClassicGame() {
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
   const [gameOver, setGameOver] = React.useState(false);
   const [winner, setWinner] = React.useState("");
-
-  let isMulti = getQueryVariable("multi");
 
   React.useEffect(() => {
     if (playerScore >= WINNING_SCORE || opponentScore >= WINNING_SCORE) {
@@ -28,8 +23,6 @@ function SpeedGame() {
     }
     // eslint-disable-next-line
   }, [playerScore, opponentScore]);
-
-  if (isMulti !== "false") return <RedirectInvalidURL />;
 
   if (gameOver === true) {
     return (
@@ -58,4 +51,4 @@ function SpeedGame() {
   );
 }
 
-export default SpeedGame;
+export default ClassicGame;

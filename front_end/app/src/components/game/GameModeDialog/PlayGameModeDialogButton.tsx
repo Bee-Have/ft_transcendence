@@ -12,12 +12,21 @@ import { Box, CardContent, DialogContent } from "@mui/material";
 
 import Switch from "@mui/material/Switch";
 import Card from "@mui/material/Card";
+
 import RobotIcon from "@mui/icons-material/SmartToyTwoTone";
 import PersonIcon from "@mui/icons-material/PersonOutlineTwoTone";
+import WarningIcon from "@mui/icons-material/WarningAmberRounded";
 
 import Divider from "@mui/material/Divider";
 
 import styles from "./PlayGameModeDialogButton.module.css";
+
+import gameService from "src/services/game";
+import { userId } from "src/pages/global/userId";
+
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
 
 const modes = ["classic", "timed", "speed", "retro"];
 const availableModes = ["classic", "timed", "speed", "retro"];
@@ -33,6 +42,7 @@ function GameModeDialog(props: GameModeDialogProps) {
   const [isMulti, setIsMulti] = React.useState(false);
   const { onClose, selectedMode, open, updateGameMode } = props;
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
   const handleClose = () => {
     onClose(selectedMode);
@@ -43,7 +53,25 @@ function GameModeDialog(props: GameModeDialogProps) {
   };
 
   const handleLaunchGame = () => {
-    navigate("/game/" + selectedMode + "?multi=" + isMulti);
+    gameService
+      .deleteUserInvites(userId)
+      .then((res) => {
+        navigate("/game/training/" + selectedMode);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const joinMatchmakingQueue = () => {
+    gameService
+      .joinMatchmaking(userId, selectedMode)
+      .then((res) => {
+        handleClose();
+      })
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
+      });
   };
 
   return (
@@ -122,7 +150,16 @@ function GameModeDialog(props: GameModeDialogProps) {
         </List>
         <Divider />
         <br />
-        <Button className={styles.StartGameButton} onClick={handleLaunchGame}>
+        <div className={styles.Disclaimer}>
+          <WarningIcon />
+          Starting a game cancels all invites and matchmaking
+        </div>
+        <Divider />
+        <br />
+        <Button
+          className={styles.StartGameButton}
+          onClick={isMulti === false ? handleLaunchGame : joinMatchmakingQueue}
+        >
           {isMulti === false ? "Start Game" : "Matchmaking"}
         </Button>
       </DialogContent>
@@ -148,7 +185,11 @@ function PlayGameModeDialogButton() {
 
   return (
     <div>
-      <Button className={styles.ButtonDialogOpen} variant="outlined" onClick={handleClickOpen}>
+      <Button
+        className={styles.ButtonDialogOpen}
+        variant="outlined"
+        onClick={handleClickOpen}
+      >
         play
       </Button>
       <GameModeDialog

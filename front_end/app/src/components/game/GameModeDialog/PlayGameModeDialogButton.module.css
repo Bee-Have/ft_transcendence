@@ -138,3 +138,8 @@
 	border-radius: 20px;
 	background: linear-gradient(to right, #26640a, rgb(43, 100, 185));
 }
+
+.Disclaimer {
+	font-size: 12px;
+	text-align: center;
+}

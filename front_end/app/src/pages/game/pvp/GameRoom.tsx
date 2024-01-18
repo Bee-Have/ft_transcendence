@@ -168,14 +168,13 @@ function GameRoomPvp() {
       />
     );
   }
-//   return <CircularProgress className="Pong-Game" />;
   if (gameSocket.current === undefined || startGame === false) {
-  return (
-	// <div className="Pong-Game">
-  	<CircularProgress sx={{position:'absolute', left:'50%', top:'50%', transform:'translate(-50%, -50%)'}} size={100} />
-	//   </div>
-  );
-}
+    return (
+      <div className="centeredContent">
+        <CircularProgress size={100} />
+      </div>
+    );
+  }
   return (
     <div
       className={gameMode.current === "retro" ? "Pong-game-retro" : "Pong-game"}

@@ -45,7 +45,7 @@ function InvitationStatusComponent({
   }, [isAccepted]);
 
   if (gamePopupProps.sender.id === userId) {
-    return <CircularProgress className={styles.CircularProgress} />;
+    return <CircularProgress />;
   } else {
     return <CheckIcon className={styles.ApproveButton} onClick={launchMatch} />;
   }

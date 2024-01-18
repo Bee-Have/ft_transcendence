@@ -92,7 +92,8 @@ export class PrivateMessageController {
 
 		if (!userHaveRights)
 			throw new ForbiddenException('You cannot access these messages')
-
+		while (message.content.includes("\n\n\n"))
+			message.content = message.content.replace("\n\n\n", "\n\n")
 		return await this.privateMessageService.createNewMessage(userId, message)
 
 	}

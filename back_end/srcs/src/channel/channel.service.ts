@@ -298,7 +298,7 @@ export class ChannelService {
 			state: member.state,
 			channelId,
 			username: await this.userService.getUsername(userId),
-			channelName: await this.getChannelName(channelId) 
+			channelName: await this.getChannelName(channelId)
 		})
 		if (member.role === "OWNER") {
 			try {
@@ -391,14 +391,6 @@ export class ChannelService {
 		return trim
 	}
 
-	async restrictChannelMember(userId: number, body: RestrictChannelMember) {
-		if (body.restriction === "MUTED")
-			await this.muteUser(userId, body.restrictedUserId, body.channelId)
-		if (body.restriction === "BANNED")
-			await this.banUser(userId, body.restrictedUserId, body.channelId)
-		if (body.restriction === "KICKED")
-			await this.kickUser(userId, body.restrictedUserId, body.channelId)
-	}
 
 	async uploadBadge(userId: number, channelId: number, file: Express.Multer.File) {
 		const ownerId = await this.getChannelOwnerId(channelId)
@@ -435,6 +427,40 @@ export class ChannelService {
 		}
 		catch (e) {
 			throw new BadRequestException('The file could not be saved')
+		}
+
+	}
+
+	async restrictChannelMember(userId: number, body: RestrictChannelMember) {
+		const restrictedUser = await this.getChannelMember(body.restrictedUserId, body.channelId)
+
+		if (body.restriction === "MUTED")
+			await this.muteUser(userId, body.restrictedUserId, body.channelId)
+		if (body.restriction === "BANNED")
+			await this.banUser(userId, body.restrictedUserId, body.channelId)
+		if (body.restriction === "KICKED")
+			await this.kickUser(userId, body.restrictedUserId, body.channelId)
+
+		this.broadcastToAllChannelMembers(body.channelId, 'channel-info', {
+				userId: body.restrictedUserId,
+				channelId: body.channelId,
+				state: body.restriction,
+				username: await this.userService.getUsername(body.restrictedUserId),
+				channelName: await this.getChannelName(body.channelId)
+		})
+
+
+		if (body.restriction === "KICKED" || body.restriction === "BANNED")
+		{	
+			this.broadcastToAllChannelMembers(body.channelId, 'leave-channel-member', {
+				userId: restrictedUser.userId,
+				memberId: restrictedUser.id,
+				role: restrictedUser.role,
+				state: restrictedUser.state,
+				channelId: body.channelId,
+				username: await this.userService.getUsername(restrictedUser.userId),
+				channelName: await this.getChannelName(body.channelId)
+			})
 		}
 
 	}
@@ -501,7 +527,7 @@ export class ChannelService {
 			throw new ForbiddenException('You can not manage role for this channel')
 
 		try {
-			await this.prisma.channelMember.update({
+			const t = await this.prisma.channelMember.update({
 				where: {
 					id: body.memberId,
 					NOT: {
@@ -511,6 +537,16 @@ export class ChannelService {
 				data: {
 					role: body.role
 				}
+			})
+
+			this.broadcastToAllChannelMembers(body.channelId, 'channel-role', {
+				userId: t.userId,
+				memberId: body.memberId,
+				channelId: body.channelId,
+				role: body.role,
+				state: t.state,
+				username: await this.userService.getUsername(t.userId),
+				channelName: await this.getChannelName(body.channelId)
 			})
 		}
 		catch (e) {

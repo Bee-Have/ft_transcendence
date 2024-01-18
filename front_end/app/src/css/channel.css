@@ -459,3 +459,18 @@ select {
 	background-color: rgb(170, 170, 170);
 	z-index: 20;
 }
+
+.wrappi {
+	height: fit-content;
+	margin: auto;
+	margin-left: 0px;
+}
+
+.margin-left-10px {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+.margin-bottom-0px {
+	margin-bottom: 0px;
+}

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ChannelTextArea from 'src/components/channel.text-area';
 import { BACKEND_URL } from '../global/env';
 import ChannelMembersBar from './components/ChannelMembersBar';
 import ChannelTopBar from './components/ChannelTopBar';
@@ -9,6 +8,7 @@ import { MemberProps } from './types/MemberProps.types';
 
 import '../../css/channel.css';
 import '../../css/chat.css';
+import ChannelTextArea from './components/ChannelTextArea';
 
 const Channel: React.FC = () => {
 

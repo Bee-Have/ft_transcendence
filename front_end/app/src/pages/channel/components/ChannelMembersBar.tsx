@@ -1,4 +1,4 @@
-import { Avatar, List, ListItemButton, ListSubheader } from "@mui/material"
+import { Avatar, Box, List, ListItemButton, ListSubheader } from "@mui/material"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
@@ -7,19 +7,60 @@ import { userId } from "src/pages/global/userId"
 import { socket } from "src/pages/global/websocket"
 import { MemberProps } from "../types/MemberProps.types"
 import ChannelSettingPanel from "./ChannelSettingPannel"
+import InteractiveAvatarChannel from "./InteractiveAvatarChannel"
+import InteractiveUsernameChannel from "./InteractiveUsernameChannel"
 
+const MemberList = ({ headerName, members, clicker }: { headerName: string, members: MemberProps[], clicker: MemberProps }) => {
+	// const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-const MemberList = ({ headerName, members }: { headerName: string, members: MemberProps[] }) => {
+	const onContextMenu = (e: any) => {
+		e.preventDefault()
+		// setAnchorEl(e.currentTarget)
+	}
+
 	return (
 		<>
 			<ListSubheader>{headerName}</ListSubheader>
 			{members.map((member) => (
-				<ListItemButton key={member.userId}>
+				<ListItemButton
+					key={member.userId}
+					onContextMenu={onContextMenu}>
+					{/* <PopUp user={member} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
 					<Avatar
 						alt={member.username}
 						src={BACKEND_URL + '/user/image/' + member.userId}
 						sx={{ width: 60, height: 60 }} />
-					<div className='channel-member-list-name'>{member.username}</div>
+					<div className='channel-member-list-name'>{member.username}</div> */}
+					{member.userId === userId ?
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "row",
+								justifyContent: "center",
+								alignItems: "center",
+								gap: "10px",
+							}}
+						>
+							<Avatar
+								src={BACKEND_URL + "/user/image/" + member.userId}
+								alt={member.username}
+								sx={{ width: 60, height: 60 }}
+							/>
+							<h1 className="margin-bottom-0px" >{member.username}</h1>
+						</Box>
+						:
+						<Box
+							sx={{
+								display: "flex",
+								flexDirection: "row",
+								justifyContent: "center",
+								alignItems: "center",
+								gap: "10px",
+							}}
+						>
+							<InteractiveAvatarChannel member={member} clicker={clicker} />
+							<InteractiveUsernameChannel member={member} clicker={clicker} />
+						</Box>}
 				</ListItemButton>
 			))}
 		</>
@@ -33,10 +74,10 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 	const [owner, setOwner] = useState<MemberProps[]>([])
 	const [admins, setAdmins] = useState<MemberProps[]>([])
 	const [members, setMembers] = useState<MemberProps[]>([])
+	const [clicker, setClicker] = useState<MemberProps>()
 	const [leaveMessage, setLeaveMessage] = useState('Leave')
 	const [showButton, setShowButton] = useState(false)
 	const navigate = useNavigate()
-
 
 	useEffect(() => {
 		let own = []
@@ -53,6 +94,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 		setOwner(own)
 		setAdmins(adms)
 		setMembers(membs)
+		setClicker(channelMembers.filter((member) => { return member.userId === userId })[0])
 	}, [channelMembers])
 
 	useEffect(() => {
@@ -77,12 +119,27 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 			}
 		}
 
+		const listenRole = (info: MemberProps) => {
+			if (info.userId === userId)
+				setClicker(info)
+			if (info.role === 'ADMIN') {
+				setMembers((prev) => prev.filter((member) => { return member.userId !== info.userId }))
+				setAdmins(prev => [...prev, info])
+			} 
+			if (info.role === 'NONADMIN') {
+				setAdmins((prev) => prev.filter((member) => { return member.userId !== info.userId }))
+				setMembers(prev => [...prev, info])
+			}
+		}
+
 		socket?.on('new-channel-member', listenNewMember)
 		socket?.on('leave-channel-member', listenLeaveMember)
+		socket?.on('channel-role', listenRole)
 
 		return () => {
 			socket?.off('new-channel-member', listenNewMember)
 			socket?.off('leave-channel-member', listenLeaveMember)
+			socket?.off('channel-role', listenRole)
 		}
 	}, [channelId, navigate])
 
@@ -184,7 +241,6 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 
 	useEffect(() => {
 		const listener = (e: any) => {
-			console.log(e)
 			if (e.key === 'Escape') {
 				setShowButton(false)
 				setLeaveMessage("You can leave")
@@ -197,7 +253,6 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 			window.removeEventListener('keydown', listener)
 		}
 	}, [leaveMessage])
-
 
 	return (
 		<div className='channel-member-bar'>
@@ -225,9 +280,20 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 				}
 			</div>
 			<List>
-				<MemberList headerName='Owner' members={owner} />
-				{admins.length !== 0 && <MemberList headerName={admins.length > 1 ? 'Admins' : 'Admin'} members={admins} />}
-				{members.length !== 0 && <MemberList headerName={members.length > 1 ? 'Members' : 'Member'} members={members} />}
+				{clicker && <MemberList
+					headerName='Owner'
+					members={owner}
+					clicker={clicker} />}
+				{admins.length !== 0 && clicker &&
+					<MemberList
+						headerName={admins.length > 1 ? 'Admins' : 'Admin'}
+						members={admins}
+						clicker={clicker} />}
+				{members.length !== 0 && clicker &&
+					<MemberList
+						headerName={members.length > 1 ? 'Members' : 'Member'}
+						members={members}
+						clicker={clicker} />}
 			</List>
 		</div>
 	)

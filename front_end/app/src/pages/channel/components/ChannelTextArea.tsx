@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
-import { socket } from '../pages/global/websocket';
+import { socket } from '../../global/websocket';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { useNavigate } from 'react-router';
-import '../css/chat.css'
+import { MemberProps } from '../types/MemberProps.types';
 
 interface ChannelMessageProps {
 	id: number,
@@ -15,26 +15,28 @@ interface ChannelMessageProps {
 	senderMemberId: number,
 	username: string,
 	channelId: number,
+	isInfo: boolean | undefined
 }
 
 const Message = ({ message, isSame }: any) => {
 
 	return (
-		<div className="message">
-			{ isSame ? "" :
-			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.username} src={BACKEND_URL + '/user/image/' + message.senderUserId} />
-				<div className='private-message-name'>{message.username}</div>
-			</div>}
+		(message.isInfo === true) ? <div className=''>{message.content}</div> :
+			<div className="message">
+				{isSame ? "" :
+					<div className='private-message-header'>
+						<Avatar className="private-message-avatar" alt={message.username} src={BACKEND_URL + '/user/image/' + message.senderUserId} />
+						<div className='private-message-name'>{message.username}</div>
+					</div>}
 
-			<div className={"private-message-message-wrapper "}>
-				<div className='private-message-message'>{message.content}</div>
+				<div className={"private-message-message-wrapper "}>
+					<div className='private-message-message'>{message.content}</div>
+				</div>
 			</div>
-		</div>
 	)
 }
 
-const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
+const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -46,10 +48,9 @@ const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
 	}, [messages]);
 
 	useEffect(() => {
-		axios.get(BACKEND_URL + '/channel/messages/' + currentChannelId, {withCredentials: true})
+		axios.get(BACKEND_URL + '/channel/messages/' + currentChannelId, { withCredentials: true })
 			.then((res) => {
 				setMessages(res.data)
-				console.log(res.data)
 			})
 			.catch((e) => {
 				console.log(e)
@@ -60,16 +61,67 @@ const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
 	useEffect(() => {
 		const listenMessage = (message: ChannelMessageProps) => {
 			console.log(message, currentChannelId)
-			if (currentChannelId === message.channelId)
-			{
+			if (currentChannelId === message.channelId) {
 				setMessages((prev) => [...prev, message]);
 			}
 		}
 
+		const listenRole = (info: MemberProps) => {
+			if (currentChannelId === info.channelId) {
+				let message: ChannelMessageProps  = {
+					id: -1,
+					createdAt: -1,
+					content: info.username + " is ",
+					senderUserId: -1,
+					senderMemberId: -1,
+					username: info.username,
+					channelId: info.channelId,
+					isInfo: true
+				}
+				if (info.role === "ADMIN")
+					message.content += "Promoted to Admin"
+				else
+					message.content += "Demoted to Member" 
+
+				setMessages((prev) => [...prev, message]);
+			}
+		}
+
+		const listenInfo = (info: MemberProps) => {
+			if (currentChannelId === info.channelId) {
+				let message: ChannelMessageProps  = {
+					id: -1,
+					createdAt: -1,
+					content: info.username + " has been ",
+					senderUserId: -1,
+					senderMemberId: -1,
+					username: "",
+					channelId: info.channelId,
+					isInfo: true
+				}
+
+				if (info.state === "KICKED")
+					message.content += "Kicked"
+				else if (info.state === "BANNED")
+					message.content += "Banned"
+				else
+					message.content += "Muted for 5 minutes" 
+
+				setMessages((prev) => [...prev, message]);
+			}
+		}
+
+
+
 		socket?.on('new-channel-message', listenMessage)
+		socket?.on('channel-role', listenRole)
+		socket?.on('channel-info', listenInfo)
 
 		return () => {
-			socket?.off('new-channel-message', listenMessage)
+			socket?.off('new-channel-message', listenRole)
+			socket?.off('channel-role', listenRole)
+			socket?.off('channel-info', listenInfo)
+
 		}
 	}, [currentChannelId])
 
@@ -86,7 +138,7 @@ const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
-			axios.post(BACKEND_URL + '/channel/messages', { channelId: currentChannelId, content: inputValue }, {withCredentials: true})
+			axios.post(BACKEND_URL + '/channel/messages', { channelId: currentChannelId, content: inputValue }, { withCredentials: true })
 				.then((res): any => {
 					// setMessages([...messages, res.data]);
 					setInputValue('');
@@ -110,7 +162,7 @@ const ChannelTextArea = ({ currentChannelId }: {currentChannelId: number}) => {
 		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
-					<Message key={index} message={message} isSame={isLastMessageSameSender(index)}/>
+					<Message key={index} message={message} isSame={isLastMessageSameSender(index)} />
 				))}
 				<div ref={messagesEndRef} />
 			</div>

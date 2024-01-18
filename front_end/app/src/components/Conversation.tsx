@@ -10,6 +10,9 @@ import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
 import { BACKEND_URL } from 'src/pages/global/env';
+import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
+import InteractiveUsername from './interactive/InteractiveUsername';
+import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -27,29 +30,6 @@ import { BACKEND_URL } from 'src/pages/global/env';
 // 	friendUsername: string
 // 	username: string
 // }
-
-interface ConversationProps {
-	conversation: {
-		id: number
-		memberOneId: number
-		memberOneUsername: string
-		memberTwoId: number
-		memberTwoUsername: string
-		friendUsername: string
-		friendId: number
-		username: string
-	}
-	lastMessage: {
-		id: number
-		conversationId: number
-		senderId: number
-		createdAt: Date
-		content: string
-		isRead: boolean
-	}
-	convIsUnRead: boolean
-	userstatus: string | null
-}
 
 console.log(userId)
 
@@ -74,7 +54,8 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 			<Avatar
 				className={"avatar " + (conv.convIsUnRead ? "unread" : "")}
 				alt={friendUsername}
-				src={BACKEND_URL + '/user/image/' + friendId} />
+				src={BACKEND_URL + '/user/image/' + friendId}
+				sx={{ width: 60, height: 60 }} />
 		</Badge>
 	)
 }
@@ -205,11 +186,11 @@ const Conversations: React.FC = () => {
 	return (
 		<>
 			<div className='channel-top-bar'>
-				{showTextArea && <><img
+				{showTextArea && currentChat && <><img
 					className='channel-top-bar-img'
-					alt={"channel badge"}
-					src={BACKEND_URL + '/user/image/' + currentChat?.conversation.friendId} />
-					<div className='channel-top-bar-name'>{currentChat?.conversation.friendUsername}</div></>}
+					alt={currentChat.conversation.friendUsername + " avatar"}
+					src={BACKEND_URL + '/user/image/' + currentChat.conversation.friendId} />
+					<div className='wrappi margin-left-10px'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div></>}
 			</div>
 			<div className="channel-member-bar">
 				<div onClick={createConv} className='privMsg'>
@@ -226,7 +207,7 @@ const Conversations: React.FC = () => {
 					) : null}
 				</List>
 			</div>
-			{showTextArea && <PrivateTextArea currentChat={currentChat} userId={userId} />}
+			{showTextArea && currentChat && <PrivateTextArea currentChat={currentChat} userId={userId} />}
 		</>
 	);
 }

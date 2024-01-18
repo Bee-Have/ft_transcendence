@@ -4,6 +4,9 @@ import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { socket } from '../pages/global/websocket';
 import { BACKEND_URL } from 'src/pages/global/env';
+import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
+import InteractiveUsername from './interactive/InteractiveUsername';
+import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 
 interface MessageProps {
 	id: number,
@@ -18,11 +21,17 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 
 	return (
 		<div className="message">
-			{ isSame ? "" :
-			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={BACKEND_URL + '/user/image/' + message.senderId} />
-				<div className='private-message-name'>{message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}</div>
-			</div>}
+			{isSame ? "" :
+				<div className='private-message-header'>
+					<Avatar
+						className="private-message-avatar"
+						alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}
+						src={BACKEND_URL + '/user/image/' + message.senderId} />
+					{message.senderId === userId ?
+						<div className='private-message-name'>
+							{currentChat.conversation.username}
+						</div> : <div className='wrappi'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div>}
+				</div>}
 
 			<div className={"private-message-message-wrapper "}>
 				<div className='private-message-message'>{message.content}</div>
@@ -31,7 +40,7 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 	)
 }
 
-const PrivateTextArea = ({ currentChat, userId }: any) => {
+const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationProps, userId: number }) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -52,8 +61,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 
 	useEffect(() => {
 		const listenMessage = (message: MessageProps) => {
-			if (currentChat.conversation.id === message.conversationId)
-			{
+			if (currentChat.conversation.id === message.conversationId) {
 				setMessages((prev) => [...prev, message]);
 				axios.get(BACKEND_URL + '/privatemessage/conversations/isread/' + currentChat.conversation.id, { withCredentials: true })
 					.then((res) => console.log(res.data))
@@ -67,13 +75,6 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 			socket?.off('new-message', listenMessage)
 		}
 	}, [currentChat])
-
-	// const listenMessage = (message: MessageProps) => {
-	// 	console.log(message)
-	// 	setMessages([...messages, message]);
-	// }
-
-	// socket?.on('new-message', listenMessage)
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {
@@ -105,7 +106,7 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
-					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)}/>
+					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)} />
 				))}
 				<div ref={messagesEndRef} />
 			</div>

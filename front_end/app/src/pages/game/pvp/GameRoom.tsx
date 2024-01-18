@@ -8,6 +8,7 @@ import { useEffectOnce } from "src/components/useEffectOnce";
 
 import "../solo/Game.css";
 
+import CircularProgress from "@mui/material/CircularProgress";
 import DynamicBackground from "src/components/game/pvp/DynamicBackground";
 
 import Score from "src/components/game/pvp/Score";
@@ -167,9 +168,14 @@ function GameRoomPvp() {
       />
     );
   }
+//   return <CircularProgress className="Pong-Game" />;
   if (gameSocket.current === undefined || startGame === false) {
-    return <div>Waiting for game to start...</div>;
-  }
+  return (
+	// <div className="Pong-Game">
+  	<CircularProgress sx={{position:'absolute', left:'50%', top:'50%', transform:'translate(-50%, -50%)'}} size={100} />
+	//   </div>
+  );
+}
   return (
     <div
       className={gameMode.current === "retro" ? "Pong-game-retro" : "Pong-game"}

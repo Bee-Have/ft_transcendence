@@ -8,7 +8,7 @@ export class IncomingDirectMessage {
 	@IsNotEmpty()
 	content: string
 }
-
+//Inco,ingDirectMessage.content
 export class OutgoingDirectMessage {
 	@Expose()
 	id: number

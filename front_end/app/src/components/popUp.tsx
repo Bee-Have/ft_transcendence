@@ -13,12 +13,12 @@ import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css"
 
 interface PopUpProps {
   user: Friend;
-  isFriend: boolean;
+  usage: "stranger" | "friend" | "invite";
   anchorEl: HTMLElement | null;
   setAnchorEl: (event: HTMLElement | null) => void;
 }
 
-function PopUp({ user, isFriend, anchorEl, setAnchorEl }: PopUpProps) {
+function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
   const navigate = useNavigate();
 
   const open = Boolean(anchorEl);
@@ -51,8 +51,8 @@ function PopUp({ user, isFriend, anchorEl, setAnchorEl }: PopUpProps) {
         profile
       </Button>
 
-      {isFriend === true && <InviteSpectateButton user={user} />}
-      {isFriend === false && <InviteGameModeDialogButton user={user} />}
+      {usage === "friend" && <InviteSpectateButton user={user} />}
+      {usage === "stranger" && <InviteGameModeDialogButton user={user} />}
 
       <Button
         className={styles.ButtonDialogOpen}

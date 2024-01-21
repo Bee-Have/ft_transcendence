@@ -8,10 +8,10 @@ import styles from "./InteractiveUsername.module.css";
 
 function InteractiveUsername({
   user,
-  isFriend = true,
+  usage = "friend",
 }: {
   user: Friend;
-  isFriend?: boolean;
+  usage?: "stranger" | "friend" | "invite";
 }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -25,7 +25,7 @@ function InteractiveUsername({
       </h1>
       <PopUp
         user={user}
-        isFriend={isFriend}
+        usage={usage}
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
       />

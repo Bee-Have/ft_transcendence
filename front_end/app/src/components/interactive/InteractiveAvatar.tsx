@@ -9,10 +9,10 @@ import styles from "./InteractiveAvatar.module.css";
 
 function InteractiveAvatar({
   user,
-  isFriend = true,
+  usage = "friend",
 }: {
   user: Friend;
-  isFriend?: boolean;
+  usage?: "stranger" | "friend" | "invite";
 }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -26,7 +26,7 @@ function InteractiveAvatar({
       />
       <PopUp
         user={user}
-        isFriend={isFriend}
+        usage={usage}
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
       />

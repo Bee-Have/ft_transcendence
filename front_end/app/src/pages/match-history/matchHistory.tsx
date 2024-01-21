@@ -47,8 +47,8 @@ const Match: React.FC<CardProps> = ({ outcome, user, score, mode }) => {
           gap: "10px",
         }}
       >
-        <InteractiveAvatar user={user} isFriend={false} />
-        <InteractiveUsername user={user} isFriend={false} />
+        <InteractiveAvatar user={user} usage={"stranger"} />
+        <InteractiveUsername user={user} usage={"stranger"} />
       </Box>
       <div className="score">
         <h1>{score}</h1>

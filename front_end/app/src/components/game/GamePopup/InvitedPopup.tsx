@@ -55,7 +55,7 @@ function InvitedPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
             launchMatch={launchMatch}
           />
           <CloseIcon className={styles.CancelButton} onClick={declineInvite} />
-          <InteractiveAvatar user={gamePopupProps.sender} />
+          <InteractiveAvatar user={gamePopupProps.sender} usage={"invite"}/>
         </div>
         <div className={styles.GameMode}>{gamePopupProps.gameMode}</div>
       </CardContent>

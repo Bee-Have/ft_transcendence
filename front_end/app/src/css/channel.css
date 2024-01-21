@@ -401,9 +401,9 @@ select {
 .channel-overlay-wrapper {
 	min-width: 500px;
 	width: 60%;
-	height: 60%;
-	min-height: 700px;
-	margin: 10% auto;
+	height: fit-content;
+	max-height: 90%;
+	margin: 0 auto;
 	background-color: lightgray;
 }
 

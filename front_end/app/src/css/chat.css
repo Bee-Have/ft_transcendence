@@ -29,6 +29,18 @@
 	height: 100%;
 }
 
+.friend-selected{
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	background-color: rgb(187, 187, 187);
+}
+
+.friend:hover{
+	cursor: pointer;
+	background-color: rgb(163, 163, 163);
+}
+
 .popup .avatar{
 	width: 20px;
 	height: 20px;

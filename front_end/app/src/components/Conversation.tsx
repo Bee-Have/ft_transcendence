@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar';
 import List from '@mui/material/List';
 // import ListItem from '@mui/material/ListItem';
-import { Badge } from '@mui/material';
+import { Badge, ListItem } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -65,9 +65,13 @@ const Conversation = ({ onClick, conv, chatId }: any) => {
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
+	const han = () => {
+		console.log('wef')
+	}
+
 	return (
-		<div className="friend" >
-			<ListItemButton key={id} onClick={onClick}>
+		<div className={chatId === conv.conversation.id ? "friend-selected" : "friend"} >
+			<ListItem key={id} onClick={onClick}>
 				{
 					conv.userstatus ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar
@@ -77,10 +81,15 @@ const Conversation = ({ onClick, conv, chatId }: any) => {
 							sx={{ width: 60, height: 60 }} />
 				}
 				<div className="private-message-name">{friendUsername}</div>
-				{
-					chatId === conv.conversation.id ? "SELECTED" : false
-				}
-			</ListItemButton>
+			</ListItem>
+			{
+				chatId === conv.conversation.id ? <div>
+					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto'}}>
+						<ListItemButton sx={{margin: 'auto'}} onClick={han}>Invite</ListItemButton>
+						<ListItemButton sx={{margin: 'auto'}} onClick={han}>Spectate</ListItemButton>
+					</List>
+				</div> : false
+			}
 		</div>
 	)
 
@@ -100,9 +109,9 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
 			.then((res): any => {
 				if (chatId) {
-					const up = res.data.map((m:any) => m.conversation.id === chatId ? {...m, convIsUnRead: false} : m)
+					const up = res.data.map((m: any) => m.conversation.id === chatId ? { ...m, convIsUnRead: false } : m)
 					setConvs(up)
-					const cur = up.filter((m:any) => { return m.conversation.id === chatId })[0]
+					const cur = up.filter((m: any) => { return m.conversation.id === chatId })[0]
 					if (!cur)
 						navigate('/404')
 					setCurrentChat(cur)
@@ -210,7 +219,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 								<Conversation
 									key={convs[i].conversation.id}
 									onClick={() => handleclick(convs[i])}
-									conv={convs[i]} 
+									conv={convs[i]}
 									chatId={chatId} />
 							))}
 						</div>

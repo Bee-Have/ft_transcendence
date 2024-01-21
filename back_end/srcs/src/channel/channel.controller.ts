@@ -97,6 +97,16 @@ export class ChannelController {
 		await this.channelService.restrictChannelMember(userId, body)
 	}
 
+	@Post('unban/:channelId/:channelMemberId')
+	@HttpCode(HttpStatus.OK)
+	async Unban(
+		@GetCurrentUser('sub') userId: number,
+		@Param('channelId', ParseIntPipe) channelId: number,
+		@Param('channelMemberId', ParseIntPipe) channelMemberId: number
+	) {
+		await this.channelService.unbanMember(userId, channelId,channelMemberId)
+	}
+
 	@Post('manage/role')
 	@HttpCode(HttpStatus.OK)
 	async ManageChannelAdmin (

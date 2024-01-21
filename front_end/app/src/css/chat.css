@@ -207,6 +207,7 @@
 	word-wrap: break-word;
 	white-space: pre-wrap;
 	margin: 1px;
+	letter-spacing: 0.5px;
 	padding: 10px 12px 10px 12px;
 	background-color: lightgrey;
 	border-radius: 10px;
@@ -230,5 +231,7 @@
 }
 
 .channel-text-field {
-	height: 100px;
+	width: 100%;
+	min-width: 300px;
+	height: fit-content;
 }

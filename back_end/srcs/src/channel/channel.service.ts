@@ -526,6 +526,30 @@ export class ChannelService {
 		return restrictUser
 	}
 
+	async unbanMember(userId: number, channelId: number, channelMemberId: number) {
+		const ownerId = await this.getChannelOwnerId(channelId)
+
+		if (ownerId !== userId)
+			throw new ForbiddenException('Only Owner can Unban Member')
+	
+		try {
+			await this.prisma.channelMember.delete({
+				where: {
+					id: channelMemberId,
+					state: "BANNED"
+				}
+			})
+		}
+		catch (e) {
+			if (e.code === 'P2025')
+				throw new BadRequestException('This member either not exist or not banned')
+			else {
+				console.log(e)
+				throw new InternalServerErrorException('Could not unban')
+			}
+		}
+	}
+
 	async manageRole(userId: number, body: ManageChannelRole) {
 		const ownerId = await this.getChannelOwnerId(body.channelId)
 
@@ -718,9 +742,31 @@ export class ChannelService {
 		})
 	}
 
+	async getBannedMembersofChannel(channelId: number) {
+		try {
+			const banneds = await this.prisma.channelMember.findMany({
+				where: {
+					channelId,
+					state: "BANNED"
+				}
+			})
+
+			for (const banned of banneds) {
+				banned["username"] = await this.userService.getUsername(banned.userId)
+			}
+			return banneds
+		}
+		catch (e) {
+			throw new InternalServerErrorException("Error getting banned members")
+			
+		}
+	}
+
 	async getChannelInfo(userId: number, channelId: number) {
 		const member = await this.getChannelMember(userId, channelId)
-		return await this.getChannelNoPassword(channelId)
+		const channel = await this.getChannelNoPassword(channelId)
+		channel["banned"] = await this.getBannedMembersofChannel(channelId)
+		return channel
 	}
 
 	isMuted(channelMember: ChannelMember) {

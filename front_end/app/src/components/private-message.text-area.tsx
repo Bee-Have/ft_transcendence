@@ -111,12 +111,12 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 			</div>
 			<div className="prompt">
 				<TextField
+					className='channel-text-field'
 					placeholder={'Send message to ' + currentChat.conversation.friendUsername}
-					style={{ width: '100%' }}
 					value={inputValue === '\n' ? setInputValue('') : inputValue}
-					multiline={true}
-					maxRows={1}
-					onChange={(e) => { setInputValue(e.target.value); console.log(e) }}
+					multiline
+					rows={1}
+					onChange={(e) => { setInputValue(e.target.value) }}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

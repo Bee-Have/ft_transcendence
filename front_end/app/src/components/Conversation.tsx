@@ -126,7 +126,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 			.catch((err) => {
 				console.log(err)
 			})
-	}, [])
+	}, [chatId, navigate])
 
 	useEffect(() => {
 		const listenNewConv = (conv: ConversationProps) => {

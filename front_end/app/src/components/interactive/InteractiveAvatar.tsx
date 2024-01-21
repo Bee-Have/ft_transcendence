@@ -7,7 +7,13 @@ import { Friend } from "src/pages/global/friend.dto";
 
 import styles from "./InteractiveAvatar.module.css";
 
-function InteractiveAvatar({ user }: { user: Friend }) {
+function InteractiveAvatar({
+  user,
+  isFriend = true,
+}: {
+  user: Friend;
+  isFriend?: boolean;
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   return (
@@ -15,10 +21,15 @@ function InteractiveAvatar({ user }: { user: Friend }) {
       <Avatar
         src={user.photo}
         alt={user.username}
-		onClick={(event) => setAnchorEl(event.currentTarget)}
-		className={styles.InteractiveAvatar}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+        className={styles.InteractiveAvatar}
       />
-      <PopUp user={user} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <PopUp
+        user={user}
+        isFriend={isFriend}
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+      />
     </>
   );
 }

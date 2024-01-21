@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "@mui/material/Button";
 import InviteSpectateButton from "./DynamicInviteSpectateButton";
+import InviteGameModeDialogButton from "./game/GameModeDialog/InviteGameModeDialogButton";
 import Menu from "@mui/material/Menu";
 
 import { Friend } from "../pages/global/friend.dto";
@@ -12,11 +13,12 @@ import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css"
 
 interface PopUpProps {
   user: Friend;
+  isFriend: boolean;
   anchorEl: HTMLElement | null;
   setAnchorEl: (event: HTMLElement | null) => void;
 }
 
-function PopUp({ user, anchorEl, setAnchorEl }: PopUpProps) {
+function PopUp({ user, isFriend, anchorEl, setAnchorEl }: PopUpProps) {
   const navigate = useNavigate();
 
   const open = Boolean(anchorEl);
@@ -49,7 +51,8 @@ function PopUp({ user, anchorEl, setAnchorEl }: PopUpProps) {
         profile
       </Button>
 
-      <InviteSpectateButton user={user} />
+      {isFriend === true && <InviteSpectateButton user={user} />}
+      {isFriend === false && <InviteGameModeDialogButton user={user} />}
 
       <Button
         className={styles.ButtonDialogOpen}

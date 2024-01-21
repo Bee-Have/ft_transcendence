@@ -1,10 +1,11 @@
 import { Socket } from 'socket.io'
 
 export enum UserStatus {
-	online = "Online",
-	offline = "Offline",
-	ingame = "In game",
-	inchat = "In chat"
+	online = "Online" as any,
+	offline = "Offline" as any,
+	ingame = "Playing" as any,
+	ingamesolo = "Training" as any,
+	inchat = "In chat" as any
 }
 
 export class UserInfo {

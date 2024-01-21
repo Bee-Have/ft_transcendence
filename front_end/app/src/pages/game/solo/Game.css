@@ -6,6 +6,14 @@
 	right: 0px;
 	bottom: 0px;
 	margin: auto;
+
+	overflow: hidden;
+}
+.centeredContent {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
 }
 
 .Pong-game > * {

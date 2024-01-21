@@ -66,7 +66,9 @@ const Welcome: React.FC = () => {
           })
           .catch((e) => console.log(e));
       }
-    } else setAuthenticated(true);
+    } else {
+      setAuthenticated(true);
+    }
   }, []);
 
   const guestUser = () => {

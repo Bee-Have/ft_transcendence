@@ -2,12 +2,12 @@
 	--positionX: 50;
 	--positionY: 50;
 	position: absolute;
-	top: calc(var(--positionY) * 1vh);
-	left: calc(var(--positionX) * 1vw);
+	top: calc(var(--positionY) * 1%);
+	left: calc(var(--positionX) * 1%);
 	transform: translate(-50%, -50%);
 	
 	background-color: #ffffff;
 
-	height: 0.76vh;
-	width: 0.76vh;
+	height: 2%;
+	width: 2%;
 }

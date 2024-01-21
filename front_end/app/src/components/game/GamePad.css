@@ -1,12 +1,12 @@
 .GamePad {
 	--position: 50;
 	position: absolute;
-	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
-	left: 5vw;
+	top: calc(var(--position) * 1%);
+	transform: translate(-50%, -50%);
+	left: 5%;
 
-	height: 10vh;
-	width: 2vh;
+	height: 10%;
+	width: 2%;
 	background-color: #B4B4B4;
 	border-radius: 0.8vh;
 }
@@ -15,12 +15,12 @@
 	--position: 50;
 	
 	position: absolute;
-	top: calc(var(--position) * 1vh);
-	transform: translateY(-50%);
-	right: 5vw;
+	top: calc(var(--position) * 1%);
+	transform: translate(50%, -50%);
+	right: 5%;
 	
-	height: 10vh;
-	width: 2vh;
+	height: 10%;
+	width: 2%;
 	background-color: #6D6D6D;
 	border-radius: 0.8vh;
 }

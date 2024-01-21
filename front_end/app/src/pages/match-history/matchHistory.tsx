@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Menu from "../../components/menu";
 
-import { Friend, UserStatus } from "../global/friend.dto";
+import { Friend } from "../global/friend.dto";
 
 import { Box } from "@mui/material";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
+import { useEffectOnce } from "src/components/useEffectOnce";
+
+import gameService from "src/services/game";
+
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
+import { userId } from "src/pages/global/userId";
+
+// const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
   outcome: string;
@@ -50,6 +60,15 @@ const Match: React.FC<CardProps> = ({ outcome, user, score, mode }) => {
   );
 };
 
+interface MatchHistoryItemDto {
+  winnerId: number | null;
+  p1: Friend;
+  p1Score: string;
+  p2: Friend;
+  p2Score: string;
+  gameMode: string;
+}
+
 interface MatchHistoryProps {
   outcome: string;
   user: Friend;
@@ -60,64 +79,51 @@ interface MatchHistoryProps {
 const MatchHistory: React.FC = () => {
   const [matches, setMatches] = useState<MatchHistoryProps[]>([]);
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
-  useEffect(() => {
-    // Call to get the history of the user
-    // axios
-    //   .get("http://localhost:3001/user/test/match-history/" + userId, {
-    // 	withCredentials: true,
-    //   })
-    //   .then((res) =>
-    // 	setMatches({ ...res.data, photo: PHOTO_FETCH_URL + res.data.id })
-    //   )
-    //   .catch((err) => console.log(err));
-    setMatches([
-      {
-        user: {
-          id: 1,
-          username: "test1",
-          userstatus: UserStatus.online,
-          photo: PHOTO_FETCH_URL + 1,
-        },
-        mode: "speed",
-        score: "5 / 3",
-        outcome: "victory",
-      },
-      {
-        user: {
-          id: 2,
-          username: "test2",
-          userstatus: UserStatus.online,
-          photo: PHOTO_FETCH_URL + 2,
-        },
-        mode: "retro",
-        score: "3 / 11",
-        outcome: "defeat",
-      },
-      {
-        user: {
-          id: 3,
-          username: "test3",
-          userstatus: UserStatus.offline,
-          photo: PHOTO_FETCH_URL + 3,
-        },
-        mode: "time",
-        score: "2 / 2",
-        outcome: "tie",
-      },
-      {
-        user: {
-          id: 4,
-          username: "test4",
-          userstatus: UserStatus.ingame,
-          photo: PHOTO_FETCH_URL + 4,
-        },
-        mode: "classic",
-        score: "10 / 1",
-        outcome: "victory",
-      },
-    ]);
-  }, []);
+  useEffectOnce(() => {
+    gameService
+      .getMatchHistory(userId)
+      .then((res) => {
+        setMatches(
+          res.map((match: MatchHistoryItemDto) => {
+            let matchResult: MatchHistoryProps = {} as MatchHistoryProps;
+
+            if (match.winnerId === null) {
+              matchResult.outcome = "draw";
+            } else if (match.winnerId === userId) {
+              matchResult.outcome = "victory";
+            } else {
+              matchResult.outcome = "defeat";
+            }
+            //check with profile owner Id rather then your userId when merge complete
+            matchResult.user = match.p1.id === userId ? match.p2 : match.p1;
+            matchResult.score =
+              match.p1.id === userId
+                ? `${match.p1Score}/${match.p2Score}`
+                : `${match.p2Score}/${match.p1Score}`;
+            matchResult.mode = match.gameMode;
+            return matchResult;
+          })
+        );
+      })
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
+      });
+    // setMatches([
+    //   {
+    //     user: {
+    //       id: 1,
+    //       username: "test1",
+    //       userstatus: UserStatus.online,
+    //       photo: PHOTO_FETCH_URL + 1,
+    //     },
+    //     mode: "speed",
+    //     score: "5/3",
+    //     outcome: "victory",
+    //   }
+    // ]);
+  });
 
   return (
     <div className="matchHistory">

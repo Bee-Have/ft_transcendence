@@ -3,25 +3,20 @@ import "./Retro.css";
 import {
   RetroGamePad,
   RetroOpponentPad,
-} from "../../components/game/retro_game/RetroGamePad";
-import RetroBall from "../../components/game/retro_game/RetroPongBall";
-import RetroScore from "../../components/game/retro_game/RetroScore";
-import GameOverComponent from "../../components/game/GameOverComponent";
+} from "../../../components/game/retro_game/RetroGamePad";
+import RetroBall from "../../../components/game/retro_game/RetroPongBall";
+import RetroScore from "../../../components/game/retro_game/RetroScore";
+import GameOverComponent from "../../../components/game/GameOverComponent";
 
-import RedirectInvalidURL from "./RedirectInvalidURL";
+import { retroGameOverAnimation } from "../../../components/game/animations/gameOverAnimation";
 
-import { retroGameOverAnimation } from "../../components/game/animations/gameOverAnimation";
-import { getQueryVariable } from "./getQueryVariable";
-
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 11;
 
 function RetroGame() {
   const [playerScore, setPlayerScore] = React.useState(0);
   const [opponentScore, setOpponentScore] = React.useState(0);
   const [gameOver, setGameOver] = React.useState(false);
   const [winner, setWinner] = React.useState("");
-
-  let isMulti = getQueryVariable("multi");
 
   React.useEffect(() => {
     if (playerScore >= WINNING_SCORE || opponentScore >= WINNING_SCORE) {
@@ -33,8 +28,6 @@ function RetroGame() {
     }
     // eslint-disable-next-line
   }, [playerScore, opponentScore]);
-
-  if (isMulti !== "false") return <RedirectInvalidURL />;
 
   if (gameOver === true) {
     return (

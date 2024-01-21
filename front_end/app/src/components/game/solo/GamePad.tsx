@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import "./GamePad.css";
+import "src/components/game/GamePad.css";
 
 function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
@@ -12,7 +12,6 @@ function GamePad() {
 
   // setup routine on "PongStart()" creation to update mouse position
   useEffect(() => {
-    // console.log(mousePos);
     const PadElement = document.getElementById("GamePad") as HTMLElement;
     if (mousePos > 5 && mousePos < 95)
       PadElement.style.setProperty("--position", mousePos.toString());

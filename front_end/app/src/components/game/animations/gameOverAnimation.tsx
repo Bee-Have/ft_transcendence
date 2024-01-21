@@ -2,6 +2,8 @@ export function gameOverAnimation(winner: string) {
   const left = document.getElementById("Pong-game-left-bg") as HTMLElement;
   const right = document.getElementById("Pong-game-right-bg") as HTMLElement;
 
+  if (left === null || right === null) return;
+
   left.style.setProperty("transition", "width 1s ease-in-out 1s");
   right.style.setProperty("transition", "width 1s ease-in-out 1s");
   if (winner === "player") {
@@ -21,6 +23,14 @@ export function gameOverAnimation(winner: string) {
     "opponent-score"
   ) as HTMLElement;
 
+  if (
+    opponentPad === null ||
+    gamePad === null ||
+    playerScoreElem === null ||
+    opponentScoreElem === null
+  )
+    return;
+
   opponentPad.style.setProperty("opacity", "0");
   gamePad.style.setProperty("opacity", "0");
   playerScoreElem.style.setProperty("opacity", "0");
@@ -38,8 +48,8 @@ export function retroGameOverAnimation(winner: string) {
   background.style.setProperty("left", "0%");
   background.style.setProperty("right", "0%");
 
-  const opponentPad = document.getElementById("RetroOpponentPad") as HTMLElement;
-  const gamePad = document.getElementById("RetroGamePad") as HTMLElement;
+  const opponentPad = document.getElementById("OpponentPad") as HTMLElement;
+  const gamePad = document.getElementById("GamePad") as HTMLElement;
   const playerScoreElem = document.getElementById(
     "player-score"
   ) as HTMLElement;

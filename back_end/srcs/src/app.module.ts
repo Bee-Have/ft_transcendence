@@ -10,6 +10,7 @@ import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrivateMessageModule } from './privatemessage/privatemessage.module';
 import { UserModule } from './user/user.module';
+import { GameModule } from './game/game.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
 		AuthModule,
 		PrismaModule, 
 		UserModule,
+		GameModule,
 		PrivateMessageModule,
 		ThrottlerModule.forRoot([{ttl: 30000, limit: 3}])
 	],

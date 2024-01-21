@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import  React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import "./App.css";
 import "./bootstrap/css/bootstrap.css";
@@ -30,7 +30,7 @@ import Channel from './pages/channel/Channel';
 
 const App: React.FC = () => {
   useEffect(() => {
-    const handleMessage = (event: MessageEvent): void => {};
+    const handleMessage = (event: MessageEvent): void => { };
     window.addEventListener("message", handleMessage);
     return () => {
       window.removeEventListener("message", handleMessage);
@@ -40,7 +40,7 @@ const App: React.FC = () => {
   const [update, setUpdate] = useState<boolean>(false)
 
   const onUpdate = () => {
-	  setUpdate(!update)
+    setUpdate(!update)
   }
 
   return (
@@ -55,15 +55,15 @@ const App: React.FC = () => {
           <Route path="/profil/blocked" element={<Blocked />} />
           <Route path="/profil/match-history" element={<MatchHistory />} />
           <Route path="/profil/edit-Profil" element={<EditProfil />} />
-		 
-		  <Route path="/chat" element={<><ChannelListBar update={update} /><Outlet/></>}>
-					<Route path="" element={<Chat />}/>
-					<Route path=":id" element={<Chat />}/>
-					<Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate}/>} />
-					<Route path="channel/:id" element={<Channel/>} />
-				</Route>
 
-		  <Route path="/game/redirect" element={<RedirectGame />} />
+          <Route path="/chat" element={<><ChannelListBar update={update} /><Outlet /></>}>
+            <Route path="" element={<Chat />} />
+            <Route path=":id" element={<Chat />} />
+            <Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate} />} />
+            <Route path="channel/:id" element={<Channel />} />
+          </Route>
+
+          <Route path="/game/redirect" element={<RedirectGame />} />
 
           <Route path="/game/training/classic" element={<ClassicGame />} />
           <Route path="/game/pvp/" element={<GameRoomPvp />} />

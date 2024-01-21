@@ -79,7 +79,8 @@ export class UserGateway {
 	@SubscribeMessage(process.env.SERVER_UPDATE_USER_STATUS)
 	updateUserStatus(@ConnectedSocket() client: Socket, @MessageBody() data: string){
 
-		const userId: number = Number(client.handshake.headers.id)
+		const atToken = jwtDecode(String(client.handshake?.headers?.id))
+		const userId: number = Number(atToken.sub)
 
 		const user = this.userService.connected_user_map.get(userId)
 
@@ -95,19 +96,6 @@ export class UserGateway {
 		}
 		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
 		client.emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
-	}
-
-
-	@SubscribeMessage('message')
-	async handleMessage(@ConnectedSocket() client, @MessageBody() body: OutgoingDirectMessage)
-	{
-		const friendId = await this.privmessage.getFriendIdByConvId(body.senderId, body.conversationId)
-	
-		const friend = this.userService.connected_user_map.get(friendId)
-
-		if (friend)
-			friend.socket.emit('new-message', body)
-
 	}
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {

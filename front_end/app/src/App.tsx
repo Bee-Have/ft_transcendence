@@ -52,6 +52,7 @@ const App: React.FC = () => {
 				<Route path="/profil/edit-Profil" element={<EditProfil />} />
 				<Route path="/chat" element={<><ChannelListBar update={update} /><Outlet/></>}>
 					<Route path="" element={<Chat />}/>
+					<Route path=":id" element={<Chat />}/>
 					<Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate}/>} />
 					<Route path="channel/:id" element={<Channel/>} />
 				</Route>

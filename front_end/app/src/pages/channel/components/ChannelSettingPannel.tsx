@@ -38,7 +38,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 		return () => {
 			window.removeEventListener('keydown', listener)
 		}
-	}, [channelId])
+	}, [channelId, hideOverlay])
 
 
 	const infoChange = () => {
@@ -141,7 +141,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 			<div className='channel-form-separator'></div>
 			{
 				!!bannedPeople.length &&
-				<List>
+				<List sx={{overflowY: 'auto', height: '180px'}}>
 					{bannedPeople.map((banned, index) => (
 						<Banned banned={banned} index={index} />
 					))}
@@ -169,7 +169,7 @@ const Banned = ({ banned }: any) => {
 
 
 	return (
-		<ListItem key={banned.userId}>
+		<ListItem key={banned.userId} >
 			<Box
 				sx={{
 					display: "flex",

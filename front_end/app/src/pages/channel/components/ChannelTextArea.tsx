@@ -25,8 +25,13 @@ const Message = ({ message, isSame }: any) => {
 			<div className="message">
 				{isSame ? "" :
 					<div className='private-message-header'>
-						<Avatar className="private-message-avatar" alt={message.username} src={BACKEND_URL + '/user/image/' + message.senderUserId} />
-						<div className='private-message-name'>{message.username}</div>
+						<Avatar
+							className="private-message-avatar"
+							alt={message.username}
+							src={BACKEND_URL + '/user/image/' + message.senderUserId} />
+						<div className='private-message-name'>
+							{message.username}
+						</div>
 					</div>}
 
 				<div className={"private-message-message-wrapper "}>

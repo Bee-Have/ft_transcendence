@@ -6,7 +6,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import InteractiveUsernameConversation from 'src/pages/chat/components/InteractiveUsernameConversation';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
 import { BACKEND_URL } from 'src/pages/global/env';
 import TextInputWithEnterCallback from '../pages/global/TextInput';
@@ -60,20 +59,15 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 	)
 }
 
-const Conversation = ({ onClick, conv }: any) => {
+const Conversation = ({ onClick, conv, chatId }: any) => {
 
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
-	const showMenu = (e: any) => {
-		//TODO: Add the popup menu for conversations
-		e.preventDefault()
-	}
-
 	return (
 		<div className="friend" >
-			<ListItemButton key={id} onClick={onClick} onContextMenu={showMenu}>
+			<ListItemButton key={id} onClick={onClick}>
 				{
 					conv.userstatus ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar
@@ -82,8 +76,10 @@ const Conversation = ({ onClick, conv }: any) => {
 							src={BACKEND_URL + '/user/image/' + friendId}
 							sx={{ width: 60, height: 60 }} />
 				}
-
-				<div className="channel-member-list-name">{friendUsername}</div>
+				<div className="private-message-name">{friendUsername}</div>
+				{
+					chatId === conv.conversation.id ? "SELECTED" : false
+				}
 			</ListItemButton>
 		</div>
 	)
@@ -92,7 +88,7 @@ const Conversation = ({ onClick, conv }: any) => {
 };
 
 
-const Conversations: React.FC = () => {
+const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 
 	const [convs, setConvs] = useState<ConversationProps[]>([])
 	const [showTextArea, setshowTextArea] = useState(false)
@@ -103,7 +99,17 @@ const Conversations: React.FC = () => {
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
 			.then((res): any => {
-				setConvs(res.data)
+				if (chatId) {
+					const up = res.data.map((m:any) => m.conversation.id === chatId ? {...m, convIsUnRead: false} : m)
+					setConvs(up)
+					const cur = up.filter((m:any) => { return m.conversation.id === chatId })[0]
+					if (!cur)
+						navigate('/404')
+					setCurrentChat(cur)
+					setshowTextArea(true)
+				}
+				else
+					setConvs(res.data)
 			})
 			.catch((err) => {
 				console.log(err)
@@ -124,8 +130,7 @@ const Conversations: React.FC = () => {
 
 	const handleclick = (e: ConversationProps) => {
 		convUpdateUnReadStatus(e.conversation.id, false)
-		setCurrentChat(e)
-		setshowTextArea(true)
+		navigate('/chat/' + e.conversation.id)
 	}
 
 	const createConv = () => {
@@ -155,7 +160,6 @@ const Conversations: React.FC = () => {
 
 		setConvs(updated)
 	}
-
 
 	useEffect(() => {
 		const listenNewMessage = (message: any) => {
@@ -190,8 +194,9 @@ const Conversations: React.FC = () => {
 					className='channel-top-bar-img'
 					alt={currentChat.conversation.friendUsername + " avatar"}
 					src={BACKEND_URL + '/user/image/' + currentChat.conversation.friendId} />
-					<div className='wrappi margin-left-10px'><InteractiveUsernameConversation chat={currentChat}/></div></>}
-					<div className="left-but"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
+					<div className='private-message-name'>{currentChat.conversation.friendUsername}</div>
+				</>}
+				<div className="left-but"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
 			</div>
 			<div className="channel-member-bar">
 				<div onClick={createConv} className='privMsg'>
@@ -202,7 +207,11 @@ const Conversations: React.FC = () => {
 					{convs ? (
 						<div>
 							{Object.keys(convs).map((i) => (
-								<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]} />
+								<Conversation
+									key={convs[i].conversation.id}
+									onClick={() => handleclick(convs[i])}
+									conv={convs[i]} 
+									chatId={chatId} />
 							))}
 						</div>
 					) : null}

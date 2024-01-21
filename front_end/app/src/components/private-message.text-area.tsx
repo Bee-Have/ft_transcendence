@@ -2,7 +2,6 @@ import { TextField } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import InteractiveUsernameConversation from 'src/pages/chat/components/InteractiveUsernameConversation';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
 // import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 import { BACKEND_URL } from 'src/pages/global/env';
@@ -26,11 +25,11 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 						className="private-message-avatar"
 						alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}
 						src={BACKEND_URL + '/user/image/' + message.senderId} />
-					{message.senderId === userId ?
-						<div className='private-message-name'>
-							{currentChat.conversation.username}
-						</div> : <div className='wrappi'><InteractiveUsernameConversation chat={currentChat} /></div>}
-				</div>}
+					<div className='private-message-name'>
+						{currentChat.conversation.username}
+					</div>
+				</div>
+			}
 
 			<div className={"private-message-message-wrapper "}>
 				<div className='private-message-message'>{message.content}</div>
@@ -43,6 +42,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	// const naigate = useNavigate()
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });

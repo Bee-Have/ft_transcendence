@@ -131,10 +131,6 @@ select {
 	cursor: pointer;
 }
 
-.channel-form-button:hover {
-	background-color: #379c3b;
-}
-
 .button-non-ready {
 	background-color: red;
 }

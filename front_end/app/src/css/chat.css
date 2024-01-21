@@ -196,8 +196,12 @@
 	/* display: flex; */
 	/* align-items: center; */
 	max-width: 80%;
+	height: fit-content;
+	margin: auto;
+	margin-left: 0px;
 	word-wrap: break-word;
 	white-space: pre-wrap;
+	overflow: auto;
 }
 
 .private-message-message {
@@ -232,6 +236,6 @@
 
 .channel-text-field {
 	width: 100%;
-	min-width: 300px;
+	min-width: 400px;
 	height: fit-content;
 }

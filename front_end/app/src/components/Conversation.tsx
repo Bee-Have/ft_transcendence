@@ -84,9 +84,12 @@ const Conversation = ({ onClick, conv, chatId }: any) => {
 			</ListItem>
 			{
 				chatId === conv.conversation.id ? <div>
-					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto'}}>
-						<ListItemButton sx={{margin: 'auto'}} onClick={han}>Invite</ListItemButton>
-						<ListItemButton sx={{margin: 'auto'}} onClick={han}>Spectate</ListItemButton>
+					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto', flexWrap: 'wrap'}}>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Invite</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
 					</List>
 				</div> : false
 			}

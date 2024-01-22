@@ -1,6 +1,7 @@
 import axios from "axios";
+import { BACKEND_URL } from "src/pages/global/env";
 
-const API_URL = "http://localhost:3001/game";
+const API_URL = BACKEND_URL + "/game";
 
 const joinMatchmaking = async (userId: number, gameMode: string) => {
   return await axios

@@ -42,6 +42,7 @@ function InvitationStatusComponent({
       navigate(redirectUrl);
       setIsAccepted(false);
     }
+	// eslint-disable-next-line
   }, [isAccepted]);
 
   if (gamePopupProps.sender.id === userId) {

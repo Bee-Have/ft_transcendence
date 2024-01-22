@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 
 interface FAEnableProps {
@@ -6,13 +7,19 @@ interface FAEnableProps {
 }
 
 const FADisable: React.FC<FAEnableProps> = ({popUp, btn}) => {
+	const desactivate = () => {
+		axios.get('http://localhost:3001/user/tfa/disable', { withCredentials: true })
+		popUp(false); 
+		btn(false);
+	}
+
 	return (
 		<div className='overlay'>
 			<div className='content'>
 				<div className='QRCode'>
 					<h1>Are you sure you want to remove 2FA?</h1>
 					<br/><br/><br/><br/>
-					<button onClick={() => { popUp(false); btn(false)}}>Yes</button>
+					<button onClick={() => desactivate()}>Yes</button>
 					<button onClick={() => { popUp(false); btn(true)}}>No </button>
 				</div>
 			</div>

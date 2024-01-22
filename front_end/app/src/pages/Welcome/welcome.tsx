@@ -10,6 +10,8 @@ import { BACKEND_URL } from '../global/env';
 import "src/css/welcome.css";
 import "src/css/header.css";
 
+import { useGamePopup } from "src/context/GamePopupContext";
+
 // interface WelcomeProps
 // {
 //   isLogged: boolean;
@@ -26,6 +28,8 @@ const Welcome: React.FC = () => {
   const aToken = ReadCookie("access_token");
   const rToken = ReadCookie("refresh_token");
 
+  const gamePopup = useGamePopup();
+
   // const login = () => {
   // }
 
@@ -33,28 +37,35 @@ const Welcome: React.FC = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
 
-    axios.get(BACKEND_URL + '/auth', )
+    axios.get(BACKEND_URL + '/auth')
     .then((res: any) => {
       window.location.replace(res.data)
     })
     .catch(e => console.log(e))
+
 	// login()
     // setAuthenticated(true);
   };
 
   useEffect(() => {
-    if (!aToken) {
-      console.log("login");
-      // login()
-      setAuthenticated(false);
-    } else if (isTokenExpired(aToken)) {
-      console.log("Atoken Expired");
-      if (!rToken || isTokenExpired(rToken)) {
-        console.log("No Rt or expired");
-        setAuthenticated(false);
-        // login()
-      } else {
-        console.log("posting");
+		if (!aToken)
+		{
+			console.log('login');
+			// login()
+			setAuthenticated(false);
+		}
+		else if ( isTokenExpired(aToken) )
+		{
+			console.log('Atoken Expired')
+			if ( !rToken || isTokenExpired(rToken) )
+			{
+				console.log('No Rt or expired');
+				setAuthenticated(false);
+			// login()
+			}
+			else
+			{
+				console.log('posting')
         axios
           .post(
             BACKEND_URL + "/auth/refresh",
@@ -80,7 +91,7 @@ const Welcome: React.FC = () => {
       {/* add querry here to check if authentification token was filled */}
       {authenticated && (
         <div className="header">
-          <button className="btn btn-light" onClick={() => navigate("/profil")}>
+          <button className="btn btn-light" onClick={() => navigate(`/profil/${ReadCookie("userId")}`)}>
             profile
           </button>
         </div>
@@ -109,7 +120,7 @@ const Welcome: React.FC = () => {
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light">leaderboard</button>
+          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible)}} >leaderboard</button>
           {/* <button className="btn btn-light" onClick={() => navigate("/leaderboard")}>leaderboard</button> */}
         </div>
       </div>

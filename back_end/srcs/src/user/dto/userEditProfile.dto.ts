@@ -5,16 +5,13 @@ export class userEditProfileDto {
     username: string
 
     @Expose()
-    score: number
-
-    @Expose()
-    win: number
-
-    @Expose()
-    loose: number
+    nickname: string
 
 	@Expose()
 	isTwoFAEnable: boolean
+
+    @Expose()
+    description: string
 
     //add avatar + achievement
 }

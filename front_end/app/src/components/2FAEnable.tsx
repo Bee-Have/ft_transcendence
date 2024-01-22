@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect} from 'react';
-import QRCode from 'qrcode.react';
+import React, {useCallback, useEffect, useState} from 'react';
+import axios from 'axios';
 
 import Input from '@mui/material/Input';
 
@@ -9,9 +9,47 @@ interface FAEnableProps {
 }
 
 const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
+	const [qrCode, setQrCode] = useState('')
+	const [code, setCode] = useState('')
+
+	const click= () => {
+		const test = document.getElementById('test')
+		if (test)
+			test.blur();
+		axios.get('http://localhost:3001/user/tfa/enable/callback?code=' + code, { withCredentials: true })
+		.then((res) => {
+			if (res.status === 200){
+                popUp(false);
+				btn(true);
+            }
+		})
+		.catch(e => console.log(e));
+	}
+
+	const updateCode = (e: any) => {
+		setCode(e.target.value)
+	}
+
+	const getQrCode = () => {
+		axios.get('http://localhost:3001/user/tfa/enable', { withCredentials: true })
+			.then((res: any) => {
+				if (res.data) {
+					setQrCode(res.data);
+				} else {
+					console.error("QR Code data is undefined");
+				}
+			})
+			.catch(e => console.log(e))
+	}
+	
+
 	const handleKeyPress = useCallback((event: KeyboardEvent) => {
 	if (event.key === 'Escape')
-	popUp(false);
+		popUp(false);
+	if (event.key === 'Enter'){
+		event.preventDefault();
+		click();
+	}
 	}, []);
 	
 	useEffect(() => {
@@ -21,14 +59,19 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 		};
 	  }, [handleKeyPress]);
 
+
+	useEffect(() => {
+		getQrCode();
+	}, [])
+
 	return (
 		<div className='overlay'>
 			<div className='content'>
 				<div className='QRCode'>
 				<h1>Two factor authentification :</h1>
-				<QRCode value="https://www.google.com"/><br/>
-				<Input placeholder="ENTER CODE HERE"/><br/>
-				<button onClick={() => {popUp(false); btn(true)}}>Validate</button>
+				<img src={qrCode}></img>
+				<Input autoFocus onChange={(e) => updateCode(e)} placeholder="ENTER CODE HERE"/><br/>
+				<button id='test' onClick={() => click()}>Validate</button>
 				</div>
 			</div>
 		</div>

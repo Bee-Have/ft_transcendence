@@ -10,9 +10,10 @@ import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrivateMessageModule } from './privatemessage/privatemessage.module';
 import { UserModule } from './user/user.module';
-import { GameModule } from './game/game.module';
+import { ChannelController } from './channel/channel.controller';
+import { ChannelService } from './channel/channel.service';
 import { ChannelModule } from './channel/channel.module';
-
+import { GameModule } from './game/game.module';
 
 @Module({
 	imports: [

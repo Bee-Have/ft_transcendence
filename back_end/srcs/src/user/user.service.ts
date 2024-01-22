@@ -123,13 +123,13 @@ export class UserService {
 	// 	return trimuser
 	// }
 
-	async updateUsername(userId: number, newUsername: string) {
+	async updateNickName(userId: number, newNickName: string) {
 		await this.prisma.user.update({
 			where: {
 				id: userId
 			},
 			data: {
-				username: newUsername
+				nickname: newNickName
 			}
 		})
 	}

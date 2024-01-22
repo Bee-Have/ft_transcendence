@@ -5,6 +5,9 @@ export class userProfileDto {
     username: string
 
     @Expose()
+    nickname: string
+
+    @Expose()
     score: number
 
     @Expose()
@@ -12,6 +15,9 @@ export class userProfileDto {
 
     @Expose()
     loose: number
+
+    @Expose()
+    description: string
 
     //add avatar + achievement
 }

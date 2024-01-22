@@ -49,19 +49,17 @@ export class AuthService {
 		{
 			const tfaToken = await this.getTfaToken(user.id, user.email)
 	
-			response.cookie('TfaEnable', 'true', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('TfaToken', tfaToken, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('PayLoad', 'true', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
+			response.cookie('TfaEnable', 'true', { httpOnly: false, sameSite: 'none', maxAge: 7*24*60*60*100})
+			response.cookie('TfaToken', tfaToken, { httpOnly: false, sameSite: 'none', maxAge: 7*24*60*60*100})
 		}
 		else
 		{
 			const tokens = await this.getTokens(userData.id, userData.email)
 		
 			response.cookie('TfaEnable', 'false')
-			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
-			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
-			response.cookie('payload_cookie', tokens.payload_cookie, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
-			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
+			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'none', maxAge: 7*24*60*60*100})
+			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'none', maxAge: 7*24*60*60*100})
+			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'none', maxAge: 7*24*60*60*100 });
 		}
 		response.redirect(process.env.FRONT_END_URL)
 	}
@@ -85,7 +83,23 @@ export class AuthService {
 	}
 
 	async logout(userId: number) {
-//		console.log(userId);
+		const hash = await this.prisma.user.findUnique({
+			where: {id: userId},
+			select: {hashedRt: true}
+		});
+
+		axios.postForm("https://oauth2.googleapis.com/revoke?token=" + hash,
+			{
+				headers:{
+					'Content-type':'application/x-www-form-urlencoded'
+				}
+			},
+			{}).catch((err: any) => {
+				console.log(hash);
+				//console.log(err.request);
+				//console.log(err.response)
+			});
+
 		await this.prisma.user.updateMany({
 			where: {
 			  id: userId,

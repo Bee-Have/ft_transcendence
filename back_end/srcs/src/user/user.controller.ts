@@ -7,7 +7,7 @@ import { TfaDto } from "src/auth/dto/tfa.dto";
 import { FriendshipService } from "src/friendship/friendship.service";
 import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 import { Friend } from "./dto/friend.dto";
-import { updateUserDescriptionDto, updateUsernameDto } from "./dto/updateUsername.dto";
+import { updateUserDescriptionDto, updateNicknameDto } from "./dto/updateNickname.dto";
 import { UserService } from './user.service';
 import { UserStatusEventDto } from "./gateway/dto/userStatus.dto";
 
@@ -147,9 +147,10 @@ export class UserController {
 	}})
 	@ApiCreatedResponse({ description: 'The username has been updated'})
 	@ApiBadRequestResponse({ description: 'The body is malformed'})
-	@Post('update/username')
-	async UpdateUsername(@GetCurrentUser('sub') userId: number, @Body() body: updateUsernameDto) {
-		return await this.userService.updateUsername(userId, body.username)
+	@Post('update/nickname')
+	async UpdateNickName(@GetCurrentUser('sub') userId: number,
+	@Body() body: updateNicknameDto) {
+		return await this.userService.updateNickName(userId, body.nickname)
 	}
 
 	@Post('update/description')
@@ -174,7 +175,8 @@ export class UserController {
 	@ApiCreatedResponse({ description: 'The avatar have been uploaded successfully'})
 	@Post('upload/avatar')
 	@UseInterceptors(FileInterceptor('avatar'))
-	uploadAvatar(@UploadedFile() file: Express.Multer.File, @GetCurrentUser('sub') userId: number) {
+	uploadAvatar(@UploadedFile() file: Express.Multer.File,
+				@GetCurrentUser('sub') userId: number) {
 		this.userService.uploadAvatar(userId, file)
 	}
 

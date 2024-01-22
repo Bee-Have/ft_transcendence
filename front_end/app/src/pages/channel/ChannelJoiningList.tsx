@@ -7,16 +7,19 @@ import { ChannelProps } from './types/ChannelProps.types';
 
 import '../../css/channel.css';
 import '../../css/chat.css';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 
 const ChannelJoiningList = ({ onUpdate }: any) => {
 	const [channelList, setChannelList] = useState<ChannelProps[]>([])
+	const errorContext = useErrorContext();
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel/list', { withCredentials: true })
 			.then((res): any => {
 				setChannelList(res.data)
 			})
-			.catch(error => console.log(error))
+			.catch(e => errorContext.newError?.(errorHandler(e)))
 	}, [])
 
 	// const popChannel = (channelId: number) => {

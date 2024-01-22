@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router';
 
 import { BACKEND_URL } from 'src/pages/global/env';
 import { ChannelProps } from '../types/ChannelProps.types';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 
 
 const ChannelJoinBox = ({ channel, onUpdate }: { channel: ChannelProps, onUpdate: any }) => {
@@ -15,6 +17,7 @@ const ChannelJoinBox = ({ channel, onUpdate }: { channel: ChannelProps, onUpdate
 	const [showPasswordoverlay, setshowPasswordoverlay] = useState(false)
 	const [showPassword, setShowPassword] = useState(false)
 	const [passwordMessage, setPasswordMessage] = useState<string | null>(null)
+	const errorContext = useErrorContext();
 
 	const showOverLay = () => {
 		setPasswordMessage(null)
@@ -31,7 +34,7 @@ const ChannelJoinBox = ({ channel, onUpdate }: { channel: ChannelProps, onUpdate
 	const joinPublic = () => {
 		axios.post(BACKEND_URL + '/channel/join/public', { channelId: channel.id }, { withCredentials: true })
 			.then(() => { onUpdate(); navigate("/chat/channel/" + channel.id) })
-			.catch((e) => console.log(e.response.data))
+			.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
 
 	const joinChannel = () => {

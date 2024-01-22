@@ -6,6 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import 'src/css/profil.css';
 import axios from 'axios';
 import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
+import { BACKEND_URL } from '../global/env';
 
 
 
@@ -23,7 +24,7 @@ const Profil: React.FC = () => {
 	const id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
 
 
-	axios.get(`http://localhost:3001/user/profile/${id}`, {withCredentials: true})
+	axios.get(`${BACKEND_URL}/user/profile/${id}`, {withCredentials: true})
 	.then( function (response)
 	{
 		setRealName(response.data.username);
@@ -31,7 +32,7 @@ const Profil: React.FC = () => {
 			setNickName(response.data.username);
 		else
 			setNickName(response.data.nickname);
-		setProfilePic(`http://localhost:3001/user/image/${id}`);
+		setProfilePic(BACKEND_URL + `/user/image/${id}`);
 		setWins(response.data.win);
 		setLoses(response.data.loose);
 		setScore(response.data.score);
@@ -58,7 +59,7 @@ const Profil: React.FC = () => {
                 	<button className="btn btn-light" onClick={() => navigate("/profil/edit-Profil")}>edit profil</button>
 				}
                 <button className="btn btn-light" onClick={() => {
-					axios.post("http://localhost:3001/auth/logout", {}, {headers: {Authorization: `Bearer ${ReadCookie("access_token")}`}, withCredentials: true}).then( () =>
+					axios.post(BACKEND_URL + "/auth/logout", {}, {headers: {Authorization: `Bearer ${ReadCookie("access_token")}`}, withCredentials: true}).then( () =>
 					{
 						deleteCookie("access_token");
 						deleteCookie("refresh_token");

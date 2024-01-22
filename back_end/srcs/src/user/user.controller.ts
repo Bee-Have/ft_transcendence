@@ -168,7 +168,7 @@ export class UserController {
 				type: 'file',
 				format: 'image/jpeg'
 			}
-		}
+		} 
 	}})
 	@ApiOperation({ description: 'Upload a .jpeg avatar less than 100Kb' })
 	@ApiBadRequestResponse({ description: 'The request is malformed' })

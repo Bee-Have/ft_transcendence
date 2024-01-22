@@ -9,8 +9,12 @@ import { MemberProps } from './types/MemberProps.types';
 import '../../css/channel.css';
 import '../../css/chat.css';
 import ChannelTextArea from './components/ChannelTextArea';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 
 const Channel: React.FC = () => {
+
+	const errorContext = useErrorContext()
 
 	const { id } = useParams()
 	const [channelMembers, setChannelMembers] = useState<MemberProps[]>([])
@@ -21,9 +25,11 @@ const Channel: React.FC = () => {
 		axios.get(BACKEND_URL + '/channel/members/' + channelId, { withCredentials: true })
 			.then((res): any => {
 				setChannelMembers(res.data)
+				console.log(res.data)
 			})
 			.catch((e: any) => {
-				console.log(e)
+				;
+				errorContext.newError?.(errorHandler(e));
 				navigate("/" + e.response.status)
 			})
 	}, [channelId, navigate])

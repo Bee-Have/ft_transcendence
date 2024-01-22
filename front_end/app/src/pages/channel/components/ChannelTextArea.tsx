@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { socket } from '../../global/websocket';
 import { MemberProps } from '../types/MemberProps.types';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 
 interface ChannelMessageProps {
 	id: number,
@@ -45,7 +47,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-
+	const errorContext = useErrorContext();
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -58,7 +60,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				setMessages(res.data)
 			})
 			.catch((e) => {
-				console.log(e)
+				errorContext.newError?.(errorHandler(e))
 				navigate("/" + e.response.status)
 			})
 	}, [currentChannelId, navigate])
@@ -176,19 +178,8 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 					setInputValue('');
 				})
 				.catch((err) => {
-					//TODO: popup try again error with message
 					if (err.response?.data?.message === "You can not send messages to this Channel") {
-						let message: ChannelMessageProps = {
-							id: -1,
-							createdAt: -1,
-							content: err.response.data.message,
-							senderUserId: -1,
-							senderMemberId: -1,
-							username: "",
-							channelId: currentChannelId,
-							isInfo: true
-						}
-						setMessages((prev) => [...prev, message]);
+						errorContext.newError?.(errorHandler(err))
 						setInputValue('');
 					}
 					else

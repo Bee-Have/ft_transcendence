@@ -1,6 +1,8 @@
 import { Avatar, Box, List, ListItem } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
 import { BACKEND_URL } from "src/pages/global/env";
 
 
@@ -16,6 +18,8 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 	const [file, setFile] = useState(null)
 	const [errorBadgeMessage, setErrorBadgeMessage] = useState<null | string>(null)
 
+	const errorContext = useErrorContext();
+	
 	useEffect(() => {
 		axios.get(BACKEND_URL + "/channel/info/" + channelId, { withCredentials: true })
 			.then((res) => {
@@ -23,7 +27,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				setMode(res.data.mode)
 				setBannedPeople(res.data.banned)
 			})
-			.catch((e) => { console.log(e) })
+			.catch((e) => {errorContext.newError?.(errorHandler(e))})
 	}, [channelId])
 
 	useEffect(() => {
@@ -72,7 +76,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				setErrorMessage('success')
 				setInfoChanged(false)
 			})
-			.catch((e) => setErrorMessage(e.response.data.message))
+			.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
 
 	const handleFileChange = (e: any) => {
@@ -86,7 +90,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				{ 'badge': file },
 				{ withCredentials: true })
 				.then(() => { setErrorBadgeMessage("badge upload success") })
-				.catch((e) => setErrorBadgeMessage(e.response.data.message))
+				.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
 
 	return (
@@ -155,15 +159,15 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 const Banned = ({ banned }: any) => {
 
 	const [unbanSucces, setUnbanSuccess] = useState(false)
-
+	const errorContext = useErrorContext();
 
 	const unban = (banned: any) => {
 		axios.post(BACKEND_URL + '/channel/unban/' + banned.channelId + '/' + banned.id,
 			{},
 			{ withCredentials: true })
 			.then((res) => setUnbanSuccess(true))
-			.catch((err) => {
-				console.log(err)
+			.catch((e) => {
+				errorContext.newError?.(errorHandler(e))
 			})
 	}
 

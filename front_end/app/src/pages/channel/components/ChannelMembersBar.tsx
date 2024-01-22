@@ -9,6 +9,8 @@ import { MemberProps } from "../types/MemberProps.types"
 import ChannelSettingPanel from "./ChannelSettingPannel"
 import InteractiveAvatarChannel from "./InteractiveAvatarChannel"
 import InteractiveUsernameChannel from "./InteractiveUsernameChannel"
+import { errorHandler } from "src/context/errorHandler"
+import { useErrorContext } from "src/context/ErrorContext"
 
 const MemberList = ({ headerName, members, clicker }: { headerName: string, members: MemberProps[], clicker: MemberProps }) => {
 
@@ -65,6 +67,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 	const [leaveMessage, setLeaveMessage] = useState('Leave')
 	const [showButton, setShowButton] = useState(false)
 	const navigate = useNavigate()
+	const errorContext = useErrorContext();
 
 	useEffect(() => {
 		let own = []
@@ -148,7 +151,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 				.then((res) => {
 					navigate('/chat')
 				})
-				.catch((e) => console.log(e))
+				.catch((e) => errorContext.newError?.(errorHandler(e)))
 		if (leaveMessage === "Press Escape")
 			setLeaveMessage("Hold your breath from now")
 		if (leaveMessage === "Are you sure you want to quit ?") {

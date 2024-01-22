@@ -384,7 +384,9 @@ export class ChannelService {
 					state: member.state,
 					channelId: member.channelId,
 					username: await this.userService.getUsername(member.userId),
-					channelName: await this.getChannelName(channelId)
+					channelName: await this.getChannelName(channelId),
+					isMemberBlockedByuser: await this.userService.isMemberOneBlockedByMemberTwo(member.userId, userId),
+					isMemberFriendWithUser: !!(await this.userService.getUserFriendsId(userId)).includes(member.userId)
 				})
 		}
 

@@ -3,9 +3,10 @@ import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
-// import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { socket } from '../pages/global/websocket';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 interface MessageProps {
 	id: number,
 	createdAt: number,
@@ -42,6 +43,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const errorContext = useErrorContext();
 	// const naigate = useNavigate()
 
 	useEffect(() => {
@@ -54,7 +56,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 				setMessages(res.data)
 			})
 			.catch((e) => {
-				console.log(e)
+				errorContext.newError?.(errorHandler(e))
 			})
 	}, [currentChat])
 
@@ -64,7 +66,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 				setMessages((prev) => [...prev, message]);
 				axios.get(BACKEND_URL + '/privatemessage/conversations/isread/' + currentChat.conversation.id, { withCredentials: true })
 					.then((res) => console.log(res.data))
-					.catch((err) => console.log(err))
+					.catch((e) => errorContext.newError?.(errorHandler(e)))
 			}
 		}
 
@@ -86,9 +88,9 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 					setMessages([...messages, res.data]);
 					setInputValue('');
 				})
-				.catch((err) => {
+				.catch((e) => {
 					//TODO: popup try again error with message
-					console.log(err)
+					errorContext.newError?.(errorHandler(e))
 				})
 		}
 	};

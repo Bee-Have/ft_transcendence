@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
 import { BACKEND_URL } from "src/pages/global/env";
 import { socket } from "src/pages/global/websocket";
 
@@ -12,12 +14,14 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 	const [name, setName] = useState('')
 	const [imageKey, setImageKey] = useState(0);
 
+	const errorContext = useErrorContext();
+
 	useEffect(() => {
 		axios.get(BACKEND_URL + "/channel/info/" + channelId, { withCredentials: true })
 			.then((res) => {
 				setName(res.data.channelName)
 			})
-			.catch((e) => { console.log(e) })
+			.catch((e) => { errorContext.newError?.(errorHandler(e)); })
 	}, [channelId])
 
 	useEffect(() => {

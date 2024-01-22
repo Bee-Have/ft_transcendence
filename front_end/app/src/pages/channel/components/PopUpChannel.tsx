@@ -1,14 +1,22 @@
 import { Button, Menu } from "@mui/material";
+import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router";
-import InviteSpectateButton from "src/components/DynamicInviteSpectateButton";
 import styles from "../../../components/game/GameModeDialog/InviteGameModeDialogButton.module.css";
 import { BACKEND_URL } from '../../global/env';
-import { PopUpChannelProps } from "../types/PopUpChannelProps.types";
 import { MemberProps } from "../types/MemberProps.types";
-import axios from "axios";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
 
-function PopUpChannel({ member, clicker, anchorEl, setAnchorEl }: PopUpChannelProps) {
+function PopUpChannel({
+	member,
+	clicker,
+	anchorEl,
+	setAnchorEl,
+	memberIsBlocked,
+	setMemberIsBlocked,
+	memberIsFriend,
+	setMemberIsFriend }: any) {
 
 	const navigate = useNavigate();
 
@@ -35,52 +43,62 @@ function PopUpChannel({ member, clicker, anchorEl, setAnchorEl }: PopUpChannelPr
 				horizontal: "center",
 			}}
 		>
-			<Button
-				className={styles.ButtonDialogOpen}
-				onClick={() => navigate("/profil")}
-			>
-				{/* TODO */}
-				Profile
-			</Button>
 
-			<InviteSpectateButton user={
-				{
-					id: member.memberId,
-					username: member.username,
-					userstatus: null,
-					photo: BACKEND_URL + '/member/image/' + member.memberId
-				}} />
-
+			<ProfilButton member={member} handleClose={handleClose} navigate={navigate} />
 			<ChatButton member={member} handleClose={handleClose} navigate={navigate} />
-			<AddFriendButton  member={member} clicker={clicker} handleClose={handleClose} />
-			
+			<AddFriendButton
+				member={member}
+				clicker={clicker}
+				handleClose={handleClose}
+				memberIsFriend={memberIsFriend}
+				setMemberIsFriend={setMemberIsFriend} />
+			<BlockUserButton
+				member={member}
+				clicker={clicker}
+				handleClose={handleClose}
+				memberIsBlocked={memberIsBlocked}
+				setMemberIsBlocked={setMemberIsBlocked} />
+
 			<SetAsAdminButton member={member} clicker={clicker} handleClose={handleClose} />
 			<UnsetAdminButton member={member} clicker={clicker} handleClose={handleClose} />
 			<RestrictUserButton member={member} clicker={clicker} handleClose={handleClose} />
-			<BlockUserButton member={member} clicker={clicker} handleClose={handleClose} />
 
 		</Menu>
 	);
 }
 
-const AddFriendButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
+const ProfilButton = ({ member, handleClose, navigate }: any) => {
+
+	return (
+		<PopUpButton name={"Profil"} callback={() => navigate("/profil/" + member.userId)} />
+	)
+}
+
+
+const AddFriendButton = ({ member, clicker, handleClose, memberIsFriend, setMemberIsFriend }: any) => {
+
+	const errorContext = useErrorContext();
 
 	const sendFriendRequest = () => {
 		axios.get(BACKEND_URL + '/user/friend/create/' + member.userId,
-		{withCredentials: true})
-		.then((res) => {})
-		.catch((e) => {console.log(e.response.data)})
+			{ withCredentials: true })
+			.then((res) => { setMemberIsFriend(true) })
+			.catch((e) => { errorContext.newError?.(errorHandler(e)); setMemberIsFriend(true) })
 		handleClose()
 	}
 
 	return (
 		<>
-			<PopUpButton name={"Add Friend"} callback={sendFriendRequest} />
+			{
+				!memberIsFriend && <PopUpButton name={"Add Friend"} callback={sendFriendRequest} />
+			}
 		</>
 	)
 }
 
 const ChatButton = ({ member, handleClose, navigate }: any) => {
+
+	const errorContext = useErrorContext();
 
 	const chatWithUser = () => {
 		axios.post(BACKEND_URL + '/privatemessage/conversations/' + member.userId, {}, { withCredentials: true })
@@ -88,7 +106,7 @@ const ChatButton = ({ member, handleClose, navigate }: any) => {
 				navigate("/chat/" + res.data.conversation.id)
 			})
 			.catch((e) => {
-				console.log(e.response.data.message)
+				errorContext.newError?.(errorHandler(e))
 			})
 		handleClose()
 	}
@@ -123,22 +141,26 @@ enum Restriction {
 	MUTED = "MUTED"
 }
 
-const manageRole = (manageRoleObject: ManageRole) => {
+const manageRole = (manageRoleObject: ManageRole, errorContext: any) => {
+
+
 	axios.post(BACKEND_URL + '/channel/manage/role',
 		manageRoleObject,
 		{ withCredentials: true })
 		.then((res) => { console.log(res) })
-		.catch((e) => console.log(e.response.data))
+		.catch((e) => errorContext.newError?.(errorHandler(e)))
 }
 
 const SetAsAdminButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
+
+	const errorContext = useErrorContext();
 
 	const setAdmin = () => {
 		manageRole({
 			channelId: member.channelId,
 			memberId: member.memberId,
 			role: "ADMIN"
-		})
+		}, errorContext)
 		handleClose()
 	}
 
@@ -153,12 +175,14 @@ const SetAsAdminButton = ({ member, clicker, handleClose }: ButtonParamProps) =>
 
 const UnsetAdminButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
 
+	const errorContext = useErrorContext();
+
 	const setMember = () => {
 		manageRole({
 			channelId: member.channelId,
 			memberId: member.memberId,
 			role: "NONADMIN"
-		})
+		}, errorContext)
 		handleClose()
 	}
 
@@ -172,17 +196,22 @@ const UnsetAdminButton = ({ member, clicker, handleClose }: ButtonParamProps) =>
 }
 
 const RestrictUserButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
+
+	const errorContext = useErrorContext();
+
 	const restrictUser = (restriction: Restriction) => {
 		const restrictedUser: RestrictUserInterface = {
 			channelId: member.channelId,
 			restrictedUserId: member.userId,
 			restriction
 		}
+
+
 		axios.post(BACKEND_URL + '/channel/restrict',
 			restrictedUser,
 			{ withCredentials: true })
 			.then((res) => { console.log(res) })
-			.catch((e) => console.log(e))
+			.catch((e) => errorContext.newError?.(errorHandler(e)))
 		handleClose()
 	}
 
@@ -213,20 +242,28 @@ const RestrictUserButton = ({ member, clicker, handleClose }: ButtonParamProps) 
 	)
 }
 
-const BlockUserButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
+const BlockUserButton = ({ member, clicker, handleClose, memberIsBlocked, setMemberIsBlocked }: any) => {
+
+	const errorContext = useErrorContext();
 
 	const blockUser = () => {
-		axios.post(BACKEND_URL + '/user/friend/block/' + member.userId, {}, { withCredentials: true })
+
+		const Url = BACKEND_URL + '/user/friend/' + (memberIsBlocked ? "unblock/" : "block/") + member.userId
+
+		axios.post(Url, {}, { withCredentials: true })
 			.then((res) => {
+				setMemberIsBlocked(!memberIsBlocked)
 			})
 			.catch((e) => {
-				console.log(e.response.data.message)
+				errorContext.newError?.(errorHandler(e))
 			})
 		handleClose()
 	}
 
 	return (
-		<PopUpButton name={"Block"} callback={blockUser} />
+		<>
+			<PopUpButton name={memberIsBlocked ? "Unblock" : "Block"} callback={blockUser} />
+		</>
 	)
 }
 

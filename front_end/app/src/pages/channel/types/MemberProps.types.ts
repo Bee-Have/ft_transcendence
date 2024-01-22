@@ -5,5 +5,7 @@ export interface MemberProps {
 	state: string,
 	channelId: number,
 	username: string,
-	channelName: string
+	channelName: string,
+	isMemberBlockedByuser: boolean,
+	isMemberFriendWithUser: boolean
 }

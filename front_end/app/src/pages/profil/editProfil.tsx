@@ -76,7 +76,7 @@ const EditProfil: React.FC = () =>
 	}
 
 	useEffect(() => {
-		axios.get("http://localhost:3001/user/profile/edit", {withCredentials: true})
+		axios.get(BACKEND_URL + "/user/profile/edit", {withCredentials: true})
 		.then(function (response)
 		{
 			setRealName(response.data.username);
@@ -90,7 +90,7 @@ const EditProfil: React.FC = () =>
 			if (!description)
 				setDescription("");
 			
-			setProfilePic(`http://localhost:3001/user/image/${ReadCookie("userId")}`);
+			setProfilePic(BACKEND_URL + `/user/image/${ReadCookie("userId")}`);
 		}).catch(err => {
 			console.log(err);
 		})

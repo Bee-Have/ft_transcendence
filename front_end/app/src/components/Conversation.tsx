@@ -12,6 +12,8 @@ import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -64,10 +66,13 @@ const Conversation = ({ onClick, conv, chatId }: any) => {
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
+	const navigate = useNavigate()
+
 
 	const han = () => {
 		console.log('wef')
 	}
+
 
 	return (
 		<div className={chatId === conv.conversation.id ? "friend-selected" : "friend"} >
@@ -84,12 +89,13 @@ const Conversation = ({ onClick, conv, chatId }: any) => {
 			</ListItem>
 			{
 				chatId === conv.conversation.id ? <div>
-					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto', flexWrap: 'wrap'}}>
-						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Invite</ListItemButton>
-						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
-						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
-						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
-						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto', flexWrap: 'wrap' }}>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={() => navigate("/profil/" + conv.conversation.friendId)}>Profil</ListItemButton>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={han}>Invite</ListItemButton>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{ width: '100px', justifyContent: 'center' }} onClick={han}>Spectate</ListItemButton>
 					</List>
 				</div> : false
 			}
@@ -107,6 +113,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 	const [currentChat, setCurrentChat] = useState<ConversationProps>()
 	const [createConvBool, setCreateConvBool] = useState(false)
 	const navigate = useNavigate()
+	const errorContext = useErrorContext();
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
@@ -124,7 +131,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 					setConvs(res.data)
 			})
 			.catch((err) => {
-				console.log(err)
+				errorContext.newError?.(errorHandler(err))
 			})
 	}, [chatId, navigate])
 
@@ -162,9 +169,9 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 						if (!exist)
 							setConvs((prev) => [...prev, res.data])
 					})
-					.catch(e => console.log(e))
+					.catch(e => errorContext.newError?.(errorHandler(e)))
 			})
-			.catch((e) => console.log(e))
+			.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
 
 	const convUpdateUnReadStatus = (conversationId: number, readStatus: boolean) => {

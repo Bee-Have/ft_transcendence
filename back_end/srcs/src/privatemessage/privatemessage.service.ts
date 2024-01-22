@@ -276,7 +276,13 @@ export class PrivateMessageService {
 			friendId,
 			memberOneUsername: userId < friendId ? username : friendUsername,
 			memberTwoUsername: userId < friendId ? friendUsername : username,
+			isMemberBlockedByuser: await this.userService.isMemberOneBlockedByMemberTwo(friendId, userId),
+			isMemberFriendWithUser: (await this.userService.getUserFriendsId(userId)).includes(friendId) || 
+									!!(await this.userService.getUserSentInvite(userId)).filter(m => {return m.id === friendId}).length
 		}
+		console.log(!!(await this.userService.getUserSentInvite(userId)).filter(m => {return m.id === friendId}).length)
+
+		console.log(conv)
 
 		const obj: ConversationProps = {
 			conversation: conv,
@@ -288,7 +294,7 @@ export class PrivateMessageService {
 		return obj
 	}
 
-	async isBlocked(userId, receiverId) {
+	async isBlocked(userId, receiverId) { 
 		return await this.friendshipService.isUserBlocked(userId, receiverId)
 	}
 

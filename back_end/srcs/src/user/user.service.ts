@@ -318,6 +318,37 @@ export class UserService {
 		return friendsRequest
 	}
 
+	async getUserSentInvite(userId:number) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				sentFriendRequests: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('User Not found')
+
+		const friendsRequest = new Array<FriendRequest>()
+
+		for (const friendReq of user.sentFriendRequests) {
+			const senderStatus = this.connected_user_map.get(friendReq.senderId)?.userstatus;
+
+			if (friendReq.status === 'pending') {
+				friendsRequest.push({
+					id: friendReq.receiverId,
+					userstatus: UserStatus.offline,
+					username: await this.getUsername(friendReq.receiverId)
+				})
+			}
+		}
+
+		return friendsRequest
+	}
+
 	async doMemberOneBlockedMemberTwo(memberOneId: number, memberTwoId: number) {
 		const User = await this.prisma.user.findUnique({
 			where: {

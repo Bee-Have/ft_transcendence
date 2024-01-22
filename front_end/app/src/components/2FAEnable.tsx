@@ -51,7 +51,7 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 		event.preventDefault();
 		click();
 	}
-	}, []);
+	}, [popUp]);
 	
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyPress);
@@ -63,14 +63,14 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 
 	useEffect(() => {
 		getQrCode();
-	}, [])
+	}, [popUp])
 
 	return (
 		<div className='overlay'>
 			<div className='content'>
 				<div className='QRCode'>
 				<h1>Two factor authentification :</h1>
-				<img src={qrCode}></img>
+				<img alt="qrcode" src={qrCode}></img>
 				<Input autoFocus onChange={(e) => updateCode(e)} placeholder="ENTER CODE HERE"/><br/>
 				<button id='test' onClick={() => click()}>Validate</button>
 				</div>

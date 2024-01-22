@@ -46,7 +46,7 @@ export class UserController {
 	@Get('friend/create/:receiverId')
 	async CreateFriendRequest(
 		@GetCurrentUser('sub') userId: number,
-		@Param('receiverId') receiverId: number
+		@Param('receiverId', ParseIntPipe) receiverId: number
 	) {
 		return await this.friendService.createFriendRequest(userId, receiverId)
 	}
@@ -54,7 +54,7 @@ export class UserController {
 	@Get('friend/cancel/:receiverId')
 	async CancelFriendRequest(
 		@GetCurrentUser('sub') userId: number,
-		@Param('receiverId') receiverId: number
+		@Param('receiverId', ParseIntPipe) receiverId: number
 	) {
 		return await this.friendService.cancelFriendRequest(userId, receiverId)
 	}

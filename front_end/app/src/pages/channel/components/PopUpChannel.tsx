@@ -2,6 +2,7 @@ import { Button, Menu } from "@mui/material";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router";
+import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
 import styles from "../../../components/game/GameModeDialog/InviteGameModeDialogButton.module.css";
 import { BACKEND_URL } from '../../global/env';
 import { MemberProps } from "../types/MemberProps.types";
@@ -58,6 +59,13 @@ function PopUpChannel({
 				handleClose={handleClose}
 				memberIsBlocked={memberIsBlocked}
 				setMemberIsBlocked={setMemberIsBlocked} />
+			<InviteGameModeDialogButton user={
+				{
+					id: member.userId,
+					username: member.username,
+					userstatus: null,
+					photo: BACKEND_URL + '/user/image/' + member.userId,
+				}} />
 
 			<SetAsAdminButton member={member} clicker={clicker} handleClose={handleClose} />
 			<UnsetAdminButton member={member} clicker={clicker} handleClose={handleClose} />

@@ -20,7 +20,7 @@ const ChannelJoiningList = ({ onUpdate }: any) => {
 				setChannelList(res.data)
 			})
 			.catch(e => errorContext.newError?.(errorHandler(e)))
-	}, [])
+	}, [errorContext])
 
 	// const popChannel = (channelId: number) => {
 	// 	setChannelList((prev => channelList.filter(

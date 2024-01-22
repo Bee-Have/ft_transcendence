@@ -91,7 +91,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 				setChannels(res.data)
 			})
 			.catch(e => errorContext.newError?.(errorHandler(e)))
-	}, [update])
+	}, [update, navigate, errorContext])
 
 	useEffect(() => {
 		const id = window.location.pathname.split('/')

@@ -28,7 +28,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				setBannedPeople(res.data.banned)
 			})
 			.catch((e) => {errorContext.newError?.(errorHandler(e))})
-	}, [channelId])
+	}, [channelId, hideOverlay, errorContext])
 
 	useEffect(() => {
 		const listener = (e: any) => {

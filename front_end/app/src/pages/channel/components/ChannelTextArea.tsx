@@ -47,6 +47,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<ChannelMessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	
 	const errorContext = useErrorContext();
 	const navigate = useNavigate()
 
@@ -63,7 +64,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				errorContext.newError?.(errorHandler(e))
 				navigate("/" + e.response.status)
 			})
-	}, [currentChannelId, navigate])
+	}, [currentChannelId, navigate, errorContext])
 
 	useEffect(() => {
 		const listenMessage = (message: ChannelMessageProps) => {

@@ -22,7 +22,7 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 				setName(res.data.channelName)
 			})
 			.catch((e) => { errorContext.newError?.(errorHandler(e)); })
-	}, [channelId])
+	}, [channelId, errorContext])
 
 	useEffect(() => {
 		const listenNewBadge = (info: { channelId: number }) => {

@@ -32,7 +32,7 @@ const Channel: React.FC = () => {
 				errorContext.newError?.(errorHandler(e));
 				navigate("/" + e.response.status)
 			})
-	}, [channelId, navigate])
+	}, [channelId, navigate, errorContext])
 
 	return (
 		<div className="channel-content-wrapper">
@@ -46,4 +46,4 @@ const Channel: React.FC = () => {
 	);
 };
 
-export default Channel;
+export default Channel; 

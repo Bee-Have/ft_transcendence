@@ -58,7 +58,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 			.catch((e) => {
 				errorContext.newError?.(errorHandler(e))
 			})
-	}, [currentChat])
+	}, [currentChat, errorContext])
 
 	useEffect(() => {
 		const listenMessage = (message: MessageProps) => {
@@ -75,7 +75,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 		return () => {
 			socket?.off('new-message', listenMessage)
 		}
-	}, [currentChat])
+	}, [currentChat, errorContext])
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {

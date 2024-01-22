@@ -133,7 +133,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 			.catch((err) => {
 				errorContext.newError?.(errorHandler(err))
 			})
-	}, [chatId, navigate])
+	}, [chatId, navigate, errorContext])
 
 	useEffect(() => {
 		const listenNewConv = (conv: ConversationProps) => {

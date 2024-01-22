@@ -8,6 +8,7 @@ import { useEffectOnce } from "src/components/useEffectOnce";
 
 import "../solo/Game.css";
 
+import CircularProgress from "@mui/material/CircularProgress";
 import DynamicBackground from "src/components/game/pvp/DynamicBackground";
 
 import Score from "src/components/game/pvp/Score";
@@ -168,7 +169,11 @@ function GameRoomPvp() {
     );
   }
   if (gameSocket.current === undefined || startGame === false) {
-    return <div>Waiting for game to start...</div>;
+    return (
+      <div className="centeredContent">
+        <CircularProgress size={100} />
+      </div>
+    );
   }
   return (
     <div

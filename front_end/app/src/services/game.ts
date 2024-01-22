@@ -67,7 +67,7 @@ const getUserCurrentGame = async (userId: number) => {
 	.then((res) => res.data);
 }
 
-export default {
+const gameService = {
   joinMatchmaking,
   leaveMatchmaking,
   getUserInvites,
@@ -78,3 +78,5 @@ export default {
   getMatchHistory,
   getUserCurrentGame,
 };
+
+export default gameService;

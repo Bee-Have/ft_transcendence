@@ -58,8 +58,8 @@ function GameModeDialog(props: GameModeDialogProps) {
       .then((res) => {
         navigate("/game/training/" + selectedMode);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
       });
   };
 

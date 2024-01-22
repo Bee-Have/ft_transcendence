@@ -1,4 +1,9 @@
-import { ForbiddenException, HttpException, Injectable } from "@nestjs/common";
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { equal } from "assert";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserInfo, UserStatus } from "src/user/gateway/dto/userStatus.dto";
@@ -56,10 +61,6 @@ export class GameService {
       opponent.socket.emit("new-invite");
       const player: UserInfo = this.userService.connected_user_map.get(userId);
       player.socket.emit("new-invite");
-      // Matchmaking logic here.
-      //   const opponent: UserInfo = this.userService.connected_user_map.get(gameInvites[0].senderId);
-      //   opponent.socket.emit('game-found', userId);
-      console.log("matchmaking with other: ", gameInvites[0].senderId);
       return gameInvites[0].senderId;
     }
 
@@ -103,24 +104,24 @@ export class GameService {
   }
 
   async getUsersSharedInvite(user1Id: number, user2Id: number) {
-	const gameInvite = await this.prisma.gameInvite.findFirst({
-	  where: {
-		OR: [
-		  {
-			senderId: user1Id,
-			receiverId: user2Id,
-		  },
-		  {
-			senderId: user2Id,
-			receiverId: user1Id,
-		  },
-		],
-	  },
-	});
+    const gameInvite = await this.prisma.gameInvite.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: user1Id,
+            receiverId: user2Id,
+          },
+          {
+            senderId: user2Id,
+            receiverId: user1Id,
+          },
+        ],
+      },
+    });
 
-	if (gameInvite === undefined) return null;
+    if (gameInvite === undefined) return null;
 
-	return gameInvite;
+    return gameInvite;
   }
 
   async getUserInvites(userId: number): Promise<InviteDto[]> {
@@ -351,21 +352,91 @@ export class GameService {
     acceptedUser?.socket.emit("new-invite");
   }
 
-  async createMatchHistoryItem(gameInfo: GameInfo) {
-	try {
+  calculK(score: number) {
+    if (score < 1000) return 80;
+    if (score >= 1000 && score < 2000) return 50;
+    if (score >= 2000 && score < 2400) return 30;
+    if (score >= 2400) return 20;
+  }
 
-		await this.prisma.matchHistoryItem.create({
-			data: {
-				player1Id: gameInfo.player1,
-				player1Score: gameInfo.player1Score,
-				player2Id: gameInfo.player2,
-				player2Score: gameInfo.player2Score,
-				gameMode: gameInfo.gamemode,
-				winnerId: gameInfo.winnerId,
-			},
-		});
-	} catch (e) {
-	}
+  //appeller l'ID du gagnant en 1er
+  async calculateElo(winnerId: number, loserId: number, isDraw: boolean) {
+    const winner = await this.prisma.user.findUnique({
+      where: {
+        id: winnerId,
+      },
+      select: {
+        score: true,
+        win: true,
+      },
+    });
+    const loser = await this.prisma.user.findUnique({
+      where: {
+        id: loserId,
+      },
+      select: {
+        score: true,
+        loose: true,
+      },
+    });
+    if (!loser || !winner) throw new NotFoundException("User Not Found");
+    const estimation =
+      1 / (1 + Math.pow(10, (loser.score - winner.score) / 400));
+    const estimation2 =
+      1 / (1 + Math.pow(10, (winner.score - loser.score) / 400));
+    // check si match nul gamewinner === undefined
+    const newWinnerElo =
+      winner.score +
+      this.calculK(winner.score) * ((isDraw === true ? 0.5 : 1) - estimation);
+    const newLoserElo =
+      loser.score +
+      this.calculK(loser.score) * ((isDraw === true ? 0.5 : 0) - estimation2);
+    winner.score = Math.max(1, Math.min(10000, newWinnerElo));
+    loser.score = Math.max(1, Math.min(10000, newLoserElo));
+    if (isDraw === false) {
+      winner.win = winner.win + 1;
+      loser.loose = loser.loose + 1;
+    }
+    await this.prisma.user.update({
+      where: {
+        id: winnerId,
+      },
+      data: {
+        score: winner.score,
+        win: winner.win,
+      },
+    });
+    await this.prisma.user.update({
+      where: {
+        id: loserId,
+      },
+      data: {
+        score: loser.score,
+        loose: loser.loose,
+      },
+    });
+  }
+
+  async createMatchHistoryItem(gameInfo: GameInfo) {
+    try {
+      if (gameInfo.winnerId === undefined) {
+        await this.calculateElo(gameInfo.player1, gameInfo.player2, true);
+      } else if (gameInfo.winnerId === gameInfo.player1) {
+        await this.calculateElo(gameInfo.player1, gameInfo.player2, false);
+      } else {
+        await this.calculateElo(gameInfo.player2, gameInfo.player1, false);
+      }
+      await this.prisma.matchHistoryItem.create({
+        data: {
+          player1Id: gameInfo.player1,
+          player1Score: gameInfo.player1Score,
+          player2Id: gameInfo.player2,
+          player2Score: gameInfo.player2Score,
+          gameMode: gameInfo.gamemode,
+          winnerId: gameInfo.winnerId,
+        },
+      });
+    } catch (e) {}
   }
 
   async getMatchHistory(userId: number) {
@@ -443,18 +514,18 @@ export class GameService {
   }
 
   async deleteRunningGame(userId: number) {
-	await this.prisma.runningGame.deleteMany({
-	  where: {
-		OR: [
-		  {
-			player1Id: userId,
-		  },
-		  {
-			player2Id: userId,
-		  },
-		],
-	  },
-	});
+    await this.prisma.runningGame.deleteMany({
+      where: {
+        OR: [
+          {
+            player1Id: userId,
+          },
+          {
+            player2Id: userId,
+          },
+        ],
+      },
+    });
   }
 
   async getRunningGame(userId: number): Promise<RunningGameDto> {

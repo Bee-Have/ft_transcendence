@@ -1,7 +1,7 @@
 import { Button, Menu } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router";
-import InviteSpectateButton from "src/components/DynamicInviteSpectateButton";
+import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
 import styles from "../../../components/game/GameModeDialog/InviteGameModeDialogButton.module.css";
 import { BACKEND_URL } from '../../global/env';
 import { PopUpChannelProps } from "../types/PopUpChannelProps.types";
@@ -43,12 +43,12 @@ function PopUpChannel({ member, clicker, anchorEl, setAnchorEl }: PopUpChannelPr
 				Profile
 			</Button>
 
-			<InviteSpectateButton user={
+			<InviteGameModeDialogButton user={
 				{
-					id: member.memberId,
+					id: member.userId,
 					username: member.username,
 					userstatus: null,
-					photo: BACKEND_URL + '/member/image/' + member.memberId
+					photo: BACKEND_URL + '/user/image/' + member.userId,
 				}} />
 
 			<Button

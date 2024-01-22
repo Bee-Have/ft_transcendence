@@ -51,16 +51,9 @@ function PopUpChannel({ member, clicker, anchorEl, setAnchorEl }: PopUpChannelPr
 					photo: BACKEND_URL + '/member/image/' + member.memberId
 				}} />
 
-			<Button
-				className={styles.ButtonDialogOpen}
-				onClick={() => navigate("/chat")}
-			>
-				{/* TODO */}
-				Chat
-			</Button>
-
+			<ChatButton member={member} handleClose={handleClose} navigate={navigate} />
 			<AddFriendButton  member={member} clicker={clicker} handleClose={handleClose} />
-
+			
 			<SetAsAdminButton member={member} clicker={clicker} handleClose={handleClose} />
 			<UnsetAdminButton member={member} clicker={clicker} handleClose={handleClose} />
 			<RestrictUserButton member={member} clicker={clicker} handleClose={handleClose} />
@@ -84,6 +77,24 @@ const AddFriendButton = ({ member, clicker, handleClose }: ButtonParamProps) => 
 		<>
 			<PopUpButton name={"Add Friend"} callback={sendFriendRequest} />
 		</>
+	)
+}
+
+const ChatButton = ({ member, handleClose, navigate }: any) => {
+
+	const chatWithUser = () => {
+		axios.post(BACKEND_URL + '/privatemessage/conversations/' + member.userId, {}, { withCredentials: true })
+			.then((res) => {
+				navigate("/chat/" + res.data.conversation.id)
+			})
+			.catch((e) => {
+				console.log(e.response.data.message)
+			})
+		handleClose()
+	}
+
+	return (
+		<PopUpButton name={"Chat"} callback={chatWithUser} />
 	)
 }
 

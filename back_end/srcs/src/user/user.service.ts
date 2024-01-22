@@ -402,4 +402,26 @@ export class UserService {
 		fs.writeFileSync(filename, file.buffer)
 	}
 
+	async fctLeaderboard() {
+		const user = await this.prisma.user.findMany({
+			take : 5,
+			orderBy: {
+				score: 'desc'
+			},
+			select: {
+				username: true,
+				id: true,
+				score: true
+			}
+		})
+		console.log("user object in leaderboardfct", user)
+		if (!user)
+		{
+			console.log("no user found for leaderboard")
+			throw new NotFoundException('Not enough player in the leaderboard')
+		}
+		return user
+	}
+
 }
+

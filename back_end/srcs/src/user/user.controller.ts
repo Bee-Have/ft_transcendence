@@ -158,6 +158,11 @@ export class UserController {
 		await this.userService.updateDescription(userId, description.description)
 	}
 
+	@Get('leaderboard')
+	async getLeaderboard() : Promise <any>{
+		return await this.userService.fctLeaderboard()
+	}
+
 
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({schema: {

@@ -10,6 +10,7 @@ import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
 import { userEditProfileDto } from "./dto/userEditProfile.dto";
+import { error } from "console";
 const qrcode = require('qrcode')
 var sizeOf = require('buffer-image-size');
 
@@ -403,24 +404,28 @@ export class UserService {
 	}
 
 	async fctLeaderboard() {
-		const user = await this.prisma.user.findMany({
-			take : 5,
-			orderBy: {
-				score: 'desc'
-			},
-			select: {
-				username: true,
-				id: true,
-				score: true
+		try {
+			const user = await this.prisma.user.findMany({
+				take : 5,
+				orderBy: {
+					score: 'desc'
+				},
+				select: {
+					username: true,
+					id: true,
+					score: true
+				}
+			})
+			console.log("user object in leaderboardfct", user)
+			if (user.length ===0)
+			{
+				console.log("no user found for leaderboard")
+				throw new NotFoundException('Not enough player in the leaderboard')
 			}
-		})
-		console.log("user object in leaderboardfct", user)
-		if (!user)
-		{
-			console.log("no user found for leaderboard")
-			throw new NotFoundException('Not enough player in the leaderboard')
-		}
-		return user
+			return user
+	} catch(e) {
+		console.log("error found in fctleaderboard", e)
+	}
 	}
 
 }

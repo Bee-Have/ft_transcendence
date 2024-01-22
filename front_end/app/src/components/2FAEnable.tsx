@@ -16,7 +16,6 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 		const test = document.getElementById('test')
 		if (test)
 			test.blur();
-		console.log(code);
 		axios.get('http://localhost:3001/user/tfa/enable/callback?code=' + code, { withCredentials: true })
 		.then((res) => {
 			if (res.status === 200){
@@ -33,16 +32,21 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 
 	const getQrCode = () => {
 		axios.get('http://localhost:3001/user/tfa/enable', { withCredentials: true })
-		.then((res: any) => {
-			setQrCode(res.data);
-		})
-		.catch(e => console.log(e))
+			.then((res: any) => {
+				if (res.data) {
+					setQrCode(res.data);
+				} else {
+					console.error("QR Code data is undefined");
+				}
+			})
+			.catch(e => console.log(e))
 	}
+	
 
 	const handleKeyPress = useCallback((event: KeyboardEvent) => {
 	if (event.key === 'Escape')
 		popUp(false);
-	if (event.key === ' '){
+	if (event.key === 'Enter'){
 		event.preventDefault();
 		click();
 	}

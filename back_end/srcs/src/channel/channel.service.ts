@@ -449,18 +449,24 @@ export class ChannelService {
 				channelName: await this.getChannelName(body.channelId)
 		})
 
-
 		if (body.restriction === "KICKED" || body.restriction === "BANNED")
 		{	
-			this.broadcastToAllChannelMembers(body.channelId, 'leave-channel-member', {
+			const obj = {
 				userId: restrictedUser.userId,
 				memberId: restrictedUser.id,
 				role: restrictedUser.role,
-				state: restrictedUser.state,
+				state: body.restriction,
 				channelId: body.channelId,
 				username: await this.userService.getUsername(restrictedUser.userId),
-				channelName: await this.getChannelName(body.channelId)
-			})
+				channelName: await this.getChannelName(body.channelId),
+
+			}
+
+			this.broadcastToAllChannelMembers(body.channelId, 'leave-channel-member', obj)
+
+			const restricted = this.userService.connected_user_map.get(restrictedUser.userId)
+
+			restricted?.socket?.emit('leave-channel-member', obj)
 		}
 
 	}
@@ -518,6 +524,30 @@ export class ChannelService {
 			throw new ForbiddenException('Only Admin or Owner can restrict a channel member')
 
 		return restrictUser
+	}
+
+	async unbanMember(userId: number, channelId: number, channelMemberId: number) {
+		const ownerId = await this.getChannelOwnerId(channelId)
+
+		if (ownerId !== userId)
+			throw new ForbiddenException('Only Owner can Unban Member')
+	
+		try {
+			await this.prisma.channelMember.delete({
+				where: {
+					id: channelMemberId,
+					state: "BANNED"
+				}
+			})
+		}
+		catch (e) {
+			if (e.code === 'P2025')
+				throw new BadRequestException('This member either not exist or not banned')
+			else {
+				console.log(e)
+				throw new InternalServerErrorException('Could not unban')
+			}
+		}
 	}
 
 	async manageRole(userId: number, body: ManageChannelRole) {
@@ -712,9 +742,31 @@ export class ChannelService {
 		})
 	}
 
+	async getBannedMembersofChannel(channelId: number) {
+		try {
+			const banneds = await this.prisma.channelMember.findMany({
+				where: {
+					channelId,
+					state: "BANNED"
+				}
+			})
+
+			for (const banned of banneds) {
+				banned["username"] = await this.userService.getUsername(banned.userId)
+			}
+			return banneds
+		}
+		catch (e) {
+			throw new InternalServerErrorException("Error getting banned members")
+			
+		}
+	}
+
 	async getChannelInfo(userId: number, channelId: number) {
 		const member = await this.getChannelMember(userId, channelId)
-		return await this.getChannelNoPassword(channelId)
+		const channel = await this.getChannelNoPassword(channelId)
+		channel["banned"] = await this.getBannedMembersofChannel(channelId)
+		return channel
 	}
 
 	isMuted(channelMember: ChannelMember) {

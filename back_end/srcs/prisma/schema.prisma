@@ -26,10 +26,6 @@ model User {
     win   Int @default(0)
     loose Int @default(0)
 
-    // achiv Achievments[]
-
-    // channel Channel[]
-
     friends         User[] @relation("friends")
     friendsRelation User[] @relation("friends")
 

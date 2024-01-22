@@ -70,9 +70,6 @@ function PopUpChannel({ member, clicker, anchorEl, setAnchorEl }: PopUpChannelPr
 	);
 }
 
-//TODO IN BACK_END IF A USER SEND A FRIEND REQUEST AND AND THE RECEIVER DOESNT ACCEPT IT
-// BUT SENT ANOTHER ONE THE SENDER IT MIGHT ME BUGGY
-
 const AddFriendButton = ({ member, clicker, handleClose }: ButtonParamProps) => {
 
 	const sendFriendRequest = () => {

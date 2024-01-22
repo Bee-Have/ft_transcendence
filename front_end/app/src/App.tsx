@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 
 import "./App.css";
 import "./bootstrap/css/bootstrap.css";
@@ -14,8 +14,9 @@ import Chat from "./pages/chat/chat";
 import EditProfil from "./pages/profil/editProfil";
 
 import Channel from './pages/channel/Channel';
-import ChannelListBar  from './pages/channel/components/ChannelListBar';
 import ChannelJoiningList from './pages/channel/ChannelJoiningList';
+
+import ChannelListBar from './pages/channel/components/ChannelListBar';
 
 import RedirectGame from "./pages/game/RedirectGame";
 
@@ -30,49 +31,54 @@ import RedirectInvalidURL from "./pages/game/RedirectInvalidURL";
 import GamePopupList from "src/components/game/GamePopup/GamePopupList";
 
 const App: React.FC = () => {
+
+	const [update, setUpdate] = useState<boolean>(false);
+
+	const onUpdate = () => {
+		setUpdate(!update);
+	}
+
+
 	useEffect(() => {
-		const handleMessage = (event: MessageEvent): void => {};
+		const handleMessage = (event: MessageEvent): void => { };
 		window.addEventListener("message", handleMessage);
 		return () => {
-			window.removeEventListener('message', handleMessage);
+			window.removeEventListener("message", handleMessage);
 		};
 	}, []);
 
-	const [update, setUpdate] = useState<boolean>(false)
-
-	const onUpdate = () => {
-		setUpdate(!update)
-	}
-
 	return (
-		<BrowserRouter>
-		<GamePopupList />
-			<Routes>
-				<Route path="/" element={<Welcome />} />
-				<Route path="/profil/:id" element={<Profil />} />
-				<Route path="/profil/friend-list" element={<FriendList />} />
-				<Route path="/profil/pending-friend-request" element={<Pending />} />
-				<Route path="/profil/blocked" element={<Blocked />} />
-				<Route path="/profil/match-history" element={<MatchHistory />} />
-				<Route path="/profil/edit-Profil" element={<EditProfil />} />
-				<Route path="/chat" element={<><ChannelListBar update={update} /><Outlet/></>}>
-					<Route path="" element={<Chat />}/>
-					<Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate}/>} />
-					<Route path="channel/:id" element={<Channel/>} />
-				</Route>
-				{/* <Route path="/channel/:id" Component={Channel} /> */}
-				{/* <Route path="/channel" Component={Channels} /> */}
-				<Route path="/game/redirect" element={<RedirectGame />} />
-				<Route path="/game/pvp/" element={<GameRoomPvp />} />
-				<Route path="/game/classic" element={<ClassicGame />} />
-				<Route path="/game/timed" element={<TimedGame />} />
-				<Route path="/game/speed" element={<SpeedGame />} />
-				<Route path="/game/retro" element={<RetroGame />} />
+		<>
+			<BrowserRouter>
+				<GamePopupList />
+				<Routes>
+					<Route path="/" element={<Welcome />} />
+					<Route path="/profil" element={<Profil />} />
+					<Route path="/profil/friend-list" element={<FriendList />} />
+					<Route path="/profil/pending-friend-request" element={<Pending />} />
+					<Route path="/profil/blocked" element={<Blocked />} />
+					<Route path="/profil/match-history" element={<MatchHistory />} />
+					<Route path="/profil/edit-Profil" element={<EditProfil />} />
+					<Route path="/chat" element={<><ChannelListBar update={update} /><Outlet /></>}>
+						<Route path="" element={<Chat />} />
+						<Route path=":id" element={<Chat />} />
+						<Route path="channel" element={<ChannelJoiningList onUpdate={onUpdate} />} />
+						<Route path="channel/:id" element={<Channel />} />
+					</Route>
 
-				<Route path="*" element={<RedirectInvalidURL />} />
-				{/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
-			</Routes>
-		</BrowserRouter>
+					<Route path="/game/redirect" element={<RedirectGame />} />
+
+					<Route path="/game/training/classic" element={<ClassicGame />} />
+					<Route path="/game/pvp/" element={<GameRoomPvp />} />
+					<Route path="/game/training/timed" element={<TimedGame />} />
+					<Route path="/game/training/speed" element={<SpeedGame />} />
+					<Route path="/game/training/retro" element={<RetroGame />} />
+
+					<Route path="/403" element={<p>403 Forbidden</p>} />
+					<Route path="*" element={<RedirectInvalidURL />} />
+				</Routes>
+			</BrowserRouter>
+		</>
 	);
 };
 

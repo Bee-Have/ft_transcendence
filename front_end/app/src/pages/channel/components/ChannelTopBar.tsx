@@ -49,8 +49,7 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 				src={BACKEND_URL + '/channel/badge/' + channelId + `?${imageKey}`} />
 			<div className='channel-top-bar-name'>{name}</div>
 			<div className="header">
-
-				<div className="margin-cu"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
+			<div className="margin-cu"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
 			</div>
 		</div>
 	);

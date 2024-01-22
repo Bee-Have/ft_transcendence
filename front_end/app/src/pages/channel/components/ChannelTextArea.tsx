@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Input from '@mui/material/Input';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
 import axios from 'axios';
-import { socket } from '../../global/websocket';
-import { BACKEND_URL } from 'src/pages/global/env';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { BACKEND_URL } from 'src/pages/global/env';
+import { socket } from '../../global/websocket';
 import { MemberProps } from '../types/MemberProps.types';
 
 interface ChannelMessageProps {
@@ -21,12 +21,17 @@ interface ChannelMessageProps {
 const Message = ({ message, isSame }: any) => {
 
 	return (
-		(message.isInfo === true) ? <div className=''>{message.content}</div> :
+		(message.isInfo === true) ? <div className='channel-info'>{message.content}</div> :
 			<div className="message">
 				{isSame ? "" :
 					<div className='private-message-header'>
-						<Avatar className="private-message-avatar" alt={message.username} src={BACKEND_URL + '/user/image/' + message.senderUserId} />
-						<div className='private-message-name'>{message.username}</div>
+						<Avatar
+							className="private-message-avatar"
+							alt={message.username}
+							src={BACKEND_URL + '/user/image/' + message.senderUserId} />
+						<div className='private-message-name'>
+							{message.username}
+						</div>
 					</div>}
 
 				<div className={"private-message-message-wrapper "}>
@@ -68,7 +73,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 
 		const listenRole = (info: MemberProps) => {
 			if (currentChannelId === info.channelId) {
-				let message: ChannelMessageProps  = {
+				let message: ChannelMessageProps = {
 					id: -1,
 					createdAt: -1,
 					content: info.username + " is ",
@@ -81,7 +86,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				if (info.role === "ADMIN")
 					message.content += "Promoted to Admin"
 				else
-					message.content += "Demoted to Member" 
+					message.content += "Demoted to Member"
 
 				setMessages((prev) => [...prev, message]);
 			}
@@ -89,10 +94,10 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 
 		const listenInfo = (info: MemberProps) => {
 			if (currentChannelId === info.channelId) {
-				let message: ChannelMessageProps  = {
+				let message: ChannelMessageProps = {
 					id: -1,
 					createdAt: -1,
-					content: info.username + " has been ",
+					content: info.username + " has ",
 					senderUserId: -1,
 					senderMemberId: -1,
 					username: "",
@@ -101,51 +106,93 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				}
 
 				if (info.state === "KICKED")
-					message.content += "Kicked"
+					message.content += "been Kicked"
 				else if (info.state === "BANNED")
-					message.content += "Banned"
-				else
-					message.content += "Muted for 5 minutes" 
+					message.content += "been Banned"
+				else if (info.state === "MUTED")
+					message.content += "been Muted for 5 minutes"
 
 				setMessages((prev) => [...prev, message]);
 			}
 		}
 
+		const listenNewMember = (info: MemberProps) => {
+			if (currentChannelId === info.channelId) {
+				let message: ChannelMessageProps = {
+					id: -1,
+					createdAt: -1,
+					content: info.username + " has joined the channel",
+					senderUserId: -1,
+					senderMemberId: -1,
+					username: "",
+					channelId: info.channelId,
+					isInfo: true
+				}
+				setMessages((prev) => [...prev, message]);
+			}
+		}
+
+		const listenLeaveMember = (info: MemberProps) => {
+			if (currentChannelId === info.channelId &&
+				(info.state === "REGULAR")) {
+				let message: ChannelMessageProps = {
+					id: -1,
+					createdAt: -1,
+					content: info.username + " left the channel",
+					senderUserId: -1,
+					senderMemberId: -1,
+					username: "",
+					channelId: info.channelId,
+					isInfo: true
+				}
+				setMessages((prev) => [...prev, message]);
+			}
+		}
 
 
 		socket?.on('new-channel-message', listenMessage)
+		socket?.on('new-channel-member', listenNewMember)
+		socket?.on('leave-channel-member', listenLeaveMember)
 		socket?.on('channel-role', listenRole)
 		socket?.on('channel-info', listenInfo)
 
 		return () => {
 			socket?.off('new-channel-message', listenMessage)
+			socket?.off('new-channel-member', listenNewMember)
+			socket?.off('leave-channel-member', listenLeaveMember)
 			socket?.off('channel-role', listenRole)
 			socket?.off('channel-info', listenInfo)
-
 		}
 	}, [currentChannelId])
 
-	// const listenMessage = (message: MessageProps) => {
-	// 	console.log(message)
-	// 	setMessages([...messages, message]);
-	// }
-
-	// socket?.on('new-message', listenMessage)
-
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
+		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {
 			const element = document.getElementById("test");
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
 			axios.post(BACKEND_URL + '/channel/messages', { channelId: currentChannelId, content: inputValue }, { withCredentials: true })
 				.then((res): any => {
-					// setMessages([...messages, res.data]);
 					setInputValue('');
 				})
 				.catch((err) => {
 					//TODO: popup try again error with message
-					console.log(err)
+					if (err.response?.data?.message === "You can not send messages to this Channel") {
+						let message: ChannelMessageProps = {
+							id: -1,
+							createdAt: -1,
+							content: err.response.data.message,
+							senderUserId: -1,
+							senderMemberId: -1,
+							username: "",
+							channelId: currentChannelId,
+							isInfo: true
+						}
+						setMessages((prev) => [...prev, message]);
+						setInputValue('');
+					}
+					else
+						navigate('/' + err.response?.status)
 				})
 		}
 	};
@@ -167,11 +214,13 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 				<div ref={messagesEndRef} />
 			</div>
 			<div className="prompt">
-				<Input
+				<TextField
+					className='channel-text-field'
 					placeholder={'Send message ...'}
-					style={{ width: '100%' }}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
+					value={inputValue === '\n' ? setInputValue('') : inputValue}
+					multiline
+					rows={1}
+					onChange={(e) => { setInputValue(e.target.value) }}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

@@ -1,18 +1,17 @@
 import Avatar from '@mui/material/Avatar';
 import List from '@mui/material/List';
 // import ListItem from '@mui/material/ListItem';
-import { Badge } from '@mui/material';
+import { Badge, ListItem } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
+import { BACKEND_URL } from 'src/pages/global/env';
 import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
 import { socket } from '../pages/global/websocket';
 import PrivateTextArea from './private-message.text-area';
-import { BACKEND_URL } from 'src/pages/global/env';
-import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
-import InteractiveUsername from './interactive/InteractiveUsername';
-import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
 
 // import { Conversation } from '../../../../back_end/srcs/src/privatemessage/dto/conversation.dto';
 // import { Conversation } from '@prisma/client';
@@ -60,20 +59,19 @@ const FriendAvatar = ({ conv, friendId, friendUsername }: any) => {
 	)
 }
 
-const Conversation = ({ onClick, conv }: any) => {
+const Conversation = ({ onClick, conv, chatId }: any) => {
 
 	const id = conv.conversation.id
 	const friendId = userId === conv.conversation.memberOneId ? conv.conversation.memberTwoId : conv.conversation.memberOneId
 	const friendUsername = conv.conversation.friendUsername
 
-	const showMenu = (e: any) => {
-		//TODO: Add the popup menu for conversations
-		e.preventDefault()
+	const han = () => {
+		console.log('wef')
 	}
 
 	return (
-		<div className="friend" >
-			<ListItemButton key={id} onClick={onClick} onContextMenu={showMenu}>
+		<div className={chatId === conv.conversation.id ? "friend-selected" : "friend"} >
+			<ListItem key={id} onClick={onClick}>
 				{
 					conv.userstatus ? <FriendAvatar conv={conv} friendId={friendId} friendUsername={friendUsername} /> :
 						<Avatar
@@ -82,9 +80,19 @@ const Conversation = ({ onClick, conv }: any) => {
 							src={BACKEND_URL + '/user/image/' + friendId}
 							sx={{ width: 60, height: 60 }} />
 				}
-
-				<div className="channel-member-list-name">{friendUsername}</div>
-			</ListItemButton>
+				<div className="private-message-name">{friendUsername}</div>
+			</ListItem>
+			{
+				chatId === conv.conversation.id ? <div>
+					<List sx={{ width: 'fit-content', display: 'flex', flexDirection: 'row', margin: 'auto', flexWrap: 'wrap'}}>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Invite</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+						<ListItemButton sx={{width: '100px', justifyContent: 'center'}} onClick={han}>Spectate</ListItemButton>
+					</List>
+				</div> : false
+			}
 		</div>
 	)
 
@@ -92,23 +100,33 @@ const Conversation = ({ onClick, conv }: any) => {
 };
 
 
-const Conversations: React.FC = () => {
+const Conversations = ({ chatId }: { chatId: number | undefined }) => {
 
 	const [convs, setConvs] = useState<ConversationProps[]>([])
 	const [showTextArea, setshowTextArea] = useState(false)
 	const [currentChat, setCurrentChat] = useState<ConversationProps>()
 	const [createConvBool, setCreateConvBool] = useState(false)
-
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/privatemessage/conversations', { withCredentials: true })
 			.then((res): any => {
-				setConvs(res.data)
+				if (chatId) {
+					const up = res.data.map((m: any) => m.conversation.id === chatId ? { ...m, convIsUnRead: false } : m)
+					setConvs(up)
+					const cur = up.filter((m: any) => { return m.conversation.id === chatId })[0]
+					if (!cur)
+						navigate('/404')
+					setCurrentChat(cur)
+					setshowTextArea(true)
+				}
+				else
+					setConvs(res.data)
 			})
 			.catch((err) => {
 				console.log(err)
 			})
-	}, [])
+	}, [chatId, navigate])
 
 	useEffect(() => {
 		const listenNewConv = (conv: ConversationProps) => {
@@ -124,8 +142,7 @@ const Conversations: React.FC = () => {
 
 	const handleclick = (e: ConversationProps) => {
 		convUpdateUnReadStatus(e.conversation.id, false)
-		setCurrentChat(e)
-		setshowTextArea(true)
+		navigate('/chat/' + e.conversation.id)
 	}
 
 	const createConv = () => {
@@ -155,7 +172,6 @@ const Conversations: React.FC = () => {
 
 		setConvs(updated)
 	}
-
 
 	useEffect(() => {
 		const listenNewMessage = (message: any) => {
@@ -190,7 +206,9 @@ const Conversations: React.FC = () => {
 					className='channel-top-bar-img'
 					alt={currentChat.conversation.friendUsername + " avatar"}
 					src={BACKEND_URL + '/user/image/' + currentChat.conversation.friendId} />
-					<div className='wrappi margin-left-10px'><InteractiveUsername user={BuildFriendWithConv(currentChat)}/></div></>}
+					<div className='private-message-name'>{currentChat.conversation.friendUsername}</div>
+				</>}
+				<div className="left-but"><button className="btn btn-light" onClick={() => navigate("/")}>home</button> </div>
 			</div>
 			<div className="channel-member-bar">
 				<div onClick={createConv} className='privMsg'>
@@ -201,7 +219,11 @@ const Conversations: React.FC = () => {
 					{convs ? (
 						<div>
 							{Object.keys(convs).map((i) => (
-								<Conversation key={convs[i].conversation.id} onClick={() => handleclick(convs[i])} conv={convs[i]} />
+								<Conversation
+									key={convs[i].conversation.id}
+									onClick={() => handleclick(convs[i])}
+									conv={convs[i]}
+									chatId={chatId} />
 							))}
 						</div>
 					) : null}

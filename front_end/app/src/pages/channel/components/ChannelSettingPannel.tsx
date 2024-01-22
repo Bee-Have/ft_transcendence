@@ -1,3 +1,4 @@
+import { Avatar, Box, List, ListItem } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "src/pages/global/env";
@@ -7,6 +8,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 	const [name, setName] = useState('');
 	const [mode, setMode] = useState('PUBLIC');
 	const [password, setPassword] = useState('');
+	const [bannedPeople, setBannedPeople] = useState([])
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [errorMessage, setErrorMessage] = useState<null | string>(null)
 	const [infoChanged, setInfoChanged] = useState<boolean>(false)
@@ -19,9 +21,25 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 			.then((res) => {
 				setName(res.data.channelName)
 				setMode(res.data.mode)
+				setBannedPeople(res.data.banned)
 			})
 			.catch((e) => { console.log(e) })
 	}, [channelId])
+
+	useEffect(() => {
+		const listener = (e: any) => {
+			if (e.key === 'Escape') {
+				hideOverlay()
+			}
+		}
+
+		window.addEventListener('keydown', listener)
+
+		return () => {
+			window.removeEventListener('keydown', listener)
+		}
+	}, [channelId, hideOverlay])
+
 
 	const infoChange = () => {
 		setInfoChanged(true)
@@ -120,8 +138,61 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				{errorBadgeMessage && <><span>{errorBadgeMessage}</span><br /></>}
 			</form>
 			<button onClick={hideOverlay} className='channel-update-close-button channel-form-button' >Close</button>
+			<div className='channel-form-separator'></div>
+			{
+				!!bannedPeople.length &&
+				<List sx={{overflowY: 'auto', height: '180px'}}>
+					{bannedPeople.map((banned, index) => (
+						<Banned banned={banned} index={index} />
+					))}
+				</List>
+			}
 		</div>
 	);
 }
+
+
+const Banned = ({ banned }: any) => {
+
+	const [unbanSucces, setUnbanSuccess] = useState(false)
+
+
+	const unban = (banned: any) => {
+		axios.post(BACKEND_URL + '/channel/unban/' + banned.channelId + '/' + banned.id,
+			{},
+			{ withCredentials: true })
+			.then((res) => setUnbanSuccess(true))
+			.catch((err) => {
+				console.log(err)
+			})
+	}
+
+
+	return (
+		<ListItem key={banned.userId} >
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					gap: "10px",
+				}}
+			>
+				<Avatar
+					src={BACKEND_URL + "/user/image/" + banned.userId}
+					alt={banned.username}
+					sx={{ width: 60, height: 60 }}
+				/>
+				<h1 className="margin-bottom-0px" >{banned.username}</h1>
+				{!unbanSucces && <button onClick={() => unban(banned)} className="channel-form-button">Unban</button>}
+				{unbanSucces && <div>Unbanned</div>}
+			</Box>
+		</ListItem>
+	)
+}
+
+
+
 
 export default ChannelSettingPanel;

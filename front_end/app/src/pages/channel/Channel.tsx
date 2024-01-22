@@ -35,7 +35,7 @@ const Channel: React.FC = () => {
 			<ChannelMembersBar
 				channelMembers={channelMembers}
 				channelId={channelId} />
-			<ChannelTextArea currentChannelId={Number(id)} />
+			<ChannelTextArea currentChannelId={channelId} />
 		</div>
 	);
 };

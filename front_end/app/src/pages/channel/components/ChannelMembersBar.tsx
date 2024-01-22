@@ -1,4 +1,4 @@
-import { Avatar, Box, List, ListItemButton, ListSubheader } from "@mui/material"
+import { Avatar, Box, List, ListItem, ListSubheader } from "@mui/material"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
@@ -11,26 +11,13 @@ import InteractiveAvatarChannel from "./InteractiveAvatarChannel"
 import InteractiveUsernameChannel from "./InteractiveUsernameChannel"
 
 const MemberList = ({ headerName, members, clicker }: { headerName: string, members: MemberProps[], clicker: MemberProps }) => {
-	// const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-	const onContextMenu = (e: any) => {
-		e.preventDefault()
-		// setAnchorEl(e.currentTarget)
-	}
 
 	return (
 		<>
 			<ListSubheader>{headerName}</ListSubheader>
 			{members.map((member) => (
-				<ListItemButton
-					key={member.userId}
-					onContextMenu={onContextMenu}>
-					{/* <PopUp user={member} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
-					<Avatar
-						alt={member.username}
-						src={BACKEND_URL + '/user/image/' + member.userId}
-						sx={{ width: 60, height: 60 }} />
-					<div className='channel-member-list-name'>{member.username}</div> */}
+				<ListItem
+					key={member.userId}>
 					{member.userId === userId ?
 						<Box
 							sx={{
@@ -46,7 +33,7 @@ const MemberList = ({ headerName, members, clicker }: { headerName: string, memb
 								alt={member.username}
 								sx={{ width: 60, height: 60 }}
 							/>
-							<h1 className="margin-bottom-0px" >{member.username}</h1>
+							<div className="private-message-name" >{member.username}</div>
 						</Box>
 						:
 						<Box
@@ -61,7 +48,7 @@ const MemberList = ({ headerName, members, clicker }: { headerName: string, memb
 							<InteractiveAvatarChannel member={member} clicker={clicker} />
 							<InteractiveUsernameChannel member={member} clicker={clicker} />
 						</Box>}
-				</ListItemButton>
+				</ListItem>
 			))}
 		</>
 	)
@@ -106,7 +93,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 		const listenLeaveMember = (info: MemberProps) => {
 			if (info.channelId === channelId) {
 				if (info.role === "OWNER") {
-					// navigate("/chat")
+					//TODO: REIRECT TO A PAGE THAT SAY OWNER LEAVED CHANNEL DOESNT EXIST
 					console.log("Channel Does not exist anymore, Owner Leaved")
 				}
 				else if (info.role === "ADMIN")

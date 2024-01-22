@@ -1,24 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { WsException } from "@nestjs/websockets";
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-
-class FriendRequestError extends WsException {
-	constructor(public cause: string, private receiverId:number, private action: string){
-		super({cause, receiverId})
-		super.getError()
-		super.message = 'Friend Request Error'
-	}
-}
 
 @Injectable()
 export class FriendshipService {
 
-	constructor(private prisma: PrismaService) {}
+	constructor(private prisma: PrismaService,) {}
 
 	async createFriendRequest(senderId: number, receiverId: number) {
 		if (senderId === receiverId)
-			throw new FriendRequestError('Sender cant be receiver', receiverId, 'creation')
-
+			throw new BadRequestException('Sender cant be receiver')
 
 		const receiver = await this.prisma.user.findUnique({
 			where: {
@@ -26,7 +16,7 @@ export class FriendshipService {
 			},
 		})
 		if (!receiver)
-			throw new FriendRequestError('User does not exist', receiverId, 'creation')			
+			throw new NotFoundException('User does not exist')			
 
 
 		const friends_of_receiver = await this.prisma.user.findUnique({
@@ -38,22 +28,26 @@ export class FriendshipService {
 					where: {
 						id: senderId
 					}
-				}
+				},
 			}
 		})
 		if (friends_of_receiver.friends.length)
-			throw new FriendRequestError('Users already friends', receiverId, 'creation')			
-
+			throw new BadRequestException('Users already friends')
 
 		const req = await this.prisma.friendRequest.findFirst({
 			where: {
-				senderId,
-				receiverId
+				OR: [
+					{senderId, receiverId},
+					{senderId: receiverId, receiverId: senderId}
+				]
 			}
 		})
-		if (req)
-			throw new FriendRequestError('Friend Request already exist', receiverId, 'creation')
-
+		if (req?.senderId === senderId)
+			throw new BadRequestException('Friend Request already exist')
+		if (req?.senderId === receiverId) {
+			await this.acceptFriendRequest(senderId, req.senderId)
+			return
+		}
 
 		const createdReq = await this.prisma.friendRequest.create({
 			data: {
@@ -63,13 +57,13 @@ export class FriendshipService {
 			}
 		})
 		if (!createdReq)
-			throw new FriendRequestError('Error While creating the friendRequest', receiverId, 'creation')
+			throw new InternalServerErrorException('Error While creating the friendRequest')
 	}
 
 
 	async cancelFriendRequest(senderId: number, receiverId: number) {
 		if (senderId === receiverId)
-			throw new FriendRequestError('Sender cant be receiver', receiverId, 'deletion')
+		throw new BadRequestException('Sender cant be receiver')
 
 		const req = await this.prisma.friendRequest.findFirst({
 			where: {
@@ -78,7 +72,7 @@ export class FriendshipService {
 			}
 		})
 		if (!req)
-			throw new FriendRequestError('Friend Request does not exist', receiverId, 'deletion')
+			throw new BadRequestException('Friend Request does not exist')
 	
 		const deletion = await this.prisma.friendRequest.delete({
 			where: {
@@ -86,7 +80,7 @@ export class FriendshipService {
 			}
 		})
 		if (!deletion)
-			throw new FriendRequestError('Error while deleting friend request', receiverId, 'deletion')
+			throw new InternalServerErrorException('Error while deleting friend request')
 	}
 
 
@@ -211,6 +205,31 @@ export class FriendshipService {
 				return true
 		}
 		return false
+	}
+
+	async deleteFriend(userId: number, receiverId: number) {
+		if (userId === receiverId)
+			throw new BadRequestException('Sender cant be receiver')
+
+		try {
+			await this.prisma.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					friends: {
+						disconnect: [{id: receiverId}]
+					},
+					friendsRelation: {
+						disconnect: [{id: receiverId}]
+					}
+				}
+			})
+		}
+		catch(e) {
+			console.log(e)
+			throw new InternalServerErrorException('Error while deleting friendship')
+		}
 	}
 
 	async userExist (userId: number) : Promise<boolean> {

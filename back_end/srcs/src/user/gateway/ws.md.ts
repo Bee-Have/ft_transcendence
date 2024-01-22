@@ -8,11 +8,12 @@ import { Socket } from 'socket.io'
 export const SocketAuthMiddleware = () => {
 	return (client:Socket , next) => {
 		try {
-			const tk = client.handshake.headers.authorization.split(' ')[1]
+			const tk: string = String(client.handshake.headers.id)
 			client.data = verify(tk, process.env.JWT_AT_SECRET)
 			next()
 		}
 		catch (error) {
+			console.log(error)
 			next(error)
 		}
 	}

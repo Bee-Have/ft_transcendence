@@ -13,10 +13,32 @@
 	font-size: 150%;
 }
 
+.privMsg:hover {
+	cursor: pointer;
+}
+
+.custom-input {
+	margin-bottom: 10px;
+	font-weight: 600;
+	color: rgb(255, 255, 255);
+}
+
 .friend{
 	display: inline-block;
 	width: 100%;
 	height: 100%;
+}
+
+.friend-selected{
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	background-color: rgb(187, 187, 187);
+}
+
+.friend:hover{
+	cursor: pointer;
+	background-color: rgb(163, 163, 163);
 }
 
 .popup .avatar{
@@ -30,7 +52,7 @@
 }
 
 .avatar{
-	margin-right:20px;
+	margin-right: 15px;
 }
 
 .channelPeople .name{
@@ -44,33 +66,12 @@
 	color: white;
 }
 
-/* Channel list */
-.channelList {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 4%;
-	min-width: 50px;
-	height: 100%;
-	background-color: grey;
-	overflow-y: auto;
-}
-
 .group-image {
 	margin: auto;
 	width: 90%;
-	margin-bottom: 5px;	
+	margin-bottom: 5px;
 	object-fit: cover;
 	border-radius: 50%;
-}
-
-.channelList .separator {
-	margin: auto;
-  height: 3px;
-  width: 75%;
-	border-radius: 30%;
-  margin-bottom: 5px;
-  background-color: white;
 }
 
 .add{
@@ -93,14 +94,11 @@
 
 .channelPeople {
 	position: fixed;
-	top: 0;
-	left: 4%;
 	width: 20%;
 	height: 100%;
 	background-color: silver;
 	overflow-y: auto;
 }
-	
 /* Channel list */
 .channelList {
 	position: fixed;
@@ -110,24 +108,26 @@
 	min-width: 50px;
 	height: 100%;
 	background-color: grey;
-	overflow-y: auto;
+	z-index: 123412;
+	/* overflow-y: auto; */
 }
 
 .group-image {
 	margin: auto;
-	width: 90%;
-	margin-bottom: 5px;	
+	width: 60px;
+	height: 60px;
+	margin-bottom: 5px;
 	object-fit: cover;
 	border-radius: 50%;
 }
 
 .channelList .separator {
-  margin: auto;
-  height: 3px;
-  width: 75%;
-  border-radius: 30%;
-  margin-bottom: 5px;
-  background-color: white;
+	margin: auto;
+	height: 3px;
+	width: 75%;
+	border-radius: 30%;
+	margin-bottom: 5px;
+	background-color: white;
 }
 
 .add{
@@ -153,11 +153,22 @@
 }
 
 .messages-container{
-	padding-top: 10px;
-	position: absolute;
-	bottom: 0;
-	max-height: calc(100vh - 125px);
-	}
+	height: calc(100% - 80px);
+	overflow-y: auto;
+}
+
+.messages-container::-webkit-scrollbar {
+	width: 10px;
+}
+.messages-container::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+.messages-container::-webkit-scrollbar-thumb {
+	background: #888;
+}
+.messages-container::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
 
 .message-content{
 	display: flex;
@@ -166,37 +177,53 @@
 
 .name{
 	font-weight: bold;
-	font-size: 50%;
+	font-size: 30px;
 	display: flex;
-	margin-left: 10%;
+	/* margin-left: 10%; */
+}
+
+.role {
+	font-weight: 400;
+	font-size: 12px;
 }
 
 .private-message-header {
 	display: flex;
-	margin-bottom: 10px;
-	margin-top: 10px;
+	margin-bottom: 5px;
+	margin-top: 5px;
 }
 
 .private-message-avatar {
-	width: 40px;
-	height: 40px;
+	width: 60px;
+	height: 60px;
+	margin: auto;
 	margin-right: 20px;
 	margin-left: 10px;
 }
 
 .private-message-name {
-	font-weight: bold;
-	font-size: 150%;
-	display: flex;
-	align-items: center;
+	font-weight: 500;
+	font-size: calc(1.375rem + 1.5vw);;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	/* display: flex; */
+	/* align-items: center; */
+	max-width: 80%;
+	height: fit-content;
+	margin: auto;
+	margin-left: 0px;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	overflow: auto;
 }
 
 .private-message-message {
 	display: inline-block;
 	align-items: center;
-	max-width: 500px;
+	max-width: 80%;
 	word-wrap: break-word;
+	white-space: pre-wrap;
 	margin: 1px;
+	letter-spacing: 0.5px;
 	padding: 10px 12px 10px 12px;
 	background-color: lightgrey;
 	border-radius: 10px;
@@ -206,21 +233,21 @@
 }
 
 .private-message-message-wrapper{
-	width: 50%;
 	display: flex;
 	margin-left: 15px;
 }
 
 
 .prompt{
-	height: 50px;
-	width: 72.2%;
-	margin: 2% 2% 10px 2%;
-	padding-left: 2%;
-	padding-right: 2%;
-	padding-top: 5px;
-	bottom: 0;
-	border-radius: 10em;
-	position: fixed;
+	height: fit-content;
+	width: 90%;
+	margin: 10px auto;
+	margin-left: 20px;
 	background-color: rosybrown;
+}
+
+.channel-text-field {
+	width: 100%;
+	min-width: 400px;
+	height: fit-content;
 }

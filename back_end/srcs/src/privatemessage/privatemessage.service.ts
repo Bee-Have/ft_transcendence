@@ -273,6 +273,7 @@ export class PrivateMessageService {
 			...conversation, 
 			friendUsername,
 			username,
+			friendId,
 			memberOneUsername: userId < friendId ? username : friendUsername,
 			memberTwoUsername: userId < friendId ? friendUsername : username,
 		}
@@ -281,7 +282,7 @@ export class PrivateMessageService {
 			conversation: conv,
 			lastMessage,
 			convIsUnRead: lastMessage ? (lastMessage.senderId != userId && !lastMessage.isRead) : false,
-			status: await this.getStatus(userId, friendId)
+			userstatus: await this.getStatus(userId, friendId)
 		}
 
 		return obj

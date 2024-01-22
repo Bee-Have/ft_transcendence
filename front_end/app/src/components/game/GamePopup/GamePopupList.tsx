@@ -41,6 +41,7 @@ function GamePopupList() {
     return () => {
       socket?.off("new-invite", fetchInvites);
     };
+	// eslint-disable-next-line
   }, []);
 
   if (gamePopup.isVisible === false || popupList.length === 0) return null;

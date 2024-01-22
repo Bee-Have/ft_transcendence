@@ -417,14 +417,10 @@ export class UserService {
 				}
 			})
 			console.log("user object in leaderboardfct", user)
-			if (user.length ===0)
-			{
-				console.log("no user found for leaderboard")
-				throw new NotFoundException('Not enough player in the leaderboard')
-			}
 			return user
-	} catch(e) {
-		console.log("error found in fctleaderboard", e)
+		} catch(e) {
+			console.log("error found in fctleaderboard", e)
+			throw new InternalServerErrorException("Couldn't get best Elo player")
 	}
 	}
 

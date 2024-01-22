@@ -419,7 +419,7 @@ export class UserService {
 			console.log("user object in leaderboardfct", user)
 			return user
 		} catch(e) {
-			console.log("error found in fctleaderboard", e)
+			console.log("error found in fctleaderboard :", e)
 			throw new InternalServerErrorException("Couldn't get best Elo player")
 	}
 	}

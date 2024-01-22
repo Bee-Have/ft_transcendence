@@ -47,7 +47,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
 	}, [messages]);
-
+ 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/privatemessage/messages/' + currentChat.conversation.id, { withCredentials: true })
 			.then((res) => {

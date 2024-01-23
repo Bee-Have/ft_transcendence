@@ -6,6 +6,7 @@ import { BACKEND_URL } from 'src/pages/global/env';
 import { useErrorContext } from 'src/context/ErrorContext';
 import { errorHandler } from 'src/context/errorHandler';
 import { ReadCookie } from './ReadCookie';
+import { useNavigate } from 'react-router';
 
 interface FAEnableProps {
 	popUp: (value : boolean) => void;
@@ -18,6 +19,8 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 	const [timer, setTimer] = useState(-1)
 	const [secondsLeft, setSecondsLeft] = useState(0)
 	const errorContext = useErrorContext()
+	const navigate = useNavigate()
+
 
 	const click= () => {
 		const test = document.getElementById('test')
@@ -28,6 +31,7 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 			if (res.status === 200){
                 popUp(false);
 				btn(true);
+				navigate("/")
             }
 		})
 		.catch((e) =>  {

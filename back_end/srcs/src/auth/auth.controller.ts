@@ -53,6 +53,7 @@ export class AuthController {
 		res.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 		res.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 		res.cookie('userId', userId, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
+		res.send()
 		
 	}
 

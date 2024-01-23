@@ -34,17 +34,17 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 			errorContext.newError?.(errorHandler(e));
 			if (e.response?.status === 429) {
 				setIsButtonDisabled(true)
-				setTimer(2000)
+				setTimer(30000)
 			}
 		})
 	}
 
 	useEffect(() => {
 		let id: any;
-		if (timer > 0)
+		if (timer > -1)
 			id = setInterval(() => {
 			setIsButtonDisabled(false)
-			setTimer(-1)		
+			setTimer(-2)
 		}, timer)
 
 		return () => {
@@ -55,11 +55,11 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 
 	useEffect (() => {
 		let id: any
-		if (timer > 0){
+		if (timer > -1){
 			setSecondsLeft(timer / 1000)
 			id = setInterval(() => {
 				setSecondsLeft(r => r - 1)
-			}, 30000)
+			}, 1000)
 		}
 
 		return () => {

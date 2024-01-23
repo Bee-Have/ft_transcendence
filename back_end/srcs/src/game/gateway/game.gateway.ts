@@ -93,8 +93,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let [player1Id, player2Id, userId] = [data[0], data[1], data[2]];
 
     if (data[0] === null || data[1] === null || data[2] === null) {
-        client.emit("game:badRequest");
-        return ;
+      client.emit("game:badRequest");
+      return;
     }
     if (player1Id < player2Id)
       player1Id = [player2Id, (player2Id = player1Id)][0];
@@ -107,10 +107,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (currentGame === undefined) {
       currentGame = { ...defaultGameInfo };
       this.runningGames.set(gameId, currentGame);
-      if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
-      if (currentGame.gamemode === "timed") {
-        currentGame.maxScore = 100;
-      }
     }
 
     const invite = await this.gameService.getUsersSharedInvite(
@@ -128,6 +124,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         | "timed"
         | "speed"
         | "retro";
+      if (currentGame.gamemode === "retro") currentGame.maxScore = 11;
+      if (currentGame.gamemode === "timed") currentGame.maxScore = 100;
     }
 
     this.connectedUsers.set(client.id, { userId: userId, gameId: gameId });

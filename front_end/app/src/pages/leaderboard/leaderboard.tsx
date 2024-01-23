@@ -24,12 +24,14 @@ interface LeaderboardProps {
 }
 
 function UserCard({ user }: { user: LeaderboardProps }) {
+	const navigate = useNavigate()
 
 	return (
 		<div>
-			{user.id}
-			{user.score}
-			{user.username}
+			<button className="btn btn-light" onClick={() => navigate(`/profil/${user.id}`)}>
+				{user.username}
+			</button>
+			{user.score}<br />
 		</div>
 	)
 }

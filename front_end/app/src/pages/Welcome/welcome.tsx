@@ -109,8 +109,7 @@ const Welcome: React.FC = () => {
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light">leaderboard</button>
-          { <button className="btn btn-light" onClick={() => navigate("/user/leaderboard")}>leaderboard</button> }
+          <button className="btn btn-light" onClick={() => navigate("/user/leaderboard")}>leaderboard</button>
         </div>
       </div>
     </div>

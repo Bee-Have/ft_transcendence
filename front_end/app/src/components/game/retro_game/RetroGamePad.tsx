@@ -45,7 +45,7 @@ function RetroOpponentPad() {
   function computerPlaying(delta: number) {
     const paddleElem = document.getElementById("OpponentPad") as HTMLElement;
     const ballRect = document
-      .getElementById("RetroPongBall")
+      .getElementById("PongBall")
       ?.getBoundingClientRect() as DOMRect;
     if (ballRect === undefined) {
       return;

@@ -86,9 +86,11 @@ const EditProfil: React.FC = () =>
 				setNickName(response.data.nickname);
 			
 			setFAActive(response.data.isTwoFAEnable);
-			setDescription(response.data.description);
-			if (!description)
+			console.log(response.data.description);
+			if (response.data.description === null)
 				setDescription("");
+			else
+				setDescription(response.data.description);
 			
 			setProfilePic(BACKEND_URL + `/user/image/${ReadCookie("userId")}`);
 		}).catch(err => {

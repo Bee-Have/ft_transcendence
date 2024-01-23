@@ -30,6 +30,8 @@ import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import styles from "../solo/Timed.module.css";
 
+import { BACKEND_URL } from "src/pages/global/env";
+
 function TimerCard({ duration }: { duration: number }) {
   const [remainingTime, setRemainingTime] = React.useState(duration);
   const [isStarted, setIsStarted] = React.useState(false);
@@ -81,7 +83,7 @@ function GameRoomPvp() {
 
   useEffectOnce(() => {
     if (gameSocket.current === undefined) {
-      gameSocket.current = io("http://localhost:3001/game", {
+      gameSocket.current = io(BACKEND_URL + "/game", {
         transports: ["websocket"],
       });
 

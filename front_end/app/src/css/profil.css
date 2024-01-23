@@ -141,82 +141,66 @@
 
 /* match */
 
-.matchHistory .content{
-  align-content: center;
-  text-align: center;
+.matchHistory{
+  z-index: -1;
+  position: absolute;
+  height: 90%;
+  min-height: 90%;
+  top: 5%;
+  bottom: 5%;
+  width: 70%;
+  left: 20%;
+  right: 10%;
 
   display: flex;
   flex-direction: column;
+  align-items: center;
+
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.matchHistory .content{
+  overflow-y: auto;
+  padding-right: 1px;
+  padding-left: 1px;
 }
 
 .match{
   font-size: 40px;
 
-  display: flex;
-  flex-direction: row;
+  position: relative;
+  display: grid;
+  
+  grid-template-columns: repeat(5, 1fr);
   
   justify-content: space-between;
   align-items: center;
 
- 
   border-radius: 8px;
   margin-bottom: 20px;
 
   padding: 10px;
   
   background-color: #A0A0A0;
-}
-
-.matchHistory .match{
   width: 80%;
+  overflow-x: auto;
+
+  gap: 20px;
 }
 
-.matchHistory .victory{
-  width: 15%;
+.match .victory{
   color: cyan;
 }
-.matchHistory .defeat{
-  width: 15%;
+.match .defeat{
   color: pink;
 }
-.matchHistory .tie{
-  width: 15%;
+.match .tie{
   color: white;
 }
 
-.matchHistory .VS{
-  width: 5%;
-}
-
-.matchHistory .PP{
-  width: 10%;
-}
-
-.matchHistory .opposantName{
-  width: 20%;
-}
-
-.matchHistory .score{
-	
-	width: 10%;
-	white-space: nowrap;
-}
-
-.matchHistory .mode{
-  width: 20%;
-}
-
-.matchHistory .separator {
-  height: 3px;
-  width: 75%;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background-color: white;
-}
-
-.matchHistory .avatar{
-  width: 5%;
-  padding-top: 10px;
+.match .score {
+  font-weight: bold;
 }
 
 /* Pop up */

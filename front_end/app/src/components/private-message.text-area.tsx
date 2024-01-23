@@ -65,7 +65,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 			if (currentChat.conversation.id === message.conversationId) {
 				setMessages((prev) => [...prev, message]);
 				axios.get(BACKEND_URL + '/privatemessage/conversations/isread/' + currentChat.conversation.id, { withCredentials: true })
-					.then((res) => console.log(res.data))
+					.then()
 					.catch((e) => errorContext.newError?.(errorHandler(e)))
 			}
 		}

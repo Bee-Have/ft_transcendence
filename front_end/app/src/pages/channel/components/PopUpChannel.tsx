@@ -155,7 +155,7 @@ const manageRole = (manageRoleObject: ManageRole, errorContext: any) => {
 	axios.post(BACKEND_URL + '/channel/manage/role',
 		manageRoleObject,
 		{ withCredentials: true })
-		.then((res) => { console.log(res) })
+		.then((res) => {})
 		.catch((e) => errorContext.newError?.(errorHandler(e)))
 }
 
@@ -218,7 +218,7 @@ const RestrictUserButton = ({ member, clicker, handleClose }: ButtonParamProps) 
 		axios.post(BACKEND_URL + '/channel/restrict',
 			restrictedUser,
 			{ withCredentials: true })
-			.then((res) => { console.log(res) })
+			.then((res) => {})
 			.catch((e) => errorContext.newError?.(errorHandler(e)))
 		handleClose()
 	}

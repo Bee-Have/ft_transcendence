@@ -280,9 +280,6 @@ export class PrivateMessageService {
 			isMemberFriendWithUser: (await this.userService.getUserFriendsId(userId)).includes(friendId) || 
 									!!(await this.userService.getUserSentInvite(userId)).filter(m => {return m.id === friendId}).length
 		}
-		console.log(!!(await this.userService.getUserSentInvite(userId)).filter(m => {return m.id === friendId}).length)
-
-		console.log(conv)
 
 		const obj: ConversationProps = {
 			conversation: conv,

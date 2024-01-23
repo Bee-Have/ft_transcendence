@@ -197,7 +197,6 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
     };
 
     const listenNewStatus = (status: any) => {
-      console.log("New status->", status);
       const updatedConvs = convs.map((conv) =>
         conv.conversation.memberOneId === status.userId ||
         conv.conversation.memberTwoId === status.userId

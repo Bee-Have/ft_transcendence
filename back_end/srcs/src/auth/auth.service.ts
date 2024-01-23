@@ -95,9 +95,7 @@ export class AuthService {
 				}
 			},
 			{}).catch((err: any) => {
-				console.log(hash);
-				//console.log(err.request);
-				//console.log(err.response)
+				console.log(err);
 			});
 
 		await this.prisma.user.updateMany({
@@ -307,7 +305,7 @@ export class AuthService {
 		return await hash(data)
 	}
 
-	@Interval(10000)
+	@Interval(60000)
 	handleInterval() {
 		const time = new Date()
 		this.state_map.forEach( (v, k, map) => {

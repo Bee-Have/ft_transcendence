@@ -247,12 +247,13 @@
 }
 
 .QRCode{
-    height: 40vh;
+    height: fit-content;
     min-height: 350px;
     width: 50%;
     margin-top: 2%;
     margin-left: 25%;
     text-align: center;
+    padding-bottom: 20px;
     background-color: white;
 }
 

@@ -80,7 +80,7 @@ interface ChannelProps {
 const ChannelListBar = ({ update }: { update: boolean }) => {
 	const [channels, setChannels] = useState<ChannelProps[]>([])
 	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
-	
+
 	const errorContext = useErrorContext();
 	const navigate = useNavigate()
 	const location = useLocation()
@@ -91,7 +91,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 				setChannels(res.data)
 			})
 			.catch(e => errorContext.newError?.(errorHandler(e)))
-	}, [update, navigate, errorContext])
+	}, [update])
 
 	useEffect(() => {
 		const id = window.location.pathname.split('/')
@@ -105,11 +105,10 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 
 	useEffect(() => {
 		const listenLeaveMember = (info: any) => {
-			console.log(info)
 			if (info.userId === userId || info.role === "OWNER")
-				setChannels((prev) => prev.filter((channel) => { 
-					console.log('id: ', channel.id)
-					return channel.id !== info.channelId}))
+				setChannels((prev) => prev.filter((channel) => {
+					return channel.id !== info.channelId
+				}))
 		}
 
 		socket?.on('leave-channel-member', listenLeaveMember)

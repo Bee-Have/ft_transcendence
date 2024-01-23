@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { BACKEND_URL } from 'src/pages/global/env';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 
 
 const ChannelCreationForm = ({ onUpdate }: any) => {
@@ -12,6 +14,7 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	// const [file, setFile] = useState(null)
 	const [errorMessage, setErrorMessage] = useState<null | string>(null)
+	const errorContext = useErrorContext();
 
 	const navigate = useNavigate()
 
@@ -53,7 +56,9 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 				// 		.then(() => setbadgeUpload('badge upload success'))
 				// 		.catch((e) => setErrorMessage(e.response.data.message))
 			})
-			.catch((e) => setErrorMessage(e.response.data.message))
+			.catch((e) => {
+				setErrorMessage(e.response.data.message); 
+				errorContext.newError?.(errorHandler(e))})
 	}
 
 	return (

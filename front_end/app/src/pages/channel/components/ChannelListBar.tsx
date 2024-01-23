@@ -2,6 +2,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { userId } from 'src/pages/global/userId';
 import { socket } from 'src/pages/global/websocket';
@@ -78,7 +80,8 @@ interface ChannelProps {
 const ChannelListBar = ({ update }: { update: boolean }) => {
 	const [channels, setChannels] = useState<ChannelProps[]>([])
 	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
-
+	
+	const errorContext = useErrorContext();
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -87,8 +90,8 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 			.then((res: any) => {
 				setChannels(res.data)
 			})
-			.catch((e) => console.log(e))
-	}, [update])
+			.catch(e => errorContext.newError?.(errorHandler(e)))
+	}, [update, navigate, errorContext])
 
 	useEffect(() => {
 		const id = window.location.pathname.split('/')

@@ -80,7 +80,7 @@ const Welcome: React.FC = () => {
     } else {
       setAuthenticated(true);
     }
-  }, []);
+  }, [aToken, rToken]);
 
   const guestUser = () => {
     setGuest(true);

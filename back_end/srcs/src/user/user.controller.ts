@@ -159,7 +159,7 @@ export class UserController {
 	}
 
 	@Get('leaderboard')
-	async getLeaderboard() {
+	async getLeaderboard(@GetCurrentUser('sub') userId: number) {
 		return await this.userService.fctLeaderboard()
 	}
 

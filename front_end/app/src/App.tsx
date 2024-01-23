@@ -13,6 +13,8 @@ import MatchHistory from "./pages/match-history/matchHistory";
 import Chat from "./pages/chat/chat";
 import EditProfil from "./pages/profil/editProfil";
 
+import Leaderboard from 'src/pages/leaderboard/leaderboard';
+
 import RedirectGame from "./pages/game/RedirectGame";
 
 import ClassicGame from "./pages/game/solo/Classic";
@@ -55,6 +57,8 @@ const App: React.FC = () => {
           <Route path="/profil/blocked" element={<Blocked />} />
           <Route path="/profil/match-history" element={<MatchHistory />} />
           <Route path="/profil/edit-Profil" element={<EditProfil />} />
+          <Route path="/user/leaderboard" element={<Leaderboard />} />
+
 
           <Route path="/chat" element={<><ChannelListBar update={update} /><Outlet /></>}>
             <Route path="" element={<Chat />} />

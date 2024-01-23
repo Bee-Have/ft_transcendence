@@ -404,25 +404,20 @@ export class UserService {
 	}
 
 	async fctLeaderboard() {
-		try {
-			const user = await this.prisma.user.findMany({
-				take : 5,
-				orderBy: {
-					score: 'desc'
-				},
-				select: {
-					username: true,
-					id: true,
-					score: true
-					
-				}
-			})
-			console.log("user object in leaderboardfct", user)
-			return user
-		} catch(e) {
-			console.log("error found in fctleaderboard :", e)
-			throw new InternalServerErrorException("Couldn't get best Elo player")
-	}
+		const user = await this.prisma.user.findMany({
+			take: 5,
+			orderBy: {
+				score: 'desc'
+			},
+			select: {
+				username: true,
+				id: true,
+				score: true
+
+			}
+		})
+		console.log("user object in leaderboardfct", user)
+		return user
 	}
 
 }

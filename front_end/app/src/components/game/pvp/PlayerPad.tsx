@@ -32,7 +32,11 @@ const PlayerPaddle = ({
       if (userId === player1Id) {
         document.addEventListener("mousemove", (e) => {
           setPlayerPosition(
-            clamp((e.clientY / window.innerHeight) * 100, 5, 95)
+            clamp(
+              (e.clientY / window.innerHeight) * 100,
+              (gameMode === "retro") ? 13 : 5,
+              95
+            )
           );
         });
 
@@ -64,7 +68,12 @@ const PlayerPaddle = ({
     }
   });
 
-  return <div className={gameMode === "retro" ? "RetroGamePad" : "GamePad"} id="GamePad"></div>;
+  return (
+    <div
+      className={gameMode === "retro" ? "RetroGamePad" : "GamePad"}
+      id="GamePad"
+    ></div>
+  );
 };
 
 export default PlayerPaddle;

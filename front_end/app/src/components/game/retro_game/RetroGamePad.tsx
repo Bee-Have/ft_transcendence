@@ -13,7 +13,7 @@ function RetroGamePad() {
   // setup routine on "PongStart()" creation to update mouse position
   useEffect(() => {
     const PadElement = document.getElementById("GamePad") as HTMLElement;
-    if (mousePos > 5 && mousePos < 98)
+    if (mousePos > 13 && mousePos < 95)
       PadElement.style.setProperty("--position", mousePos.toString());
   });
 
@@ -73,7 +73,7 @@ function RetroOpponentPad() {
 
     paddleElem?.style.setProperty(
       "--position",
-      clamp(paddlePosition.current, 5, 98).toString()
+      clamp(paddlePosition.current, 13, 95).toString()
     );
   }
 

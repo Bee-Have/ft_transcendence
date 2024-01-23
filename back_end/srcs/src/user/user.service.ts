@@ -414,6 +414,7 @@ export class UserService {
 					username: true,
 					id: true,
 					score: true
+					
 				}
 			})
 			console.log("user object in leaderboardfct", user)

@@ -159,7 +159,7 @@ export class UserController {
 	}
 
 	@Get('leaderboard')
-	async getLeaderboard() : Promise <any>{
+	async getLeaderboard() {
 		return await this.userService.fctLeaderboard()
 	}
 

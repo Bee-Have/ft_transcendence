@@ -38,7 +38,7 @@ function RedirectGame() {
             response.player2Id === parseInt(player1Id)
               ? response.player1Id
               : response.player2Id;
-          navigate(gameUrl);
+          navigate(gameUrl, { replace: true });
         })
         .catch((error: Error | AxiosError<unknown, any>) => {
           errorContext.newError?.(errorHandler(error));
@@ -48,7 +48,7 @@ function RedirectGame() {
       navigate("/");
     } else {
       gameUrl += "?player1=" + player1Id + "&player2=" + player2Id;
-      navigate(gameUrl);
+      navigate(gameUrl, { replace: true });
     }
   });
 

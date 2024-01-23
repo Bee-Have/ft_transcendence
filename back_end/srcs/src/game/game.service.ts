@@ -547,7 +547,11 @@ export class GameService {
       },
     });
 
-    if (runningGame === undefined) return null;
+    if (runningGame === undefined)
+      throw new HttpException(
+        "Unable to find a running game for this user",
+        404
+      );
 
     return runningGame;
   }

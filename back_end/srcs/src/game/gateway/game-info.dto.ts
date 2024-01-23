@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 import { UserStatus } from "src/user/gateway/dto/userStatus.dto";
 
 interface vec2 {
@@ -74,9 +75,17 @@ interface UserGameId {
   gameId: string;
 }
 
-interface JoinGameDto {
+class JoinGameDto {
+  @IsNotEmpty()
+  @IsNumber()
   player1Id: number;
+  
+  @IsNotEmpty()
+  @IsNumber()
   player2Id: number;
+
+  @IsNotEmpty()
+  @IsNumber()
   userId: number;
 }
 

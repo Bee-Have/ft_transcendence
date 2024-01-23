@@ -90,7 +90,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: JoinGameDto,
     @ConnectedSocket() client: Socket
   ) {
-    let [player1Id, player2Id, userId] = [data[0], data[1], data[2]];
+    let {player1Id, player2Id, userId} = data;
     if (player1Id < player2Id)
       player1Id = [player2Id, (player2Id = player1Id)][0];
 
@@ -108,6 +108,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
 
+    
     const invite = await this.gameService.getUsersSharedInvite(
       player1Id,
       player2Id

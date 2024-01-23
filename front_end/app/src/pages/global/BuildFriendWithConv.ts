@@ -3,7 +3,6 @@ import { BACKEND_URL } from "./env"
 import { Friend } from "./friend.dto"
 
 export const BuildFriendWithConv = (conv: ConversationProps) => {
-	console.log(conv)
 	const friend: Friend = {
 		id: conv.conversation.friendId,
 		username: conv.conversation.friendUsername,

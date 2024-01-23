@@ -40,19 +40,10 @@ export class UserGateway {
 		
 		if (Number.isNaN(userId))
 		{
-			console.log(client.handshake)
 			client.disconnect()
 			return
 		}
 		console.log(userId, 'connect')
-
-		// if (this.userService.connected_user_map.get(userId))
-		// {
-		// 	console.log('UserId: ' + userId, 'tried to connect to websocket while already being connected')
-		// 	client.disconnect()
-		// 	return
-		// }
-
 
 		const friendsIds = await this.userService.getUserFriendsId(userId)
 

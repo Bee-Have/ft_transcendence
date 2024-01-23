@@ -25,7 +25,6 @@ const Channel: React.FC = () => {
 		axios.get(BACKEND_URL + '/channel/members/' + channelId, { withCredentials: true })
 			.then((res): any => {
 				setChannelMembers(res.data)
-				console.log(res.data)
 			})
 			.catch((e: any) => {
 				;

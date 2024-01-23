@@ -68,7 +68,6 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 
 	useEffect(() => {
 		const listenMessage = (message: ChannelMessageProps) => {
-			console.log(message, currentChannelId)
 			if (currentChannelId === message.channelId) {
 				setMessages((prev) => [...prev, message]);
 			}

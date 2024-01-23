@@ -49,8 +49,6 @@ const AddFriendButton = ({ member, handleClose, setConvs }: any) => {
 
 	const errorContext = useErrorContext()
 
-  console.log(member)
-  
   const sendFriendRequest = () => {
     axios
       .get(BACKEND_URL + "/user/friend/create/" + member.conversation.friendId, {

@@ -40,7 +40,6 @@ export class ChannelController {
 		@GetCurrentUser('sub') userId: number,
 		@Body() body: JoinProtectedChannelDto,
 	) {
-		console.log(body)
 		await this.channelService.joinProtectedChannel(userId, body)
 	}
 

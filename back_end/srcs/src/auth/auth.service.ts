@@ -95,9 +95,7 @@ export class AuthService {
 				}
 			},
 			{}).catch((err: any) => {
-				console.log(hash);
-				//console.log(err.request);
-				//console.log(err.response)
+				console.log(err);
 			});
 
 		await this.prisma.user.updateMany({

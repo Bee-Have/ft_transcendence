@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React from 'react';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 import { BACKEND_URL } from 'src/pages/global/env';
 
 interface FAEnableProps {
@@ -8,10 +10,18 @@ interface FAEnableProps {
 }
 
 const FADisable: React.FC<FAEnableProps> = ({popUp, btn}) => {
+
+	const errorContext = useErrorContext();
+
 	const desactivate = () => {
 		axios.get(BACKEND_URL + '/user/tfa/disable', { withCredentials: true })
-		popUp(false); 
-		btn(false);
+		.then(((res) => {
+			popUp(false); 
+			btn(false);
+		}))
+		.catch((e) => {
+			errorContext.newError?.(errorHandler(e))
+		})
 	}
 
 	return (

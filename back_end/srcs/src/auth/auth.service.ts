@@ -305,7 +305,7 @@ export class AuthService {
 		return await hash(data)
 	}
 
-	@Interval(10000)
+	@Interval(60000)
 	handleInterval() {
 		const time = new Date()
 		this.state_map.forEach( (v, k, map) => {

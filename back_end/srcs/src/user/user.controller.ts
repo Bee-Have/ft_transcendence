@@ -10,6 +10,7 @@ import { Friend } from "./dto/friend.dto";
 import { updateUserDescriptionDto, updateNicknameDto } from "./dto/updateNickname.dto";
 import { UserService } from './user.service';
 import { UserStatusEventDto } from "./gateway/dto/userStatus.dto";
+import { Public } from "src/common/decorators";
 
 @ApiBearerAuth()
 @Controller('user')
@@ -127,6 +128,7 @@ export class UserController {
 		return await this.userService.getUsername(userId)
 	}
 
+	@Public()
 	@Get('image/:userId')
 	getImage(
 		@Res() res: Response,
@@ -159,8 +161,9 @@ export class UserController {
 		await this.userService.updateDescription(userId, description.description)
 	}
 
+	@Public()
 	@Get('leaderboard')
-	async getLeaderboard(@GetCurrentUser('sub') userId: number) {
+	async getLeaderboard() {
 		return await this.userService.fctLeaderboard()
 	}
 

@@ -31,6 +31,8 @@ import Card from "@mui/material/Card";
 import styles from "../solo/Timed.module.css";
 import { BACKEND_URL } from "src/pages/global/env";
 
+import { BACKEND_URL } from "src/pages/global/env";
+
 function TimerCard({ duration }: { duration: number }) {
   const [remainingTime, setRemainingTime] = React.useState(duration);
   const [isStarted, setIsStarted] = React.useState(false);

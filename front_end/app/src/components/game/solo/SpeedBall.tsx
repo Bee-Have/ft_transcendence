@@ -56,6 +56,12 @@ function BallRoutine({
       .getElementById("OpponentPad")
       ?.getBoundingClientRect() as DOMRect;
 
+    if (
+      ballRect === undefined ||
+      playerRect === undefined ||
+      opponentRect === undefined
+    )
+      return;
     let currentPaddle = Direction.current.x < 0 ? playerRect : opponentRect;
 
     const ballRadius = 1; //! This value is half of the ball's css diameter.

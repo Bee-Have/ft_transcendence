@@ -1,60 +1,65 @@
 import React, { useEffect } from "react";
 import PlayGameModeDialogButton from "../../components/game/GameModeDialog/PlayGameModeDialogButton";
 
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { ReadCookie } from '../../components/ReadCookie';
-import isTokenExpired from '../global/isTokenExpired';
 import { BACKEND_URL } from '../global/env';
+import isTokenExpired from '../global/isTokenExpired';
         
-import "src/css/welcome.css";
 import "src/css/header.css";
+import "src/css/welcome.css";
 
-// interface WelcomeProps
-// {
-//   isLogged: boolean;
-//   openLoginWindow: () => void;
-//   acceptConnection: () => void;
-//   updateBooleanStates: (statesToUpdate: Record<string, boolean>) => void;
-// }
+import TFAConnection from "src/components/2FAConnection";
+import { useGamePopup } from "src/context/GamePopupContext";
+import { resetUserId, userId } from "../global/userId";
 
-// const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConnection, updateBooleanStates}) => {
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = React.useState(false);
   const [guest, setGuest] = React.useState(false);
+  const [print2FA, set2FA] = React.useState(false);
   const aToken = ReadCookie("access_token");
   const rToken = ReadCookie("refresh_token");
+  const TFA = ReadCookie("TfaEnable");
 
-  // const login = () => {
-  // }
+
+  const gamePopup = useGamePopup();
 
   const authenticateUser = () => {
-    // this is temporary
-    // here call the 42 portal to authenticate the user
-
-    axios.get(BACKEND_URL + '/auth', )
+    axios.get(BACKEND_URL + '/auth')
     .then((res: any) => {
       window.location.replace(res.data)
     })
     .catch(e => console.log(e))
-	// login()
-    // setAuthenticated(true);
+    if (aToken && TFA){
+      alert("2FA require here");
+    }
   };
 
   useEffect(() => {
-    if (!aToken) {
-      console.log("login");
-      // login()
-      setAuthenticated(false);
-    } else if (isTokenExpired(aToken)) {
-      console.log("Atoken Expired");
-      if (!rToken || isTokenExpired(rToken)) {
-        console.log("No Rt or expired");
-        setAuthenticated(false);
-        // login()
-      } else {
-        console.log("posting");
+    if (!aToken)
+		{
+      if (TFA) {
+        set2FA(true);
+        console.log('2FA');
+      }
+      else {
+        console.log('login');
+			  setAuthenticated(false);
+      }
+		}
+		else if ( isTokenExpired(aToken) )
+		{
+			console.log('Atoken Expired')
+			if ( !rToken || isTokenExpired(rToken) )
+			{
+				console.log('No Rt or expired');
+				setAuthenticated(false);
+			}
+			else
+			{
+				console.log('posting')
         axios
           .post(
             BACKEND_URL + "/auth/refresh",
@@ -68,8 +73,9 @@ const Welcome: React.FC = () => {
       }
     } else {
       setAuthenticated(true);
+      resetUserId()
     }
-  }, []);
+  }, [aToken, rToken]);
 
   const guestUser = () => {
     setGuest(true);
@@ -77,10 +83,10 @@ const Welcome: React.FC = () => {
 
   return (
     <div className="log_window">
-      {/* add querry here to check if authentification token was filled */}
+		{print2FA && <TFAConnection popUp={set2FA} btn={setAuthenticated}/>}
       {authenticated && (
         <div className="header">
-          <button className="btn btn-light" onClick={() => navigate("/profil")}>
+          <button className="btn btn-light" onClick={() => navigate(`/profil/` + userId)}>
             profile
           </button>
         </div>
@@ -105,11 +111,10 @@ const Welcome: React.FC = () => {
               guest
             </button>
           )}
-          {/* {(authenticated || guest) && <button className="btn btn-light">play</button>} */}
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light" onClick={() => navigate("/user/leaderboard")}>leaderboard</button>
+          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible); navigate("/user/leaderboard")}} >leaderboard</button>
         </div>
       </div>
     </div>

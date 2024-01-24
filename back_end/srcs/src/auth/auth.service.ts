@@ -51,17 +51,15 @@ export class AuthService {
 	
 			response.cookie('TfaEnable', 'true', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 			response.cookie('TfaToken', tfaToken, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
-			response.cookie('PayLoad', 'true', { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
 		}
 		else
 		{
 			const tokens = await this.getTokens(userData.id, userData.email)
 		
 			response.cookie('TfaEnable', 'false')
-			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
-			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100})
-			response.cookie('payload_cookie', tokens.payload_cookie, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
-			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'lax', maxAge: 7*24*60*60*100 });
+			response.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+			response.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
+			response.cookie('userId', userData.id, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100 });
 		}
 		response.redirect(process.env.FRONT_END_URL)
 	}
@@ -85,7 +83,6 @@ export class AuthService {
 	}
 
 	async logout(userId: number) {
-//		console.log(userId);
 		await this.prisma.user.updateMany({
 			where: {
 			  id: userId,
@@ -293,7 +290,7 @@ export class AuthService {
 		return await hash(data)
 	}
 
-	@Interval(10000)
+	@Interval(60000)
 	handleInterval() {
 		const time = new Date()
 		this.state_map.forEach( (v, k, map) => {

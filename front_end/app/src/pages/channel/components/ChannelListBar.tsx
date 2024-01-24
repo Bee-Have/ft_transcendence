@@ -2,6 +2,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
 import { BACKEND_URL } from 'src/pages/global/env';
 import { userId } from 'src/pages/global/userId';
 import { socket } from 'src/pages/global/websocket';
@@ -79,6 +81,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 	const [channels, setChannels] = useState<ChannelProps[]>([])
 	const [selectedChannelId, setSelectedChannelId] = useState<number>(-1)
 
+	const errorContext = useErrorContext();
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -87,7 +90,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 			.then((res: any) => {
 				setChannels(res.data)
 			})
-			.catch((e) => console.log(e))
+			.catch(e => errorContext.newError?.(errorHandler(e)))
 	}, [update])
 
 	useEffect(() => {
@@ -102,11 +105,10 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
 
 	useEffect(() => {
 		const listenLeaveMember = (info: any) => {
-			console.log(info)
 			if (info.userId === userId || info.role === "OWNER")
-				setChannels((prev) => prev.filter((channel) => { 
-					console.log('id: ', channel.id)
-					return channel.id !== info.channelId}))
+				setChannels((prev) => prev.filter((channel) => {
+					return channel.id !== info.channelId
+				}))
 		}
 
 		socket?.on('leave-channel-member', listenLeaveMember)

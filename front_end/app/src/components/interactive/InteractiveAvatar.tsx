@@ -23,8 +23,8 @@ function InteractiveAvatar({
       <Avatar
         src={user.photo}
         alt={user.username}
-        onClick={() => navigate(`/profil/${user.id}`)}
-        //onClick={(event) => setAnchorEl(event.currentTarget)}
+        //onClick={() => navigate(`/profil/${user.id}`)}
+        onClick={(event) => {setAnchorEl(event.currentTarget);  navigate(`/profil/${user.id}`)}}
         className={styles.InteractiveAvatar}
       />
       <PopUp

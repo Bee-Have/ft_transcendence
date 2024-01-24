@@ -74,7 +74,7 @@ interface UserGameId {
   gameId: string;
 }
 
-interface JoinGameDto {
+class JoinGameDto {
   player1Id: number;
   player2Id: number;
   userId: number;

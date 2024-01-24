@@ -124,13 +124,13 @@ export class UserService {
 	// 	return trimuser
 	// }
 
-	async updateUsername(userId: number, newUsername: string) {
+	async updateNickName(userId: number, newNickName: string) {
 		await this.prisma.user.update({
 			where: {
 				id: userId
 			},
 			data: {
-				username: newUsername
+				nickname: newNickName
 			}
 		})
 	}
@@ -312,6 +312,37 @@ export class UserService {
 					id: friendReq.senderId,
 					userstatus: senderStatus ? senderStatus : UserStatus.offline,
 					username: await this.getUsername(friendReq.senderId)
+				})
+			}
+		}
+
+		return friendsRequest
+	}
+
+	async getUserSentInvite(userId:number) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				sentFriendRequests: true
+			}
+		})
+
+		if (!user)
+			throw new NotFoundException('User Not found')
+
+		const friendsRequest = new Array<FriendRequest>()
+
+		for (const friendReq of user.sentFriendRequests) {
+			const senderStatus = this.connected_user_map.get(friendReq.senderId)?.userstatus;
+
+			if (friendReq.status === 'pending') {
+				friendsRequest.push({
+					id: friendReq.receiverId,
+					userstatus: UserStatus.offline,
+					username: await this.getUsername(friendReq.receiverId)
 				})
 			}
 		}

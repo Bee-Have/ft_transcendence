@@ -1,4 +1,8 @@
+import axios from 'axios';
 import React from 'react';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { errorHandler } from 'src/context/errorHandler';
+import { BACKEND_URL } from 'src/pages/global/env';
 
 interface FAEnableProps {
 	popUp: (value : boolean) => void;
@@ -6,13 +10,27 @@ interface FAEnableProps {
 }
 
 const FADisable: React.FC<FAEnableProps> = ({popUp, btn}) => {
+
+	const errorContext = useErrorContext();
+
+	const desactivate = () => {
+		axios.get(BACKEND_URL + '/user/tfa/disable', { withCredentials: true })
+		.then(((res) => {
+			popUp(false); 
+			btn(false);
+		}))
+		.catch((e) => {
+			errorContext.newError?.(errorHandler(e))
+		})
+	}
+
 	return (
 		<div className='overlay'>
 			<div className='content'>
 				<div className='QRCode'>
 					<h1>Are you sure you want to remove 2FA?</h1>
 					<br/><br/><br/><br/>
-					<button onClick={() => { popUp(false); btn(false)}}>Yes</button>
+					<button onClick={() => desactivate()}>Yes</button>
 					<button onClick={() => { popUp(false); btn(true)}}>No </button>
 				</div>
 			</div>

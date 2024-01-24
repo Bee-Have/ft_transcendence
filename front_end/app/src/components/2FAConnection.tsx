@@ -6,6 +6,7 @@ import { BACKEND_URL } from 'src/pages/global/env';
 import { useErrorContext } from 'src/context/ErrorContext';
 import { errorHandler } from 'src/context/errorHandler';
 import { ReadCookie } from './ReadCookie';
+import { useNavigate } from 'react-router';
 
 interface FAEnableProps {
 	popUp: (value : boolean) => void;
@@ -18,6 +19,8 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 	const [timer, setTimer] = useState(-1)
 	const [secondsLeft, setSecondsLeft] = useState(0)
 	const errorContext = useErrorContext()
+	const navigate = useNavigate()
+
 
 	const click= () => {
 		const test = document.getElementById('test')
@@ -28,6 +31,7 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 			if (res.status === 200){
                 popUp(false);
 				btn(true);
+				navigate("/")
             }
 		})
 		.catch((e) =>  {
@@ -35,17 +39,17 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 			errorContext.newError?.(errorHandler(e));
 			if (e.response?.status === 429) {
 				setIsButtonDisabled(true)
-				setTimer(2000)
+				setTimer(30000)
 			}
 		})
 	}
 
 	useEffect(() => {
 		let id: any;
-		if (timer > 0)
+		if (timer > -1)
 			id = setInterval(() => {
 			setIsButtonDisabled(false)
-			setTimer(-1)		
+			setTimer(-2)		
 		}, timer)
 
 		return () => {
@@ -56,11 +60,11 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn}) => {
 
 	useEffect (() => {
 		let id: any
-		if (timer > 0){
+		if (timer > -1){
 			setSecondsLeft(timer / 1000)
 			id = setInterval(() => {
 				setSecondsLeft(r => r - 1)
-			}, 30000)
+			}, 1000)
 		}
 
 		return () => {

@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import PlayGameModeDialogButton from "../../components/game/GameModeDialog/PlayGameModeDialogButton";
 
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { ReadCookie } from '../../components/ReadCookie';
-import isTokenExpired from '../global/isTokenExpired';
 import { BACKEND_URL } from '../global/env';
+import isTokenExpired from '../global/isTokenExpired';
         
-import "src/css/welcome.css";
 import "src/css/header.css";
+import "src/css/welcome.css";
 
-import { useGamePopup } from "src/context/GamePopupContext";
 import TFAConnection from "src/components/2FAConnection";
+import { useGamePopup } from "src/context/GamePopupContext";
+import { resetUserId, userId } from "../global/userId";
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ const Welcome: React.FC = () => {
       }
     } else {
       setAuthenticated(true);
+      resetUserId()
     }
   }, [aToken, rToken]);
 
@@ -84,7 +86,7 @@ const Welcome: React.FC = () => {
 		{print2FA && <TFAConnection popUp={set2FA} btn={setAuthenticated}/>}
       {authenticated && (
         <div className="header">
-          <button className="btn btn-light" onClick={() => navigate(`/profil/${ReadCookie("userId")}`)}>
+          <button className="btn btn-light" onClick={() => navigate(`/profil/` + userId)}>
             profile
           </button>
         </div>

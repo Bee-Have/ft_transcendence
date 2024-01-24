@@ -7,7 +7,10 @@ import { useEffectOnce } from "src/components/useEffectOnce";
 import { useErrorContext } from "src/context/ErrorContext";
 import userService from "src/services/user";
 import { errorHandler } from "src/context/errorHandler";
-
+import { Friend } from "../global/friend.dto";
+import { Box } from "@mui/material";
+import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
+import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 // interface LeaderboardItemDTO {
 // 	username: string;
@@ -20,21 +23,59 @@ interface LeaderboardProps {
 	username: string;
 	id: number;
 	score: number;
-	//avatar ?
+}
+interface Lead {
+	place: string;
+	user : Friend;
+	//username: string;
+	//id: number;
+	score: number;
 }
 
-function UserCard({ user }: { user: LeaderboardProps }) {
-	const navigate = useNavigate()
+//  function UserCard({ user }: { user: LeaderboardProps }) {
+//  	const navigate = useNavigate()
 
+// 	return (
+// 		// <div>
+// 		// 	<button className="btn btn-light" onClick={() => navigate(`/profil/${user.id}`)}>
+// 		// 		{user.username}
+// 		// 	</button>
+// 		// 	{user.score}<br />
+// 		// </div>
+// 		<div>
+
+//         <p>
+// 			<button className="btn btn-light" onClick={() => navigate(`/profil/${user.id}`)}> 
+// 			{user.username}
+// 			</button>
+// 			 : {user.score} <br />
+// 			 </p>
+//         <hr />
+//       </div>
+// 	)
+//  }
+const UserCard: React.FC<Lead> = ({ place, user, score }) => {
+	//const navigate = useNavigate()
+	let rank = parseInt(place) +1 
 	return (
 		<div>
-			<button className="btn btn-light" onClick={() => navigate(`/profil/${user.id}`)}>
-				{user.username}
-			</button>
-			{user.score}<br />
+		<Box
+			sx = {{
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "center",
+				alignItems: "center",
+				gap: "10px"
+			}}
+		>
+			{rank} : 
+			<InteractiveAvatar user={user} usage={"stranger"} />
+        	<InteractiveUsername user={user} usage={"stranger"} />
+			score : {score}
+			</Box>
 		</div>
 	)
-}
+ }
 
 
 const Leaderboard: React.FC = () => {
@@ -62,11 +103,20 @@ const Leaderboard: React.FC = () => {
 				</button>
 			</div>
 			<div className="content">
-				<div className="printCard">
+				<div className="lead" style={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "flex-start",
+					gap: "10px"
+				}}>
 					{Object.keys(users).map((i) => (
 						<UserCard
 							key={i}
+							place={i}
 							user={users[i]}
+							score={users[i].score}
+
 						/>
 					))}
 				</div>

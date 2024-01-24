@@ -31,6 +31,7 @@ import RetroGame from "./pages/game/solo/Retro";
 import RedirectInvalidURL from "./pages/game/RedirectInvalidURL";
 
 import GamePopupList from "src/components/game/GamePopup/GamePopupList";
+import AxiosNavigation from './pages/global/AxiosNavigation';
 
 const App: React.FC = () => {
 
@@ -53,6 +54,7 @@ const App: React.FC = () => {
 		<>
 			<BrowserRouter>
 				<GamePopupList />
+				<AxiosNavigation/>
 				<Routes>
 					<Route path="/" element={<Welcome />} />
 					<Route path="/profil/:id" element={<Profil />} />
@@ -61,7 +63,7 @@ const App: React.FC = () => {
 					<Route path="/profil/blocked" element={<Blocked />} />
 					<Route path="/profil/match-history" element={<MatchHistory />} />
 					<Route path="/profil/edit-Profil" element={<EditProfil />} />
-          <Route path="/user/leaderboard" element={<Leaderboard />} />
+					<Route path="/user/leaderboard" element={<Leaderboard />} />
 
 					<Route path="/chat" element={<><ChannelListBar update={update} /><Outlet /></>}>
 						<Route path="" element={<Chat />} />

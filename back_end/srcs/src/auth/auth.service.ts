@@ -83,20 +83,6 @@ export class AuthService {
 	}
 
 	async logout(userId: number) {
-		const hash = await this.prisma.user.findUnique({
-			where: {id: userId},
-			select: {hashedRt: true}
-		});
-
-		axios.postForm("https://oauth2.googleapis.com/revoke?token=" + hash,
-			{
-				headers:{
-					'Content-type':'application/x-www-form-urlencoded'
-				}
-			},
-			{}).catch((err: any) => {
-				console.log(err);
-			});
 
 		await this.prisma.user.updateMany({
 			where: {

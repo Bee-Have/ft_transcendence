@@ -61,8 +61,8 @@ export class AuthController {
 	@ApiOkResponse({ description: 'The refresh token is no longer usable' })
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
-	logout(@GetCurrentUser('sub') userId: number) {
-		return this.authService.logout(userId);
+	async logout(@GetCurrentUser('sub') userId: number) {
+		return await this.authService.logout(userId);
 	}
 
 	@ApiOperation({ description: 'Provide the refresh token to get new access and refresh tokens'})

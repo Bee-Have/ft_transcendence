@@ -13,6 +13,7 @@ import "src/css/welcome.css";
 import TFAConnection from "src/components/2FAConnection";
 import { useGamePopup } from "src/context/GamePopupContext";
 import { resetUserId, userId } from "../global/userId";
+import { resetSocket } from "../global/websocket";
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ const Welcome: React.FC = () => {
     } else {
       setAuthenticated(true);
       resetUserId()
+      resetSocket()
     }
   }, [aToken, rToken]);
 

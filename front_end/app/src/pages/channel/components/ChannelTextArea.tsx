@@ -196,7 +196,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 		return false
 	}
 
-	return (
+	return ( 
 		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
@@ -206,6 +206,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 			</div>
 			<div className="prompt">
 				<TextField
+					name='wefouwe'
 					className='channel-text-field'
 					placeholder={'Send message ...'}
 					value={inputValue === '\n' ? setInputValue('') : inputValue}

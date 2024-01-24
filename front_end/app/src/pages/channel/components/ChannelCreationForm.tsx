@@ -63,15 +63,15 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 
 	return (
 		<div className='channel-form'>
-			<form onSubmit={handleSubmit} >
+			<form onSubmit={handleSubmit} id="formchannelcreation" >
 				<div>
 					<label>
 						Name:
-						<input type="text" value={name} onChange={handleNameChange} />
+						<input name='jbfw' type="text" value={name} onChange={handleNameChange} />
 					</label>
 					<label>
 						Mode:
-						<select value={mode} onChange={handleModeChange}>
+						<select name="mode" id="mode-select" value={mode} onChange={handleModeChange}>
 							<option value="PUBLIC">PUBLIC</option>
 							<option value="PROTECTED">PROTECTED</option>
 							<option value="PRIVATE">PRIVATE</option>
@@ -81,12 +81,13 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 						<div>
 							<label>
 								Password:
-								<input type="password" value={password} onChange={handlePasswordChange} />
+								<input name='jefsdbfw' type="password" value={password} onChange={handlePasswordChange} />
 							</label>
 
 							<label>
 								Confirm password:
 								<input
+									name='jbeffw' 
 									type="password"
 									value={passwordConfirm}
 									onChange={handlePasswordConfirmChange}

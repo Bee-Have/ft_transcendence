@@ -89,20 +89,20 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 			axios.postForm(BACKEND_URL + '/channel/upload/badge/' + channelId,
 				{ 'badge': file },
 				{ withCredentials: true })
-				.then(() => { setErrorBadgeMessage("badge upload success") })
+				.then(() => { setErrorBadgeMessage("badge upload success"); setFile(null) })
 				.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
 
 	return (
-		<div className='channel-form'>
-			<form onSubmit={handleSubmit} >
+		<div id="forminfochannelwrapp" className='channel-form'>
+			<form id="forminfochannel" onSubmit={handleSubmit} >
 				<label>
 					Name:
-					<input type="text" value={name} onChange={handleNameChange} />
+					<input type="text" name="channel-name-input" value={name} onChange={handleNameChange} />
 				</label>
 				<label>
 					Mode:
-					<select value={mode} onChange={handleModeChange}>
+					<select name='sfsgor' id="wefwef" value={mode} onChange={handleModeChange}>
 						<option value="PUBLIC">PUBLIC</option>
 						<option value="PROTECTED">PROTECTED</option>
 						<option value="PRIVATE">PRIVATE</option>
@@ -112,12 +112,13 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 					<div>
 						<label>
 							Password:
-							<input type="password" value={password} onChange={handlePasswordChange} />
+							<input name="channel-password-input" type="password" value={password} onChange={handlePasswordChange} />
 						</label>
 
 						<label>
 							Confirm password:
 							<input
+								name="channel-password-confirm-input"
 								type="password"
 								value={passwordConfirm}
 								onChange={handlePasswordConfirmChange}
@@ -131,12 +132,12 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				{errorMessage && <><span>{errorMessage}</span><br /></>}
 			</form>
 			<div className='channel-form-separator'></div>
-			<form onSubmit={submitFile}>
+			<form onSubmit={submitFile} id="formbadgechannel">
 				<label>
 					Badge:
-					<input type="file" onChange={handleFileChange} />
+					<input name="channel-badge-upload-input" type="file" onChange={handleFileChange} />
 				</label>
-				<button type="submit" className={file ? 'channel-form-button' : 'channel-form-button button-non-ready'}>
+				<button name='channel-badge-submit' type="submit" className={file ? 'channel-form-button' : 'channel-form-button button-non-ready'}>
 					Update Badge
 				</button><br></br>
 				{errorBadgeMessage && <><span>{errorBadgeMessage}</span><br /></>}

@@ -113,7 +113,7 @@ const EditProfil: React.FC = () =>
 			</div>
 			<Menu/>
 			<div className='profil'>
-				<form onSubmit={handle_submit}>
+				<form onSubmit={handle_submit} id="editprofilform">
 					<center>
 						<Avatar
 							className='avatar'
@@ -146,6 +146,7 @@ const EditProfil: React.FC = () =>
 
 						Two factor authentification :<br/>
 						<FormControlLabel
+							id='form2Auth'
 							control={<Switch/>} 
 							label={FAActive?"activer":"désactiver"}
 							checked={FAActive}

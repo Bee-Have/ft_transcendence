@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Menu from "../../components/menu";
+import Menu from "src/components/menu";
 
 import { Friend } from "../global/friend.dto";
 

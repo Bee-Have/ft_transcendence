@@ -159,6 +159,11 @@ export class UserController {
 		await this.userService.updateDescription(userId, description.description)
 	}
 
+	@Get('leaderboard')
+	async getLeaderboard(@GetCurrentUser('sub') userId: number) {
+		return await this.userService.fctLeaderboard()
+	}
+
 
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({schema: {

@@ -116,7 +116,7 @@ const Welcome: React.FC = () => {
           {(authenticated || guest) && <PlayGameModeDialogButton />}
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible)}} >leaderboard</button>
+          <button className="btn btn-light" onClick={() => {gamePopup.setIsVisible(!gamePopup.isVisible); navigate("/user/leaderboard")}} >leaderboard</button>
         </div>
       </div>
     </div>

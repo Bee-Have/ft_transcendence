@@ -10,6 +10,7 @@ import { Friend, FriendRequest } from "./dto/friend.dto";
 import { userProfileDto } from "./dto/userProfile.dto";
 import { UserInfo, UserStatus } from "./gateway/dto/userStatus.dto";
 import { userEditProfileDto } from "./dto/userEditProfile.dto";
+import { error } from "console";
 const qrcode = require('qrcode')
 var sizeOf = require('buffer-image-size');
 
@@ -433,4 +434,22 @@ export class UserService {
 		fs.writeFileSync(filename, file.buffer)
 	}
 
+	async fctLeaderboard() {
+		const user = await this.prisma.user.findMany({
+			take: 5,
+			orderBy: {
+				score: 'desc'
+			},
+			select: {
+				username: true,
+				id: true,
+				score: true
+
+			}
+		})
+		console.log("user object in leaderboardfct", user)
+		return user
+	}
+
 }
+

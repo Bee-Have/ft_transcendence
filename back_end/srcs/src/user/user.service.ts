@@ -447,7 +447,6 @@ export class UserService {
 
 			}
 		})
-		console.log("user object in leaderboardfct", user)
 		return user
 	}
 

@@ -60,7 +60,6 @@ const Leaderboard: React.FC = () => {
 				setUsers(res)
 			})
 			.catch((error: Error | AxiosError<unknown, any>) => {
-				console.log("error->", error)
 				errorContext.newError?.(errorHandler(error))
 			})
 

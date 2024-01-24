@@ -11,7 +11,7 @@ import { PrivateMessageService } from "src/privatemessage/privatemessage.service
 
 @Module({
 	imports: [PrismaModule, JwtModule, AuthModule], 
-controllers: [UserController],
+	controllers: [UserController],
 	providers: [UserService, JwtService, FriendshipService, UserGateway, PrivateMessageService],
 	exports: [UserService]
 })

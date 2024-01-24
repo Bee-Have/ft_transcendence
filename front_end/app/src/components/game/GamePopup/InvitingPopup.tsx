@@ -41,7 +41,7 @@ function InvitingPopup({ gamePopupProps }: { gamePopupProps: GamePopupProps }) {
         <div className={styles.InteractiveContent}>
           <InvitationStatusComponent gamePopupProps={gamePopupProps} />
           <CloseIcon className={styles.CancelButton} onClick={cancelInvite} />
-          <InteractiveAvatar user={gamePopupProps.receiver} />
+          <InteractiveAvatar user={gamePopupProps.receiver} usage={"invite"} />
         </div>
         <div className={styles.GameMode}>{gamePopupProps.gameMode}</div>
       </CardContent>

@@ -9,6 +9,7 @@ up_detach:
 	docker-compose up -d
 
 build:
+	mkdir -p back_end/srcs/uploads/avatar back_end/srcs/uploads/badge 
 	docker-compose build
 #	TODO : remove next line once finished working on project
 #	Also, just required to run once to have it on local machine due to docker's volume synchronization

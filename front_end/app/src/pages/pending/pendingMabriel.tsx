@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
+import { BACKEND_URL, PHOTO_FETCH_URL } from '../global/env';
 
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -8,14 +9,11 @@ import LockIcon from "@mui/icons-material/Lock";
 
 // import { UserStatus, Friend } from "../global/friend.dto";
 import { Friend } from "../global/friend.dto";
-import { userId } from "../global/userId";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 import Menu from "../../components/menu";
-
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
   user: Friend;
@@ -28,8 +26,9 @@ const Card = ({ user }: CardProps) => {
   const handleAcceptFrRq = () => {
     axios
       .post(
-        "http://localhost:3001/user/friend/accept/" + userId + "/" + user.id
-      )
+        BACKEND_URL + '/user/friend/accept/' + user.id, 
+		{}, 
+		{ withCredentials: true })
       .then(() => setMessage("accepted"))
       .catch((e) => console.log(e));
   };
@@ -37,17 +36,18 @@ const Card = ({ user }: CardProps) => {
   const handleReject = () => {
     axios
       .post(
-        "http://localhost:3001/user/friend/reject/" + userId + "/" + user.id
-      )
+		BACKEND_URL + "/user/friend/reject/" + user.id, 
+		{}, 
+		{ withCredentials: true })
       .then(() => setMessage("rejected"))
       .catch((e) => console.log(e));
   };
 
   const handleBlock = () => {
     axios
-      .post("http://localhost:3001/user/friend/block/" + userId, {
-        blockedUserId: user.id,
-      })
+      .post(BACKEND_URL + "/user/friend/block/" +  user.id, 
+	  	{}, 
+	  	{ withCredentials: true })
       .then(() => setHideBlock(true))
       .catch((e) => {
         console.log(e);
@@ -103,7 +103,7 @@ const Pending: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/user/pending/" + userId, {
+      .get(BACKEND_URL + "/user/pending/", {
         withCredentials: true,
       })
       .then((res) =>

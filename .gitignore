@@ -40,3 +40,4 @@ lerna-debug.log*
 node_modules
 migration_lock.toml
 back_end/srcs/uploads/avatar/*.jpeg
+back_end/srcs/uploads/badge/*.jpeg

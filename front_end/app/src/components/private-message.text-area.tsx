@@ -1,9 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Input from '@mui/material/Input';
+import { TextField } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
+// import { BuildFriendWithConv } from 'src/pages/global/BuildFriendWithConv';
+import { BACKEND_URL } from 'src/pages/global/env';
 import { socket } from '../pages/global/websocket';
-
 interface MessageProps {
 	id: number,
 	createdAt: number,
@@ -17,11 +19,17 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 
 	return (
 		<div className="message">
-			{ isSame ? "" :
-			<div className='private-message-header'>
-				<Avatar className="private-message-avatar" alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername} src={'http://localhost:3001/user/image/' + message.senderId} />
-				<div className='private-message-name'>{message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}</div>
-			</div>}
+			{isSame ? "" :
+				<div className='private-message-header'>
+					<Avatar
+						className="private-message-avatar"
+						alt={message.senderId === userId ? currentChat.conversation.username : currentChat.conversation.friendUsername}
+						src={BACKEND_URL + '/user/image/' + message.senderId} />
+					<div className='private-message-name'>
+						{currentChat.conversation.username}
+					</div>
+				</div>
+			}
 
 			<div className={"private-message-message-wrapper "}>
 				<div className='private-message-message'>{message.content}</div>
@@ -30,17 +38,18 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
 	)
 }
 
-const PrivateTextArea = ({ currentChat, userId }: any) => {
+const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationProps, userId: number }) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	// const naigate = useNavigate()
 
 	useEffect(() => {
-		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest", behavior: 'smooth' });
+		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
 	}, [messages]);
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/privatemessage/messages/' + userId + '/' + currentChat.conversation.id)
+		axios.get(BACKEND_URL + '/privatemessage/messages/' + currentChat.conversation.id, { withCredentials: true })
 			.then((res) => {
 				setMessages(res.data)
 			})
@@ -51,10 +60,9 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 
 	useEffect(() => {
 		const listenMessage = (message: MessageProps) => {
-			if (currentChat.conversation.id === message.conversationId)
-			{
+			if (currentChat.conversation.id === message.conversationId) {
 				setMessages((prev) => [...prev, message]);
-				axios.get('http://localhost:3001/privatemessage/conversations/isread/' + userId + '/' + currentChat.conversation.id)
+				axios.get(BACKEND_URL + '/privatemessage/conversations/isread/' + currentChat.conversation.id, { withCredentials: true })
 					.then((res) => console.log(res.data))
 					.catch((err) => console.log(err))
 			}
@@ -67,20 +75,13 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 		}
 	}, [currentChat])
 
-	// const listenMessage = (message: MessageProps) => {
-	// 	console.log(message)
-	// 	setMessages([...messages, message]);
-	// }
-
-	// socket?.on('new-message', listenMessage)
-
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
+		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {
 			const element = document.getElementById("test");
 			if (element) {
 				element.scrollTop = element.scrollHeight;
 			}
-			axios.post('http://localhost:3001/privatemessage/messages/' + userId, { conversationId: currentChat.conversation.id, content: inputValue })
+			axios.post(BACKEND_URL + '/privatemessage/messages', { conversationId: currentChat.conversation.id, content: inputValue }, { withCredentials: true })
 				.then((res): any => {
 					setMessages([...messages, res.data]);
 					setInputValue('');
@@ -101,19 +102,21 @@ const PrivateTextArea = ({ currentChat, userId }: any) => {
 	}
 
 	return (
-		<div className="textArea" id="test">
+		<div className="text-area-wow">
 			<div className='messages-container' >
 				{messages.map((message, index) => (
-					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)}/>
+					<Message key={index} message={message} currentChat={currentChat} userId={userId} isSame={isLastMessageSameSender(index)} />
 				))}
 				<div ref={messagesEndRef} />
 			</div>
 			<div className="prompt">
-				<Input
+				<TextField
+					className='channel-text-field'
 					placeholder={'Send message to ' + currentChat.conversation.friendUsername}
-					style={{ width: '100%' }}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
+					value={inputValue === '\n' ? setInputValue('') : inputValue}
+					multiline
+					rows={1}
+					onChange={(e) => { setInputValue(e.target.value) }}
 					onKeyDown={handleKeyDown}
 				/>
 			</div>

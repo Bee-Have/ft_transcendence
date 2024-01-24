@@ -1,3 +1,5 @@
+import { BACKEND_URL, PHOTO_FETCH_URL } from '../global/env';
+
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +11,6 @@ import { socket } from "../global/websocket";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
-
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
 
 interface CardProps {
   user: Friend;
@@ -36,7 +36,7 @@ const FriendList: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/user/test/friend/" + userId, {
+      .get(BACKEND_URL + '/user/friends', {
         withCredentials: true,
       })
       .then((res) =>

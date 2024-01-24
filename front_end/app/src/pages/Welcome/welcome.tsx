@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import PlayGameModeDialogButton from "../../components/game/GameModeDialog/PlayGameModeDialogButton";
 
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ReadCookie } from '../../components/ReadCookie';
+import isTokenExpired from '../global/isTokenExpired';
+import { BACKEND_URL } from '../global/env';
+        
 import "src/css/welcome.css";
 import "src/css/header.css";
-
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ReadCookie } from "../../components/ReadCookie";
-import isTokenExpired from "../global/isTokenExpired";
 
 // interface WelcomeProps
 // {
@@ -31,13 +32,13 @@ const Welcome: React.FC = () => {
   const authenticateUser = () => {
     // this is temporary
     // here call the 42 portal to authenticate the user
-    axios
-      .get("http://localhost:3001/auth")
-      .then((res: any) => {
-        window.location.replace(res.data);
-      })
-      .catch((e) => console.log(e));
-    // login()
+
+    axios.get(BACKEND_URL + '/auth', )
+    .then((res: any) => {
+      window.location.replace(res.data)
+    })
+    .catch(e => console.log(e))
+	// login()
     // setAuthenticated(true);
   };
 
@@ -56,7 +57,7 @@ const Welcome: React.FC = () => {
         console.log("posting");
         axios
           .post(
-            "http://localhost:3001/auth/refresh",
+            BACKEND_URL + "/auth/refresh",
             {},
             { withCredentials: true }
           )

@@ -110,7 +110,6 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 									onChange={handlePasswordConfirmChange}
 								/>
 								<span className={isMatch ? "green" : "red"}>Passwords Match</span>
-
 							</label>
 						</div>
 					)}

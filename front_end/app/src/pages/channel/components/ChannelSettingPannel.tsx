@@ -18,8 +18,14 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 	const [file, setFile] = useState(null)
 	const [errorBadgeMessage, setErrorBadgeMessage] = useState<null | string>(null)
 
+	const [isLength, setIsLength] = useState(false)
+	const [isMaj, setIsMaj] = useState(false)
+	const [isMin, setIsMin] = useState(false)
+	const [isNum, setIsNum] = useState(false)
+	const [isMatch, setIsMatch] = useState(false)
+
 	const errorContext = useErrorContext();
-	
+
 	useEffect(() => {
 		axios.get(BACKEND_URL + "/channel/info/" + channelId, { withCredentials: true })
 			.then((res) => {
@@ -27,7 +33,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				setMode(res.data.mode)
 				setBannedPeople(res.data.banned)
 			})
-			.catch((e) => {errorContext.newError?.(errorHandler(e))})
+			.catch((e) => { errorContext.newError?.(errorHandler(e)) })
 	}, [channelId, hideOverlay, errorContext])
 
 	useEffect(() => {
@@ -66,9 +72,22 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 		infoChange()
 	};
 	const handleSubmit = (e: any) => {
+
+
 		e.preventDefault()
 		if (!infoChanged)
 			return
+		if (mode === "PROTECTED" &&
+			(!isMaj || !isMin || !isNum || !isLength || !isMatch)) {
+			setErrorMessage('Password does not respect policy')
+			return
+		}
+
+		if (name.length < 3) {
+			setErrorMessage('Name length must be more than 2')
+			return
+		}
+
 		axios.post(BACKEND_URL + '/channel/update/' + channelId,
 			{ name, password, passwordConfirm, mode },
 			{ withCredentials: true })
@@ -78,6 +97,15 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 			})
 			.catch((e) => errorContext.newError?.(errorHandler(e)))
 	}
+
+	useEffect(() => {
+		setIsMatch(password === passwordConfirm)
+		setIsMaj(!(password.search(/[A-Z]/) === -1))
+		setIsMin(!(password.search(/[a-z]/) === -1))
+		setIsNum(!(password.search(/[0-9]/) === -1))
+		setIsLength(!(password.length < 8))
+	}, [password, passwordConfirm])
+
 
 	const handleFileChange = (e: any) => {
 		setErrorBadgeMessage(null)
@@ -91,6 +119,14 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				{ withCredentials: true })
 				.then(() => { setErrorBadgeMessage("badge upload success"); setFile(null) })
 				.catch((e) => errorContext.newError?.(errorHandler(e)))
+	}
+
+	const policy = () => {
+
+		if (mode != "PROTECTED")
+			return true
+		else 
+			return (isMaj && isMin && isNum && isLength && isMatch)
 	}
 
 	return (
@@ -113,6 +149,10 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 						<label>
 							Password:
 							<input name="channel-password-input" type="password" value={password} onChange={handlePasswordChange} />
+							<span className={isMaj ? "green" : "red"}>{"[ 1: A-Z ]"}</span>
+							<span className={isMin ? "green" : "red"}>{"[ 1: a-z ]"}</span>
+							<span className={isNum ? "green" : "red"}>{"[ 1: 0-9 ]"}</span>
+							<span className={isLength ? "green" : "red"}>  Length {">"} 7</span>
 						</label>
 
 						<label>
@@ -123,10 +163,12 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 								value={passwordConfirm}
 								onChange={handlePasswordConfirmChange}
 							/>
+							<span className={isMatch ? "green" : "red"}>Passwords Match</span>
+
 						</label>
 					</div>
 				)}
-				<button type="submit" className={infoChanged ? 'channel-form-button' : 'channel-form-button button-non-ready'}>
+				<button type="submit" className={infoChanged && policy() ? 'channel-form-button' : 'channel-form-button button-non-ready'}>
 					Update
 				</button><br></br>
 				{errorMessage && <><span>{errorMessage}</span><br /></>}
@@ -146,7 +188,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 			<div className='channel-form-separator'></div>
 			{
 				!!bannedPeople.length &&
-				<List sx={{overflowY: 'auto', height: '180px'}}>
+				<List sx={{ overflowY: 'auto', height: '180px' }}>
 					{bannedPeople.map((banned, index) => (
 						<Banned banned={banned} index={index} />
 					))}

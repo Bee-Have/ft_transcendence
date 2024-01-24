@@ -52,6 +52,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
           <Route path="/profil/friend-list" element={<FriendList />} />
           <Route path="/profil/pending-friend-request" element={<Pending />} />
           <Route path="/profil/blocked" element={<Blocked />} />

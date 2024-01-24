@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -12,9 +12,14 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 	const [mode, setMode] = useState('PUBLIC');
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
-	// const [file, setFile] = useState(null)
 	const [errorMessage, setErrorMessage] = useState<null | string>(null)
 	const errorContext = useErrorContext();
+
+	const [isLength, setIsLength] = useState(false)
+	const [isMaj, setIsMaj] = useState(false)
+	const [isMin, setIsMin] = useState(false)
+	const [isNum, setIsNum] = useState(false)
+	const [isMatch, setIsMatch] = useState(false)
 
 	const navigate = useNavigate()
 
@@ -35,30 +40,38 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 		setPasswordConfirm(e.target.value);
 	};
 
-	// const handleFileChange = (e: any) => {
-	// 	setFile(e.target.files[0])
-	// }
+	useEffect(() => {
+		setIsMatch(password === passwordConfirm)
+		setIsMaj(!(password.search(/[A-Z]/) === -1))
+		setIsMin(!(password.search(/[a-z]/) === -1))
+		setIsNum(!(password.search(/[0-9]/) === -1))
+		setIsLength(!(password.length < 8))
+	}, [password, passwordConfirm])
 
 	const handleSubmit = (e: any) => {
 		e.preventDefault()
 		setErrorMessage(null)
+		if (mode === "PROTECTED" &&
+			(!isMaj || !isMin || !isNum || !isLength || !isMatch)) {
+			setErrorMessage('Password does not respect policy')
+			return
+		}
 
+		if (name.length < 3) {
+			setErrorMessage('Name length must be more than 2')
+			return
+		}
 		axios.post(BACKEND_URL + '/channel',
 			{ name, password, passwordConfirm, mode },
 			{ withCredentials: true })
 			.then((res: any) => {
 				onUpdate();
 				navigate("/chat/channel/" + res.data.channelId)
-				// if (file)
-				// 	axios.postForm(BACKEND_URL + '/channel/upload/badge/' + res.data.channelId,
-				// 		{ 'badge': file },
-				// 		{ withCredentials: true })
-				// 		.then(() => setbadgeUpload('badge upload success'))
-				// 		.catch((e) => setErrorMessage(e.response.data.message))
 			})
 			.catch((e) => {
-				setErrorMessage(e.response.data.message); 
-				errorContext.newError?.(errorHandler(e))})
+				setErrorMessage(e.response.data.message);
+				errorContext.newError?.(errorHandler(e))
+			})
 	}
 
 	return (
@@ -82,16 +95,22 @@ const ChannelCreationForm = ({ onUpdate }: any) => {
 							<label>
 								Password:
 								<input name='jefsdbfw' type="password" value={password} onChange={handlePasswordChange} />
+								<span className={isMaj ? "green" : "red"}>{"[ 1: A-Z ]"}</span>
+								<span className={isMin ? "green" : "red"}>{"[ 1: a-z ]"}</span>
+								<span className={isNum ? "green" : "red"}>{"[ 1: 0-9 ]"}</span>
+								<span className={isLength ? "green" : "red"}>  Length {">"} 7</span>
 							</label>
 
 							<label>
 								Confirm password:
 								<input
-									name='jbeffw' 
+									name='jbeffw'
 									type="password"
 									value={passwordConfirm}
 									onChange={handlePasswordConfirmChange}
 								/>
+								<span className={isMatch ? "green" : "red"}>Passwords Match</span>
+
 							</label>
 						</div>
 					)}

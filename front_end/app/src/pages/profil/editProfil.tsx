@@ -16,12 +16,13 @@ import Menu from 'src/components/menu';
 import 'src/css/profil.css';
 import { ReadCookie } from 'src/components/ReadCookie';
 import { BACKEND_URL } from '../global/env';
+import { userId } from '../global/userId';
 
 const EditProfil: React.FC = () => 
 {
 	const navigate = useNavigate();
 	const [realName, setRealName] = useState("Default");
-	const [nickName, setNickName] = useState("Default");
+	const [userName, setUserName] = useState("Default");
 	const [description, setDescription] = useState("")
 	const [printPopUp, setPopUp] = useState<boolean>(false);
 	const [FAActive, setFAActive] = useState<boolean>(ReadCookie("TfaEnable") === "true");
@@ -57,7 +58,7 @@ const EditProfil: React.FC = () =>
 			.then( (res : any) => {})
 			.catch( (e) => {console.log(e.request); console.log(e.response)} );
 		
-		axios.post(BACKEND_URL + "/user/update/nickname", { "nickname": nickName }, { withCredentials: true })
+		axios.post(BACKEND_URL + "/user/update/username", { username: userName }, { withCredentials: true })
 			.then( (res : any) => {})
 			.catch( (e) => {console.log(e)} );
 
@@ -79,11 +80,8 @@ const EditProfil: React.FC = () =>
 		axios.get(BACKEND_URL + "/user/profile/edit", {withCredentials: true})
 		.then(function (response)
 		{
-			setRealName(response.data.username);
-			if (response.data.nickname == null)
-				setNickName(response.data.username);
-			else
-				setNickName(response.data.nickname);
+			setRealName(response.data.realname);
+			setUserName(response.data.username);
 			
 			setFAActive(response.data.isTwoFAEnable);
 			if (response.data.description === null)
@@ -91,7 +89,7 @@ const EditProfil: React.FC = () =>
 			else
 				setDescription(response.data.description);
 			
-			setProfilePic(BACKEND_URL + `/user/image/${ReadCookie("userId")}`);
+			setProfilePic(BACKEND_URL + `/user/image/${userId}`);
 		}).catch(err => {
 			console.log(err);
 		})
@@ -126,8 +124,8 @@ const EditProfil: React.FC = () =>
 					<div className='information'>
 						<InputLabel htmlFor="component-simple">Nickname</InputLabel>
 						<Input
-							value={nickName}
-							onChange={function (e: any) {setNickName(e.target.value)}}
+							value={userName}
+							onChange={function (e: any) {setUserName(e.target.value)}}
 							/>
 						<br/><br/>
 

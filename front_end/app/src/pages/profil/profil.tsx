@@ -12,7 +12,7 @@ import { BACKEND_URL } from '../global/env';
 const Profil: React.FC = () => {
 
 	const [realName, setRealName] = useState("Default");
-	const [nickName, setNickName] = useState("Default");
+	const [userName, setUserName] = useState("Default");
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
 	const [description, setDescription] = useState("Default");
 	const [wins, setWins] = useState(0);
@@ -26,11 +26,8 @@ const Profil: React.FC = () => {
 	axios.get(`${BACKEND_URL}/user/profile/${id}`, {withCredentials: true})
 	.then( function (response)
 	{
-		setRealName(response.data.username);
-		if (response.data.nickname == null)
-			setNickName(response.data.username);
-		else
-			setNickName(response.data.nickname);
+		setRealName(response.data.realname);
+		setUserName(response.data.username);
 		setProfilePic(BACKEND_URL + `/user/image/${id}`);
 		setWins(response.data.win);
 		setLoses(response.data.loose);
@@ -78,7 +75,7 @@ const Profil: React.FC = () => {
 					<div className='fs-2'>
 						Nickname : <br />
 						<div style={{paddingLeft:"5%"}}>
-							{nickName} ({realName})<br /><br />
+							{userName} ({realName})<br /><br />
 						</div>
 						<hr />
 						<h3>Games statistics:</h3>

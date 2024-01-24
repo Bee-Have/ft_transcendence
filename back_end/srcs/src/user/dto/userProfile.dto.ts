@@ -5,7 +5,7 @@ export class userProfileDto {
     username: string
 
     @Expose()
-    nickname: string
+    realname: string
 
     @Expose()
     score: number

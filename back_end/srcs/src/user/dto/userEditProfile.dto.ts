@@ -2,10 +2,10 @@ import { Expose } from "class-transformer"
 
 export class userEditProfileDto {
     @Expose()
-    username: string
+    realname: string
 
     @Expose()
-    nickname: string
+    username: string
 
 	@Expose()
 	isTwoFAEnable: boolean

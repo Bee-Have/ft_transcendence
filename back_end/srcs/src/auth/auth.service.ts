@@ -280,7 +280,8 @@ export class AuthService {
 			data: {
 				id: userData.id,
 				email: userData.email,
-				username: userData.login
+				username: userData.login,
+				realname: userData.login
 			},
 		})
 	}

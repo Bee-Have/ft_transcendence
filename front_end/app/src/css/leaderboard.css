@@ -1,0 +1,52 @@
+
+.user-box-wrapper {
+    margin: 100px auto;
+    width: 80%;
+    display: "flex";
+    flex-direction: "column";
+    gap: "10px";
+}
+
+.Leaderboard{
+    width: 100%;
+    height: 100vh;
+}
+
+
+.user-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    width: 80%;
+    background-color: lightgray;
+    padding: 10px;
+    margin: 0 auto 20px auto;
+    border: solid 2px black;
+    min-width: fit-content;
+}
+
+.user-info-leaderboard {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+
+}
+
+.user-box-score {
+    align-self: center;
+    font-weight: 800;
+    font-size: large;
+    height: 100%;
+}
+
+
+.user-box-rank {
+    margin-left: 20px;
+    width: 80px;
+    height: 100%;
+    font-weight: 1000;
+    font-size: xx-large;
+    align-self: center;
+}

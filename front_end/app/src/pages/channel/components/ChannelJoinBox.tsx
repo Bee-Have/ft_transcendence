@@ -34,7 +34,9 @@ const ChannelJoinBox = ({ channel, onUpdate }: { channel: ChannelProps, onUpdate
 	const joinPublic = () => {
 		axios.post(BACKEND_URL + '/channel/join/public', { channelId: channel.id }, { withCredentials: true })
 			.then(() => { onUpdate(); navigate("/chat/channel/" + channel.id) })
-			.catch((e) => errorContext.newError?.(errorHandler(e)))
+			.catch((e) => {
+				errorContext.newError?.(errorHandler(e))
+			})
 	}
 
 	const joinChannel = () => {
@@ -62,14 +64,16 @@ const ChannelJoinBox = ({ channel, onUpdate }: { channel: ChannelProps, onUpdate
 			{ channelId: channel.id, password },
 			{ withCredentials: true })
 			.then(() => { onUpdate(); navigate("/chat/channel/" + channel.id) })
-			.catch((e) => setPasswordMessage(e.response.data.message))
+			.catch((e) => {
+				setPasswordMessage(e.response.data.message)
+			})
 	}
 
 	return (
 		<div className="channel-box" onClick={joinChannel}>
 			{showPasswordoverlay && <div className='channel-password-overlay'>
 				<div className='channel-password-wrap' >
-					{passwordMessage ? <div className='password-submit-message'>{passwordMessage}</div> : null}
+					{passwordMessage ? <div className='password-submit-message red'>{passwordMessage}</div> : null}
 					<Input
 						autoFocus={true}
 						className="channel-password-input"

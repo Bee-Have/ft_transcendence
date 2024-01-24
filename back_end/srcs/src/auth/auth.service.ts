@@ -83,11 +83,6 @@ export class AuthService {
 	}
 
 	async logout(userId: number) {
-		const hash = await this.prisma.user.findUnique({
-			where: {id: userId},
-			select: {hashedRt: true}
-		});
-
 		await this.prisma.user.updateMany({
 			where: {
 			  id: userId,

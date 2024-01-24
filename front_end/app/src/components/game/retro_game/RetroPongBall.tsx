@@ -48,13 +48,13 @@ function BallRoutine({
 
   const handleCollision = () => {
     const ballRect = document
-      .getElementById("RetroPongBall")
+      .getElementById("PongBall")
       ?.getBoundingClientRect() as DOMRect;
     const playerRect = document
-      .getElementById("RetroGamePad")
+      .getElementById("GamePad")
       ?.getBoundingClientRect() as DOMRect;
     const opponentRect = document
-      .getElementById("RetroOpponentPad")
+      .getElementById("OpponentPad")
       ?.getBoundingClientRect() as DOMRect;
 
     if (ballRect === null || playerRect === null || opponentRect === null)
@@ -138,12 +138,12 @@ function BallRoutine({
   }, []);
 
   useEffect(() => {
-    const ballElem = document.getElementById("RetroPongBall") as HTMLElement;
+    const ballElem = document.getElementById("PongBall") as HTMLElement;
     ballElem.style.setProperty("--positionX", Position.x.toString());
     ballElem.style.setProperty("--positionY", Position.y.toString());
   });
 
-  return <div className="RetroPongBall" id="RetroPongBall" />;
+  return <div className="RetroPongBall" id="PongBall" />;
 }
 
 export default BallRoutine;

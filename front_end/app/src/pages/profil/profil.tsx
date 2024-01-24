@@ -9,7 +9,6 @@ import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
 import { BACKEND_URL } from '../global/env';
 
 
-
 const Profil: React.FC = () => {
 
 	const [realName, setRealName] = useState("Default");
@@ -77,13 +76,25 @@ const Profil: React.FC = () => {
 				</center>
 				<div className='information'>
 					<div className='fs-2'>
-						Nickname : {nickName}<br /><br />
-						Real Name : {realName}<br /><br />
-						Win : {wins} {'\u00A0'}{'\u00A0'} - {'\u00A0'}{'\u00A0'} Lose : {loses} <br />
-						Current ELO : {score} <br /><br />
-
-						About me : <br />
-						{ description }
+						Nickname : <br />
+						<div style={{paddingLeft:"5%"}}>
+							{nickName} ({realName})<br /><br />
+						</div>
+						<hr />
+						<h3>Games statistics:</h3>
+						<div style={{paddingLeft:"5%"}}>
+							Win : {wins} {'\u00A0'}{'\u00A0'} - {'\u00A0'}{'\u00A0'} Lose : {loses} <br /><br />
+							Current ELO : {score} <br /><br />
+						</div>
+						{ description ? (
+							<>
+								<hr />
+								About me : <br />
+								<div style={{paddingLeft:"5%"}}>
+									{ description }
+								</div>
+							</>) : ("")
+						}
 					</div>
 				</div>
 			</div>

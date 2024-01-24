@@ -131,7 +131,7 @@ export class AuthService {
 			code: code,
 			redirect_uri: authCallbackUri,
 			state: state,
-		})
+		}) 
 		.catch((err) => {
 			const res = {
 				message: '42 Auth API returned an error for token request', 

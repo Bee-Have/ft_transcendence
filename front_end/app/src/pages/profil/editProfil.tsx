@@ -87,7 +87,7 @@ const EditProfil: React.FC = () =>
 			
 			setFAActive(response.data.isTwoFAEnable);
 			if (response.data.description === null)
-				setDescription("")
+				setDescription("");
 			else
 				setDescription(response.data.description);
 			

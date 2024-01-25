@@ -17,6 +17,8 @@ import 'src/css/profil.css';
 import { ReadCookie } from 'src/components/ReadCookie';
 import { BACKEND_URL } from '../global/env';
 import { userId } from '../global/userId';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 
 const EditProfil: React.FC = () => 
 {
@@ -28,6 +30,7 @@ const EditProfil: React.FC = () =>
 	const [FAActive, setFAActive] = useState<boolean>(ReadCookie("TfaEnable") === "true");
 	const [profilePic, setProfilePic] = useState(require("src/asset/default.jpg"));
 	const [newProfilePic, setNewProfilePic] = useState<string | null>(null);
+	const errorContext = useErrorContext()
 
 	const SelectorImage = (event: any) => 
 	{
@@ -56,11 +59,11 @@ const EditProfil: React.FC = () =>
 		
 		axios.post(BACKEND_URL + "/user/update/description", { description }, { withCredentials: true })
 			.then( (res : any) => {})
-			.catch( (e) => {console.log(e.request); console.log(e.response)} );
+			.catch( (e) => {errorContext.newError?.(errorHandler(e));} );
 		
 		axios.post(BACKEND_URL + "/user/update/username", { username: userName }, { withCredentials: true })
 			.then( (res : any) => {})
-			.catch( (e) => {console.log(e)} );
+			.catch( (e) => {errorContext.newError?.(errorHandler(e))} );
 
 		if (newProfilePic)
 		{
@@ -70,7 +73,7 @@ const EditProfil: React.FC = () =>
 			  	},
 		   		"avatar": newProfilePic }, { withCredentials: true })
 			.then( (res: any) => {})
-			.catch( (e) => console.log(e.request))
+			.catch( (e) => errorContext.newError?.(errorHandler(e)))
 		}
 
 		navigate("/profil/edit-Profil");
@@ -91,7 +94,7 @@ const EditProfil: React.FC = () =>
 			
 			setProfilePic(BACKEND_URL + `/user/image/${userId}`);
 		}).catch(err => {
-			console.log(err);
+			errorContext.newError?.(errorHandler(err));
 		})
 	}, [])
 

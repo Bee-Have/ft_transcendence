@@ -7,6 +7,8 @@ import 'src/css/profil.css';
 import axios from 'axios';
 import { ReadCookie, deleteCookie } from 'src/components/ReadCookie';
 import { BACKEND_URL } from '../global/env';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
 
 
 const Profil: React.FC = () => {
@@ -19,6 +21,7 @@ const Profil: React.FC = () => {
 	const [loses, setLoses] = useState(0);
 	const [score, setScore] = useState(0);
 	const navigate = useNavigate();
+	const errorContext = useErrorContext()
 
 	const id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
 
@@ -35,7 +38,7 @@ const Profil: React.FC = () => {
 		setDescription(response.data.description);
 	})
 	.catch(err => {
-		console.log(err);
+		errorContext.newError?.(errorHandler(err))
 		//throw err;
 	});
 

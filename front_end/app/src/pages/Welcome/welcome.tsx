@@ -41,13 +41,13 @@ const Welcome: React.FC = () => {
   useEffect(() => {
     if (
       (session.aToken === null || session.rToken === null) &&
-      TFA === "false"
+      TFA !== "true"
     ) {
       session.updateTokens?.();
       return;
     }
     if (!session.aToken) {
-      if (TFA !== "false") {
+      if (TFA === "true") {
         set2FA(true);
         console.log("2FA: ", TFA);
       } else {

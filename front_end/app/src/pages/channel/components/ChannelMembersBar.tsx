@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { BACKEND_URL } from "src/pages/global/env"
 import { userId } from "src/pages/global/userId"
-import { socket } from "src/pages/global/websocket"
 import { MemberProps } from "../types/MemberProps.types"
 import ChannelSettingPanel from "./ChannelSettingPannel"
 import InteractiveAvatarChannel from "./InteractiveAvatarChannel"
 import InteractiveUsernameChannel from "./InteractiveUsernameChannel"
 import { errorHandler } from "src/context/errorHandler"
 import { useErrorContext } from "src/context/ErrorContext"
+import { useSessionContext } from "src/context/SessionContext"
 
 const MemberList = ({ headerName, members, clicker }: { headerName: string, members: MemberProps[], clicker: MemberProps }) => {
 
@@ -68,6 +68,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 	const [showButton, setShowButton] = useState(false)
 	const navigate = useNavigate()
 	const errorContext = useErrorContext();
+	const session = useSessionContext()
 
 	useEffect(() => {
 		let own = []
@@ -121,14 +122,14 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 			}
 		}
 
-		socket?.on('new-channel-member', listenNewMember)
-		socket?.on('leave-channel-member', listenLeaveMember)
-		socket?.on('channel-role', listenRole)
+		session.socket?.on('new-channel-member', listenNewMember)
+		session.socket?.on('leave-channel-member', listenLeaveMember)
+		session.socket?.on('channel-role', listenRole)
 
 		return () => {
-			socket?.off('new-channel-member', listenNewMember)
-			socket?.off('leave-channel-member', listenLeaveMember)
-			socket?.off('channel-role', listenRole)
+			session.socket?.off('new-channel-member', listenNewMember)
+			session.socket?.off('leave-channel-member', listenLeaveMember)
+			session.socket?.off('channel-role', listenRole)
 		}
 	}, [channelId, navigate])
 

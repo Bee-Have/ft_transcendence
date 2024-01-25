@@ -12,18 +12,22 @@ import { useGamePopup } from "src/context/GamePopupContext";
 // import { UserStatus } from "src/pages/global/friend.dto";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
-import { socket } from "src/pages/global/websocket";
+// import { socket } from "src/pages/global/websocket";
+import { useSessionContext } from "src/context/SessionContext";
 
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 import { AxiosError } from "axios";
 
+import { useEffectOnce } from "src/components/useEffectOnce";
+
 function GamePopupList() {
   const gamePopup = useGamePopup();
   const [popupList, setPopupList] = React.useState<GamePopupProps[]>([]);
   const errorContext = useErrorContext();
+  const session = useSessionContext();
 
-  React.useEffect(() => {
+  useEffectOnce(() => {
     const fetchInvites = () => {
       gameService
         .getUserInvites(userId)
@@ -35,14 +39,13 @@ function GamePopupList() {
         });
     };
 
-    socket?.on("new-invite", fetchInvites);
+    session.socket?.on("new-invite", fetchInvites);
 
     if (userId !== 0) fetchInvites();
     return () => {
-      socket?.off("new-invite", fetchInvites);
+      session.socket?.off("new-invite", fetchInvites);
     };
-	// eslint-disable-next-line
-  }, []);
+  });
 
   if (gamePopup.isVisible === false || popupList.length === 0) return null;
 

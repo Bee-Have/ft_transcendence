@@ -5,8 +5,7 @@ import { useNavigate } from "react-router";
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 import { BACKEND_URL } from "src/pages/global/env";
-import { socket } from "src/pages/global/websocket";
-
+import { useSessionContext } from "src/context/SessionContext"
 
 const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 
@@ -15,7 +14,8 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 	const [imageKey, setImageKey] = useState(0);
 
 	const errorContext = useErrorContext();
-
+	const session = useSessionContext()
+	
 	useEffect(() => {
 		axios.get(BACKEND_URL + "/channel/info/" + channelId, { withCredentials: true })
 			.then((res) => {
@@ -35,12 +35,12 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 				setName(info.channelName)
 		}
 
-		socket?.on('new-channel-badge', listenNewBadge)
-		socket?.on('new-channel-info', listenNewInfo)
+		session.socket?.on('new-channel-badge', listenNewBadge)
+		session.socket?.on('new-channel-info', listenNewInfo)
 
 		return () => {
-			socket?.off('new-channel-badge', listenNewBadge)
-			socket?.off('new-channel-info', listenNewInfo)
+			session.socket?.off('new-channel-badge', listenNewBadge)
+			session.socket?.off('new-channel-info', listenNewInfo)
 		}
 
 	}, [channelId])

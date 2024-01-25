@@ -9,7 +9,7 @@ import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types'
 import { BACKEND_URL } from 'src/pages/global/env';
 import TextInputWithEnterCallback from '../pages/global/TextInput';
 import { userId } from '../pages/global/userId';
-import { socket } from '../pages/global/websocket';
+import { useSessionContext } from "src/context/SessionContext";
 import PrivateTextArea from './private-message.text-area';
 
 import SelectedConversationInterations from "src/pages/chat/components/SelectedConversationInteractions";
@@ -94,6 +94,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
   const [createConvBool, setCreateConvBool] = useState(false);
   const navigate = useNavigate();
 	const errorContext = useErrorContext()
+	const session = useSessionContext();
 
   useEffect(() => {
     axios
@@ -124,10 +125,10 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
       setConvs((prev) => [...prev, conv]);
     };
 
-    socket?.on("new-conv", listenNewConv);
+    session.socket?.on("new-conv", listenNewConv);
 
     return () => {
-      socket?.off("new-conv", listenNewConv);
+      session.socket?.off("new-conv", listenNewConv);
     };
   }, []);
 
@@ -206,12 +207,12 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
       setConvs(updatedConvs);
     };
 
-    socket?.on("new-message", listenNewMessage);
-    socket?.on("user-status", listenNewStatus);
+    session.socket?.on("new-message", listenNewMessage);
+    session.socket?.on("user-status", listenNewStatus);
 
     return () => {
-      socket?.off("new-message", listenNewMessage);
-      socket?.off("user-status", listenNewStatus);
+      session.socket?.off("new-message", listenNewMessage);
+      session.socket?.off("user-status", listenNewStatus);
     };
   }, [currentChat, convs]);
 

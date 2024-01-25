@@ -57,8 +57,12 @@ export class UserController {
   getUserStatus(@GetCurrentUser("sub") userId: number) {
     const user = this.userService.connected_user_map.get(userId);
 
-    if (user) return user.userstatus;
-    return UserStatus.offline;
+    console.log("try to get user status")
+    if (user === undefined) return;
+    console.log("connected user: ", user.id);
+
+    const userStatus: UserStatus = user.userstatus;
+    user.socket.emit(process.env.CLIENT_USER_STATUS, userStatus);
   }
 
   @Get("profile/edit")

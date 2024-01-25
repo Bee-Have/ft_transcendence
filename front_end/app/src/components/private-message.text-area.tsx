@@ -4,9 +4,9 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
 import { BACKEND_URL } from 'src/pages/global/env';
-import { socket } from '../pages/global/websocket';
 import { errorHandler } from 'src/context/errorHandler';
 import { useErrorContext } from 'src/context/ErrorContext';
+import { useSessionContext } from 'src/context/SessionContext';
 interface MessageProps {
 	id: number,
 	createdAt: number,
@@ -44,7 +44,7 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 	const [messages, setMessages] = useState<MessageProps[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const errorContext = useErrorContext();
-	// const naigate = useNavigate()
+	const session = useSessionContext()
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
@@ -70,10 +70,10 @@ const PrivateTextArea = ({ currentChat, userId }: { currentChat: ConversationPro
 			}
 		}
 
-		socket?.on('new-message', listenMessage)
+		session.socket?.on('new-message', listenMessage)
 
 		return () => {
-			socket?.off('new-message', listenMessage)
+			session.socket?.off('new-message', listenMessage)
 		}
 	}, [currentChat, errorContext])
 

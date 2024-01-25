@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import Menu from "../../components/menu";
 import { Friend, UserStatusEventDto } from "../global/friend.dto";
 import { userId } from "../global/userId";
-import { socket } from "../global/websocket";
+
+import { useSessionContext } from "src/context/SessionContext";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
@@ -33,6 +34,8 @@ function Card({ user }: CardProps) {
 const FriendList: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const navigate = useNavigate();
+
+  const session = useSessionContext();
 
   useEffect(() => {
     axios
@@ -62,10 +65,10 @@ const FriendList: React.FC = () => {
       setFriends(updatedFriends);
     };
 
-    socket?.on("user-status", listenNewStatus);
+    session.socket?.on("user-status", listenNewStatus);
 
     return () => {
-      socket?.off("user-status", listenNewStatus);
+      session.socket?.off("user-status", listenNewStatus);
     };
   }, [friends]);
 

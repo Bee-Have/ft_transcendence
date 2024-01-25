@@ -22,7 +22,6 @@ import {
   retroGameOverAnimation,
 } from "src/components/game/animations/gameOverAnimation";
 
-import { socket } from "src/pages/global/websocket";
 import { UserStatus } from "src/pages/global/friend.dto";
 
 import { useNavigate } from "react-router-dom";
@@ -30,6 +29,8 @@ import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import styles from "../solo/Timed.module.css";
 import { BACKEND_URL } from "src/pages/global/env";
+
+import { useSessionContext } from "src/context/SessionContext";
 
 function TimerCard({ duration }: { duration: number }) {
   const [remainingTime, setRemainingTime] = React.useState(duration);
@@ -80,6 +81,8 @@ function GameRoomPvp() {
   const [gameOver, setGameOver] = React.useState(false);
   const [winner, setWinner] = React.useState("");
 
+  const session = useSessionContext();
+
   useEffectOnce(() => {
     if (gameSocket.current === undefined) {
       gameSocket.current = io(BACKEND_URL + "/game", {
@@ -109,7 +112,10 @@ function GameRoomPvp() {
           gameMode.current = mode;
           setTimeLeft(Math.round(remainingTime / 1000));
           if (userId === p1 || userId === p2)
-            socket?.emit("update-user-status", UserStatus[UserStatus.ingame]);
+            session.socket?.emit(
+              "update-user-status",
+              UserStatus[UserStatus.ingame]
+            );
           if (mainPlayer.current === p1) {
             playerId.current = p1;
             opponentId.current = p2;
@@ -136,7 +142,10 @@ function GameRoomPvp() {
       gameSocket.current.on("game:winner", (winnerId: number) => {
         gameSocket.current?.emit("game:unmount", gameId.current, userId);
         if (userId === player1Id || userId === player2Id)
-          socket?.emit("update-user-status", UserStatus[UserStatus.online]);
+          session.socket?.emit(
+            "update-user-status",
+            UserStatus[UserStatus.online]
+          );
         setWinner(winnerId === opponentId.current ? "opponent" : "player");
         if (gameMode.current === "retro")
           retroGameOverAnimation(
@@ -154,7 +163,10 @@ function GameRoomPvp() {
       if (gameSocket.current !== undefined) {
         gameSocket.current.emit("game:unmount", gameId.current, userId);
         if (userId === player1Id || userId === player2Id)
-          socket?.emit("update-user-status", UserStatus[UserStatus.online]);
+          session.socket?.emit(
+            "update-user-status",
+            UserStatus[UserStatus.online]
+          );
         gameSocket.current.removeAllListeners();
       }
     };

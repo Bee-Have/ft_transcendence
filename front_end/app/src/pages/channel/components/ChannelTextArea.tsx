@@ -4,10 +4,10 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { BACKEND_URL } from 'src/pages/global/env';
-import { socket } from '../../global/websocket';
 import { MemberProps } from '../types/MemberProps.types';
 import { useErrorContext } from 'src/context/ErrorContext';
 import { errorHandler } from 'src/context/errorHandler';
+import { useSessionContext } from "src/context/SessionContext";
 
 interface ChannelMessageProps {
 	id: number,
@@ -50,6 +50,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 	
 	const errorContext = useErrorContext();
 	const navigate = useNavigate()
+	const session = useSessionContext()
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
@@ -152,18 +153,18 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 		}
 
 
-		socket?.on('new-channel-message', listenMessage)
-		socket?.on('new-channel-member', listenNewMember)
-		socket?.on('leave-channel-member', listenLeaveMember)
-		socket?.on('channel-role', listenRole)
-		socket?.on('channel-info', listenInfo)
+		session.socket?.on('new-channel-message', listenMessage)
+		session.socket?.on('new-channel-member', listenNewMember)
+		session.socket?.on('leave-channel-member', listenLeaveMember)
+		session.socket?.on('channel-role', listenRole)
+		session.socket?.on('channel-info', listenInfo)
 
 		return () => {
-			socket?.off('new-channel-message', listenMessage)
-			socket?.off('new-channel-member', listenNewMember)
-			socket?.off('leave-channel-member', listenLeaveMember)
-			socket?.off('channel-role', listenRole)
-			socket?.off('channel-info', listenInfo)
+			session.socket?.off('new-channel-message', listenMessage)
+			session.socket?.off('new-channel-member', listenNewMember)
+			session.socket?.off('leave-channel-member', listenLeaveMember)
+			session.socket?.off('channel-role', listenRole)
+			session.socket?.off('channel-info', listenInfo)
 		}
 	}, [currentChannelId])
 

@@ -149,7 +149,7 @@ export class UserService {
 	async enableTFA(userId: number): Promise<string> {
 		const secret = authenticator.generateSecret(40)
 
-		await this.prisma.user.updateMany({
+		const user = await this.prisma.user.update({
 			where: {
 				id: userId
 			},
@@ -157,7 +157,7 @@ export class UserService {
 				twoFASecret: secret
 			}
 		})
-		return await this.generateQRCode(secret)
+		return await this.generateQRCode(secret, user.realname)
 	}
 
 	async enableTFACallback(userId: number, code: string) {
@@ -191,8 +191,8 @@ export class UserService {
 		})
 	}
 
-	async generateQRCode(secret: string): Promise<string> {
-		const otp = authenticator.keyuri('', 'ft_transcendence', secret)
+	async generateQRCode(secret: string, realname: string): Promise<string> {
+		const otp = authenticator.keyuri(realname, 'ft_transcendence', secret)
 
 		try {
 			const t: string = await qrcode.toDataURL(otp)
@@ -205,16 +205,23 @@ export class UserService {
 	}
 
 	async getUser(userId: number) {
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: userId
-			}
-		})
+		try {
+			const user = await this.prisma.user.findUnique({
+				where: {
+					id: userId
+				}
+			})
+		
+			if (!user)
+				throw new NotFoundException('User Not Found')
+		
+			return user
 
-		if (!user)
-			throw new NotFoundException('User Not Found')
+		}
+		catch(e) {
+			throw new BadRequestException('bad request profile')
+		}
 
-		return user
 	}
 
 	async getUserFriendsId(userId: number): Promise<number[]> {

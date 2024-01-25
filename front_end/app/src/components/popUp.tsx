@@ -46,7 +46,7 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
     >
       <Button
         className={styles.ButtonDialogOpen}
-        onClick={() => navigate("/profil")}
+        onClick={() => navigate(`/profil/${user.id}`)}
       >
         profile
       </Button>

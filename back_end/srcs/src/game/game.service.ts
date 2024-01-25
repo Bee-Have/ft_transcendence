@@ -244,6 +244,9 @@ export class GameService {
   }
 
   async sendInvite(userId: number, invitedUserDto: SendInviteDto) {
+    if (userId === invitedUserDto.invitedUserId)
+      throw new HttpException("You can't invite yourself", 409);
+
     const invitedUser = this.userService.connected_user_map.get(
       invitedUserDto.invitedUserId
     );

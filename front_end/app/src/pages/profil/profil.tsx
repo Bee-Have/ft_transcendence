@@ -15,8 +15,9 @@ import { useSessionContext } from "src/context/SessionContext";
 import { userId } from "../global/userId";
 
 import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
+import InteractiveFriendshipButton from "src/components/interactive/InteractiveFriendshipButton";
 
-interface userProfileDto {
+export interface userProfileDto {
   username: string;
   realname: string;
   photo: string;
@@ -38,7 +39,6 @@ const defaultUser: userProfileDto = {
   isFriend: false,
 };
 
-
 const Profil: React.FC = () => {
   const [profilInfo, setProfilInfo] = useState<userProfileDto>({
     ...defaultUser,
@@ -53,7 +53,8 @@ const Profil: React.FC = () => {
   useEffect(() => {
     axios
       .get(`${BACKEND_URL}/user/profile/${id}`, { withCredentials: true })
-      .then(function (response) {
+      .then((response) => {
+        // console.log(response.data);
         setProfilInfo({
           ...response.data,
           photo: BACKEND_URL + `/user/image/${id}`,
@@ -64,15 +65,6 @@ const Profil: React.FC = () => {
         navigate("/profil/" + userId);
       });
   }, [id, session.socket]);
-
-  const sendFriendRequest = () => {
-    axios
-      .get(BACKEND_URL + "/user/friend/create/" + id, { withCredentials: true })
-      .then((res) => {})
-      .catch((e) => {
-        errorContext.newError?.(errorHandler(e));
-      });
-  };
 
   return (
     <div className="content">
@@ -87,9 +79,13 @@ const Profil: React.FC = () => {
                 photo: profilInfo.photo,
               }}
             />
-            <button className="btn btn-light" onClick={sendFriendRequest}>
-              add friend
-            </button>
+            <InteractiveFriendshipButton
+              receiverId={parseInt(id ?? "0")}
+              isFriend={profilInfo.isFriend}
+              removeFriend={() => {
+                setProfilInfo({ ...profilInfo, isFriend: false });
+              }}
+            />
           </>
         )}
         {id === ReadCookie("userId") && (
@@ -157,7 +153,9 @@ const Profil: React.FC = () => {
               <>
                 <hr />
                 About me : <br />
-                <div style={{ paddingLeft: "5%" }}>{profilInfo.description}</div>
+                <div style={{ paddingLeft: "5%" }}>
+                  {profilInfo.description}
+                </div>
               </>
             ) : (
               ""

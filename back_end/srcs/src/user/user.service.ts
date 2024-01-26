@@ -93,12 +93,13 @@ export class UserService {
       },
     });
 
-    if (
-      friendList.friends.includes({ id: userId }) ||
-      friendList.friendsRelation.includes({ id: userId })
-    )
-      trimuser.isFriend = true;
-    else trimuser.isFriend = false;
+    trimuser.isFriend = false;
+    friendList.friends.map((friend) => {
+      if (friend.id === userId) trimuser.isFriend = true;
+    });
+    friendList.friendsRelation.map((friend) => {
+      if (friend.id === userId) trimuser.isFriend = true;
+    });
 
     return trimuser;
   }

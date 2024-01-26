@@ -133,6 +133,15 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Post("friend/remove/:receiverId")
+  async RemoveFriend(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+	return await this.friendService.removeFriend(userId, receiverId);
+  }
+
+  @HttpCode(HttpStatus.OK)
   @Post("friend/block/:receiverId")
   async BlockUser(
     @GetCurrentUser("sub") userId: number,

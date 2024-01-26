@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -141,6 +142,25 @@ export class FriendshipService {
     await this.prisma.friendRequest.delete({
       where: {
         id: req.id,
+      },
+    });
+  }
+
+  async removeFriend(userId: number, receiverId: number) {
+    if (userId === receiverId)
+      throw new HttpException("You cannot unfriend yourself", 409);
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        friends: {
+          disconnect: [{ id: receiverId }],
+        },
+        friendsRelation: {
+          disconnect: [{ id: receiverId }],
+        },
       },
     });
   }

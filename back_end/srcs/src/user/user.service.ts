@@ -67,13 +67,38 @@ export class UserService {
   // 	return user
   // }
 
-  async getUserProfil(userId: number) {
-    const user = await this.getUser(userId);
+  async getUserProfil(userId: number, requestedUserId: number) {
+    const user = await this.getUser(requestedUserId);
     //besoin de : achievement
 
     const trimuser = plainToInstance(userProfileDto, user, {
       excludeExtraneousValues: true,
     });
+
+    const friendList = await this.prisma.user.findUnique({
+      where: {
+        id: requestedUserId,
+      },
+      select: {
+        friends: {
+          select: {
+            id: true,
+          },
+        },
+        friendsRelation: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (
+      friendList.friends.includes({ id: userId }) ||
+      friendList.friendsRelation.includes({ id: userId })
+    )
+      trimuser.isFriend = true;
+    else trimuser.isFriend = false;
 
     return trimuser;
   }

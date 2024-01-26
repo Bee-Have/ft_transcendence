@@ -69,8 +69,11 @@ export class UserController {
   }
 
   @Get("profile/:id")
-  getProfile(@Param("id", ParseIntPipe) userId: number): Promise<any> {
-    return this.userService.getUserProfil(userId);
+  getProfile(
+    @GetCurrentUser("sub") userId: number,
+    @Param("id", ParseIntPipe) requestedUserId: number
+  ): Promise<any> {
+    return this.userService.getUserProfil(userId, requestedUserId);
   }
 
   @Get("friends")

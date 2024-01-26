@@ -19,5 +19,6 @@ export class userProfileDto {
     @Expose()
     description: string
 
+    isFriend:	boolean
     //add avatar + achievement
 }

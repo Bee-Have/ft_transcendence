@@ -14,49 +14,82 @@ import { errorHandler } from "src/context/errorHandler";
 import { useSessionContext } from "src/context/SessionContext";
 import { userId } from "../global/userId";
 
+import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
+
+interface userProfileDto {
+  username: string;
+  realname: string;
+  photo: string;
+  score: number;
+  win: number;
+  loose: number;
+  description: string;
+  isFriend: boolean;
+}
+
+const defaultUser: userProfileDto = {
+  username: "",
+  realname: "",
+  photo: "",
+  score: 0,
+  win: 0,
+  loose: 0,
+  description: "",
+  isFriend: false,
+};
+
 
 const Profil: React.FC = () => {
-  const [realName, setRealName] = useState("Default");
-  const [userName, setUserName] = useState("Default");
-  const [profilePic, setProfilePic] = useState(
-    require("src/asset/default.jpg")
-  );
-  const [description, setDescription] = useState("Default");
-  const [wins, setWins] = useState(0);
-  const [loses, setLoses] = useState(0);
-  const [score, setScore] = useState(0);
+  const [profilInfo, setProfilInfo] = useState<userProfileDto>({
+    ...defaultUser,
+  });
   const navigate = useNavigate();
 
-  const errorContext = useErrorContext()
+  const errorContext = useErrorContext();
   const session = useSessionContext();
 
-  const { id } = useParams()
+  const { id } = useParams();
 
   useEffect(() => {
     axios
       .get(`${BACKEND_URL}/user/profile/${id}`, { withCredentials: true })
       .then(function (response) {
-        setRealName(response.data.realname);
-        setUserName(response.data.username);
-        setProfilePic(BACKEND_URL + `/user/image/${id}`);
-        setWins(response.data.win);
-        setLoses(response.data.loose);
-        setScore(response.data.score);
-        setDescription(response.data.description);
+        setProfilInfo({
+          ...response.data,
+          photo: BACKEND_URL + `/user/image/${id}`,
+        });
       })
       .catch((err) => {
-		    errorContext.newError?.(errorHandler(err))
-        navigate('/profil/' + userId)
+        errorContext.newError?.(errorHandler(err));
+        navigate("/profil/" + userId);
       });
   }, [id, session.socket]);
+
+  const sendFriendRequest = () => {
+    axios
+      .get(BACKEND_URL + "/user/friend/create/" + id, { withCredentials: true })
+      .then((res) => {})
+      .catch((e) => {
+        errorContext.newError?.(errorHandler(e));
+      });
+  };
 
   return (
     <div className="content">
       <div className="header">
         {id !== ReadCookie("userId") && (
           <>
-            <button className="btn btn-light">invit to game</button>
-            <button className="btn btn-light">add friend</button>
+            <InviteGameModeDialogButton
+              user={{
+                id: parseInt(id ?? "0"),
+                username: profilInfo.username,
+                userstatus: null,
+                photo: profilInfo.photo,
+              }}
+            />
+            <button className="btn btn-light" onClick={sendFriendRequest}>
+              add friend
+            </button>
           </>
         )}
         {id === ReadCookie("userId") && (
@@ -98,7 +131,7 @@ const Profil: React.FC = () => {
         <center>
           <Avatar
             className="avatar"
-            src={profilePic}
+            src={profilInfo.photo}
             style={{ width: "100px", height: "100px" }}
           />
           <br />
@@ -107,24 +140,24 @@ const Profil: React.FC = () => {
           <div className="fs-2">
             Nickname : <br />
             <div style={{ paddingLeft: "5%" }}>
-              {userName} ({realName})<br />
+              {profilInfo.username} ({profilInfo.realname})<br />
               <br />
             </div>
             <hr />
             <h3>Games statistics:</h3>
             <div style={{ paddingLeft: "5%" }}>
-              Win : {wins} {"\u00A0"}
+              Win : {profilInfo.win} {"\u00A0"}
               {"\u00A0"} - {"\u00A0"}
-              {"\u00A0"} Lose : {loses} <br />
+              {"\u00A0"} Lose : {profilInfo.loose} <br />
               <br />
-              Current ELO : {score} <br />
+              Current ELO : {profilInfo.score} <br />
               <br />
             </div>
-            {description ? (
+            {profilInfo.description ? (
               <>
                 <hr />
                 About me : <br />
-                <div style={{ paddingLeft: "5%" }}>{description}</div>
+                <div style={{ paddingLeft: "5%" }}>{profilInfo.description}</div>
               </>
             ) : (
               ""

@@ -80,7 +80,6 @@ const App: React.FC = () => {
 					<Route path="/game/training/speed" element={<SpeedGame />} />
 					<Route path="/game/training/retro" element={<RetroGame />} />
 
-					<Route path="/403" element={<p>403 Forbidden</p>} />
 					<Route path="*" element={<RedirectInvalidURL />} />
 				</Routes>
 			</BrowserRouter>

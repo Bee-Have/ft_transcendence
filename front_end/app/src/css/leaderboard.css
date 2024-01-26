@@ -23,6 +23,7 @@
     padding: 10px;
     margin: 0 auto 20px auto;
     border: solid 2px black;
+    overflow-x: auto;
 }
 
 .user-info-leaderboard {

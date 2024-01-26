@@ -166,7 +166,7 @@ const ChannelTextArea = ({ currentChannelId }: { currentChannelId: number }) => 
 			session.socket?.off('channel-role', listenRole)
 			session.socket?.off('channel-info', listenInfo)
 		}
-	}, [currentChannelId])
+	}, [session.socket, currentChannelId])
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter' && !event.shiftKey && inputValue.length !== 0) {

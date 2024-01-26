@@ -19,7 +19,7 @@ import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 import { AxiosError } from "axios";
 
-import { useEffectOnce } from "src/components/useEffectOnce";
+// import { useEffectOnce } from "src/components/useEffectOnce";
 
 function GamePopupList() {
   const gamePopup = useGamePopup();
@@ -27,7 +27,7 @@ function GamePopupList() {
   const errorContext = useErrorContext();
   const session = useSessionContext();
 
-  useEffectOnce(() => {
+  React.useEffect(() => {
     const fetchInvites = () => {
       gameService
         .getUserInvites(userId)
@@ -39,13 +39,14 @@ function GamePopupList() {
         });
     };
 
+    console.log("listening on: ", session.socket?.id)
     session.socket?.on("new-invite", fetchInvites);
 
     if (userId !== 0) fetchInvites();
     return () => {
       session.socket?.off("new-invite", fetchInvites);
     };
-  });
+  }, [session.socket]);
 
   if (gamePopup.isVisible === false || popupList.length === 0) return null;
 
@@ -53,10 +54,13 @@ function GamePopupList() {
     <div className={styles.PopupList}>
       {Object.keys(popupList).map((key) => {
         if (popupList[key].receiver === undefined) {
+          console.log("matchmaking");
           return <MatchmakingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id === userId) {
+          console.log("inviting");
           return <InvitingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id !== userId) {
+          console.log("invited");
           return <InvitedPopup key={key} gamePopupProps={popupList[key]} />;
         } else {
           return null;

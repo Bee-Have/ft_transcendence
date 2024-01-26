@@ -82,11 +82,13 @@ export class UserGateway {
 
 		for (const key of enum_keys)
 		{
-			if (data === key)
+			if (data === key && user) {
 				user.updateStatus(UserStatus[key])
+				this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+				client.emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+			}
 		}
-		this.server.in(userId.toString()).emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
-		client.emit(process.env.CLIENT_USER_STATUS, new UserStatusEventDto(user))
+
 	}
 
 	handleDisconnect(@ConnectedSocket() client: Socket) {

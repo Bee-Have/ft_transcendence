@@ -10,6 +10,10 @@ import Menu from "@mui/material/Menu";
 import { Friend } from "../pages/global/friend.dto";
 
 import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { BACKEND_URL } from "src/pages/global/env";
+import axios from "axios";
 
 interface PopUpProps {
   user: Friend;
@@ -25,6 +29,28 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+	const errorContext = useErrorContext();
+
+	const sendFriendRequest = () => {
+		axios.get(BACKEND_URL + '/user/friend/create/' + user.id,
+			{ withCredentials: true })
+			.then((res) => { })
+			.catch((e) => { errorContext.newError?.(errorHandler(e)); })
+		handleClose()
+	}
+
+	const chatWithUser = () => {
+		axios.post(BACKEND_URL + '/privatemessage/conversations/' + user.id, {}, { withCredentials: true })
+			.then((res) => {
+				navigate("/chat/" + res.data.conversation.id)
+			})
+			.catch((e) => {
+				errorContext.newError?.(errorHandler(e))
+			})
+		handleClose()
+	}
+
 
   return (
     <Menu
@@ -48,7 +74,7 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
         className={styles.ButtonDialogOpen}
         onClick={() => navigate(`/profil/${user.id}`)}
       >
-        profile
+        Profile
       </Button>
 
       {usage === "friend" && <InviteSpectateButton user={user} />}
@@ -56,14 +82,14 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
 
       <Button
         className={styles.ButtonDialogOpen}
-        onClick={() => navigate("/chat")}
+        onClick={chatWithUser}
       >
-        chat
+        Chat
       </Button>
 
-      <Button className={styles.ButtonDialogOpen} onClick={handleClose}>
-        add friend
-      </Button>
+      {usage !== "friend" && 
+      <Button className={styles.ButtonDialogOpen} onClick={sendFriendRequest}>
+        Add friend </Button>}
     </Menu>
   );
 }

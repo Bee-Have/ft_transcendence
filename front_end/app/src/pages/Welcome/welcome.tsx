@@ -14,12 +14,11 @@ import "src/css/welcome.css";
 
 import TFAConnection from "src/components/2FAConnection";
 import { useGamePopup } from "src/context/GamePopupContext";
-import { resetUserId, userId } from "../global/userId";
+import { userId } from "../global/userId";
 
-const Welcome: React.FC = () => {
+function Welcome() {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = React.useState(false);
-  const [guest, setGuest] = React.useState(false);
+  
   const [print2FA, set2FA] = React.useState(false);
   const session = useSessionContext();
   const TFA = ReadCookie("TfaEnable");
@@ -43,7 +42,7 @@ const Welcome: React.FC = () => {
       (session.aToken === null || session.rToken === null) &&
       TFA !== "true"
     ) {
-      session.updateTokens?.();
+      session.updateTokens();
       return;
     }
     if (!session.aToken) {
@@ -52,13 +51,11 @@ const Welcome: React.FC = () => {
         console.log("2FA: ", TFA);
       } else {
         console.log("login");
-        setAuthenticated(false);
       }
     } else if (isTokenExpired(session.aToken)) {
       console.log("Atoken Expired");
       if (!session.rToken || isTokenExpired(session.rToken)) {
         console.log("No Rt or expired");
-        setAuthenticated(false);
       } else {
         console.log("posting");
         axios
@@ -69,49 +66,46 @@ const Welcome: React.FC = () => {
           .catch((e) => console.log(e));
       }
     } else {
-      setAuthenticated(true);
-      resetUserId();
+      session.login();
     }
   }, [session.aToken, session.rToken]);
 
-  const guestUser = () => {
-    setGuest(true);
-  };
 
-  return (
-    <div className="log_window">
-      {print2FA && <TFAConnection popUp={set2FA} btn={setAuthenticated} />}
-      {authenticated && (
-        <div className="header">
-          <button
-            className="btn btn-light"
-            onClick={() => navigate(`/profil/` + userId)}
-          >
-            profile
-          </button>
-        </div>
-      )}
-      <h1 className="display-1 welcome">welcome</h1>
-      <div className="login-choice">
-        <div className="col-md-4">
-          {!authenticated && (
+  if (session.isLogged === false) {
+    return (
+      <div className="log_window">
+        {print2FA && <TFAConnection popUp={set2FA} />}
+        <h1 className="display-1 welcome">welcome</h1>
+        <div className="login-choice">
+          <div>
             <button className="btn btn-light" onClick={authenticateUser}>
               login
             </button>
-          )}
-          {authenticated && (
-            <button className="btn btn-light" onClick={() => navigate("/chat")}>
-              chat
-            </button>
-          )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="log_window">
+      <div className="header">
+        <button
+          className="btn btn-light"
+          onClick={() => navigate(`/profil/` + userId)}
+        >
+          profile
+        </button>
+      </div>
+      <h1 className="display-1 welcome">welcome</h1>
+      <div className="logged-bar">
+        <div className="col-md-4">
+          <button className="btn btn-light" onClick={() => navigate("/chat")}>
+            chat
+          </button>
         </div>
         <div className="col-md-4">
-          {!authenticated && !guest && (
-            <button className="btn btn-light" onClick={guestUser}>
-              guest
-            </button>
-          )}
-          {(authenticated || guest) && <PlayGameModeDialogButton />}
+          <PlayGameModeDialogButton />
         </div>
         <div className="col-md-4">
           <button
@@ -126,7 +120,7 @@ const Welcome: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default Welcome;

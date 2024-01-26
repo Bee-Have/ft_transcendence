@@ -40,7 +40,7 @@ const ChannelIcon = ({
       session.socket?.off("new-channel-badge", listenNewBadge);
       session.socket?.off("new-channel-info", listenNewInfo);
     };
-  }, [channel.id]);
+  }, [channel.id, session.socket]);
 
   useEffect(() => {
     setName(channel.name);
@@ -132,7 +132,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
     return () => {
       session.socket?.off("leave-channel-member", listenLeaveMember);
     };
-  }, []);
+  }, [session.socket]);
 
   return (
     <nav className="channel-list-bar">

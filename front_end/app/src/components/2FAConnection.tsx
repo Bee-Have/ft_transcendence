@@ -12,10 +12,9 @@ import { useSessionContext } from "src/context/SessionContext";
 
 interface FAEnableProps {
   popUp: (value: boolean) => void;
-  btn: (value: boolean) => void;
 }
 
-const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn }) => {
+const TFAConnection: React.FC<FAEnableProps> = ({ popUp }) => {
   const [code, setCode] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(-1);
@@ -35,9 +34,8 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp, btn }) => {
       .then((res) => {
         if (res.status === 200) {
           popUp(false);
-          btn(true);
-          session.updateTokens?.();
-          navigate("/");
+          session.login();
+          navigate("/"); //? might get rid of this, react will re render the page with the state change anyway.
         }
       })
       .catch((e) => {

@@ -130,7 +130,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
     return () => {
       session.socket?.off("new-conv", listenNewConv);
     };
-  }, []);
+  }, [session.socket]);
 
   const handleclick = (e: ConversationProps) => {
     convUpdateUnReadStatus(e.conversation.id, false);
@@ -214,7 +214,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
       session.socket?.off("new-message", listenNewMessage);
       session.socket?.off("user-status", listenNewStatus);
     };
-  }, [currentChat, convs]);
+  }, [session.socket, currentChat, convs]);
 
   return (
     <>

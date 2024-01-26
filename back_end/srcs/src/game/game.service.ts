@@ -1,3 +1,4 @@
+
 import {
   ForbiddenException,
   HttpException,
@@ -291,10 +292,9 @@ export class GameService {
       },
     });
 
+    console.log("socket of invited and invitee", invitedUser.socket.id, invitee.socket.id);
     invitedUser.socket.emit("new-invite");
     invitee.socket.emit("new-invite");
-
-    return { msg: "Invite sent" };
   }
 
   async declineInvite(userId: number, declinedUserId: number) {
@@ -330,6 +330,7 @@ export class GameService {
       this.userService.connected_user_map.get(acceptedUserId);
 
     if (
+      acceptedUser === undefined || // added by mabriel
       acceptedUser.userstatus === undefined ||
       acceptedUser.userstatus === UserStatus.offline ||
       acceptedUser.userstatus === UserStatus.ingame ||

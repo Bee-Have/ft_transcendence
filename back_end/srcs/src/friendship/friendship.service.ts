@@ -29,9 +29,14 @@ export class FriendshipService {
 						id: senderId
 					}
 				},
+				friendsRelation: {
+					where: {
+						id: senderId
+					}
+				}
 			}
 		})
-		if (friends_of_receiver.friends.length)
+		if (friends_of_receiver.friends.length || friends_of_receiver.friendsRelation.length)
 			throw new BadRequestException('Users already friends')
 
 		const req = await this.prisma.friendRequest.findFirst({

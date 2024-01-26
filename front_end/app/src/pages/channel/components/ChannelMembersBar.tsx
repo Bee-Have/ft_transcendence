@@ -131,7 +131,7 @@ const ChannelMembersBar = ({ channelMembers, channelId }: { channelMembers: Memb
 			session.socket?.off('leave-channel-member', listenLeaveMember)
 			session.socket?.off('channel-role', listenRole)
 		}
-	}, [channelId, navigate])
+	}, [session.socket, channelId, navigate])
 
 	const displayOverlay = () => {
 		setShowOverlay(true)

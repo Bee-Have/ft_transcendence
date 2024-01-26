@@ -43,7 +43,7 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
 			session.socket?.off('new-channel-info', listenNewInfo)
 		}
 
-	}, [channelId])
+	}, [session.socket, channelId])
 
 	return (
 		<div className='channel-top-bar'>

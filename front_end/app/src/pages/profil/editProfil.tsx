@@ -125,11 +125,12 @@ const EditProfil: React.FC = () =>
 						<button type="button" onClick={handleEditPicture}>Edit picture</button>
 					</center>
 					<div className='information'>
-						<InputLabel htmlFor="component-simple">Nickname</InputLabel>
+						<InputLabel htmlFor="component-simple" id="profil-form">Nickname</InputLabel>
 						<Input
-							value={userName}
-							onChange={function (e: any) {setUserName(e.target.value)}}
-							/>
+						   id="component-simple"
+						   value={userName}
+						   onChange={(e) => setUserName(e.target.value)}
+						/>
 						<br/><br/>
 
 						<InputLabel htmlFor="component-simple">RealName</InputLabel>
@@ -138,6 +139,7 @@ const EditProfil: React.FC = () =>
 
 						<TextField
 							label="Description"
+							id="edit-description-area"
 							multiline rows={10}
 							value={description}
 							style={{width: '80%'}}

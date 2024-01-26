@@ -48,6 +48,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: (string | number)[],
     @ConnectedSocket() client: Socket
   ) {
+    console.log("game:unmount: ", data)
     const [gameId, userId] = data;
 
     const currentGame = this.runningGames.get(gameId as string);
@@ -91,6 +92,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket
   ) {
     let [player1Id, player2Id, userId] = [data[0], data[1], data[2]];
+
+    console.log("gamejoin: ", data)
 
     if (data[0] === null || data[1] === null || data[2] === null) {
       client.emit("game:badRequest");

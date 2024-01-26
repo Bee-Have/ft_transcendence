@@ -14,7 +14,7 @@ const Score = ({ player, opponent }: { player: number; opponent: number }) => {
     return () => {
       session.socket?.emit("update-user-status", UserStatus[UserStatus.online]);
     };
-  }, []);
+  }, [session.socket]);
 
   return (
     <div className="RetroScore">

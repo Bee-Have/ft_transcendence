@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-import Menu from "src/components/menu";
 import Avatar from "@mui/material/Avatar";
-import "src/css/profil.css";
 import axios from "axios";
 import { ReadCookie } from "src/components/ReadCookie";
+import Menu from "src/components/menu";
+import "src/css/profil.css";
 import { BACKEND_URL } from "../global/env";
 
-import { useEffectOnce } from "src/components/useEffectOnce";
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 
 import { useSessionContext } from "src/context/SessionContext";
+import { userId } from "../global/userId";
 
 
 const Profil: React.FC = () => {
@@ -30,11 +30,9 @@ const Profil: React.FC = () => {
   const errorContext = useErrorContext()
   const session = useSessionContext();
 
-  const id = window.location.href.substring(
-    window.location.href.lastIndexOf("/") + 1
-  );
+  const { id } = useParams()
 
-  useEffectOnce(() => {
+  useEffect(() => {
     axios
       .get(`${BACKEND_URL}/user/profile/${id}`, { withCredentials: true })
       .then(function (response) {
@@ -47,10 +45,10 @@ const Profil: React.FC = () => {
         setDescription(response.data.description);
       })
       .catch((err) => {
-		errorContext.newError?.(errorHandler(err))
-        //throw err;
+		    errorContext.newError?.(errorHandler(err))
+        navigate('/profil/' + userId)
       });
-  });
+  }, [id, session.socket]);
 
   return (
     <div className="content">

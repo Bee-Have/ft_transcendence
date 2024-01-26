@@ -53,7 +53,7 @@ const FriendList: React.FC = () => {
         )
       )
       .catch((err) => console.log(err));
-  }, []);
+  }, [session.socket]);
 
   useEffect(() => {
     const listenNewStatus = (eventProps: UserStatusEventDto) => {
@@ -70,7 +70,7 @@ const FriendList: React.FC = () => {
     return () => {
       session.socket?.off("user-status", listenNewStatus);
     };
-  }, [friends]);
+  }, [session.socket, friends]);
 
   return (
     <div className="friendList">

@@ -4,8 +4,6 @@ import { io, Socket } from "socket.io-client";
 
 import { userId } from "src/pages/global/userId";
 
-import { useEffectOnce } from "src/components/useEffectOnce";
-
 import "../solo/Game.css";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -83,7 +81,7 @@ function GameRoomPvp() {
 
   const session = useSessionContext();
 
-  useEffectOnce(() => {
+  React.useEffect(() => {
     if (gameSocket.current === undefined) {
       gameSocket.current = io(BACKEND_URL + "/game", {
         transports: ["websocket"],
@@ -170,7 +168,7 @@ function GameRoomPvp() {
         gameSocket.current.removeAllListeners();
       }
     };
-  });
+  }, [session.socket]);
 
   if (gameOver === true) {
     return (

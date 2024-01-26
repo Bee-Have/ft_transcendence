@@ -136,17 +136,23 @@ export class UserService {
   // }
 
   async updateUsername(userId: number, username: string) {
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        username,
-      },
-    });
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          username,
+        },
+      });
+    }
+    catch(e) {
+      throw new BadRequestException('Bad request')
+    }
   }
 
   async updateDescription(userId: number, description: string) {
+  try {  
     await this.prisma.user.update({
       where: {
         id: userId,
@@ -155,6 +161,10 @@ export class UserService {
         description,
       },
     });
+  }
+  catch(e) {
+    throw new BadRequestException('Bad request')
+  }
   }
 
   async enableTFA(userId: number): Promise<string> {

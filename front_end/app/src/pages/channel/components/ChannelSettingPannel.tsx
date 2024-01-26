@@ -190,7 +190,7 @@ const ChannelSettingPanel = ({ channelId, hideOverlay }: { channelId: number, hi
 				!!bannedPeople.length &&
 				<List sx={{ overflowY: 'auto', height: '180px' }}>
 					{bannedPeople.map((banned, index) => (
-						<Banned banned={banned} index={index} />
+						<Banned key='index' banned={banned} index={index} />
 					))}
 				</List>
 			}

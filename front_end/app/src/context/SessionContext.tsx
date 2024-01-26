@@ -4,6 +4,9 @@ import { io, Socket } from "socket.io-client";
 import { ReadCookie, deleteCookie } from "src/components/ReadCookie";
 
 import { BACKEND_URL } from "src/pages/global/env";
+import { UserStatus } from "src/pages/global/friend.dto";
+
+import { resetUserId } from "src/pages/global/userId";
 
 import React from "react";
 
@@ -11,14 +14,22 @@ export interface ISessionContext {
   socket?: Socket | null;
   aToken?: string | null;
   rToken?: string | null;
-  updateTokens?: () => void;
-  logout?: () => void;
+  isLogged: boolean;
+  updateTokens: () => void;
+  login: () => void;
+  logout: () => void;
+  disconnectSocket: () => void;
 }
 
 export const defaultSessionContext: ISessionContext = {
   socket: null,
-  aToken: null,
-  rToken: null,
+  aToken: ReadCookie("access_token"),
+  rToken: ReadCookie("refresh_token"),
+  isLogged: false,
+  updateTokens: () => { },
+  login: () => { },
+  logout: () => { },
+  disconnectSocket: () => { },
 };
 
 const SessionContext = createContext<ISessionContext>(defaultSessionContext);
@@ -29,18 +40,26 @@ export const SessionProvider = ({
   children: React.ReactNode;
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [aToken, setAToken] = useState<string | null>(null);
-  const [rToken, setRToken] = useState<string | null>(null);
+  const [aToken, setAToken] = useState<string | null>(ReadCookie("access_token"));
+  const [rToken, setRToken] = useState<string | null>(ReadCookie("refresh_token"));
+  const [isLogged, setIsLogged] = useState<boolean>(false);
 
   React.useEffect(() => {
-	console.log("SessionProvider useEffect: ", aToken, rToken, socket);
-    if (socket === null && aToken !== null) {
+    if (socket !== null) {
+      socket.emit("update-user-status", UserStatus[UserStatus.online])
+    }
+  }, [socket]);
+
+  React.useEffect(() => {
+    console.log("SessionProvider useEffect: ", aToken, rToken, socket);
+    if (socket === null) {
       setSocket(
         aToken
           ? io(BACKEND_URL + "/user", { extraHeaders: { id: aToken } })
           : null
       );
     }
+    resetUserId();
   }, [aToken]);
 
   const updateTokens = () => {
@@ -48,20 +67,30 @@ export const SessionProvider = ({
     setRToken(ReadCookie("refresh_token"));
   };
 
+  const login = () => {
+    updateTokens();
+    setIsLogged(true);
+  }
+
   const logout = () => {
-    socket?.disconnect();
-    setSocket(null);
+    socket?.emit("update-user-status", UserStatus[UserStatus.offline])
     deleteCookie("access_token");
     deleteCookie("refresh_token");
     deleteCookie("TfaEnable");
     deleteCookie("userId");
-	setAToken(null);
-	setRToken(null);
+    setAToken(null);
+    setRToken(null);
+    setIsLogged(false);
   };
+
+  const disconnectSocket = () => {
+    socket?.disconnect();
+    setSocket(null);
+  }
 
   return (
     <SessionContext.Provider
-      value={{ socket, aToken, rToken, updateTokens, logout }}
+      value={{ socket, aToken, rToken, isLogged, updateTokens, login, logout, disconnectSocket }}
     >
       {children}
     </SessionContext.Provider>

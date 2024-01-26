@@ -20,6 +20,8 @@ import { AxiosError } from "axios";
 
 import { userId } from "src/pages/global/userId";
 
+import "src/css/profil.css";
+
 interface CardProps {
   outcome: string;
   user: Friend;

@@ -40,7 +40,11 @@ const Menu: React.FC = () => {
         <ListItemText primary="Profile" />
       </ListItemButton>
 
-      <Divider />
+      <Divider
+        sx={{
+          backgroundColor: "#D9D9D9",
+        }}
+      />
 
       <ListItem className={styles.MenuItem}>
         <ListItemText primary="Friend list" />
@@ -81,7 +85,11 @@ const Menu: React.FC = () => {
         </List>
       </Box>
 
-      <Divider />
+      <Divider
+        sx={{
+          backgroundColor: "#D9D9D9",
+        }}
+      />
 
       <ListItemButton
         onClick={() => navigate("/profil/match-history")}

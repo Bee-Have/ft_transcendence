@@ -68,59 +68,61 @@ const Profil: React.FC = () => {
 
   return (
     <div className="content">
-      <div className="header">
-        {id !== ReadCookie("userId") && (
-          <>
-            <InviteGameModeDialogButton
-              user={{
-                id: parseInt(id ?? "0"),
-                username: profilInfo.username,
-                userstatus: null,
-                photo: profilInfo.photo,
-              }}
-            />
-            <InteractiveFriendshipButton
-              receiverId={parseInt(id ?? "0")}
-              isFriend={profilInfo.isFriend}
-              removeFriend={() => {
-                setProfilInfo({ ...profilInfo, isFriend: false });
-              }}
-            />
-          </>
-        )}
-        {id === ReadCookie("userId") && (
+      <div className="header-bar">
+        <div className="header">
+          {id !== ReadCookie("userId") && (
+            <>
+              <InviteGameModeDialogButton
+                user={{
+                  id: parseInt(id ?? "0"),
+                  username: profilInfo.username,
+                  userstatus: null,
+                  photo: profilInfo.photo,
+                }}
+              />
+              <InteractiveFriendshipButton
+                receiverId={parseInt(id ?? "0")}
+                isFriend={profilInfo.isFriend}
+                removeFriend={() => {
+                  setProfilInfo({ ...profilInfo, isFriend: false });
+                }}
+              />
+            </>
+          )}
+          {id === ReadCookie("userId") && (
+            <button
+              className="btn btn-light"
+              onClick={() => navigate("/profil/edit-Profil")}
+            >
+              edit profil
+            </button>
+          )}
           <button
             className="btn btn-light"
-            onClick={() => navigate("/profil/edit-Profil")}
+            onClick={() => {
+              axios
+                .post(
+                  BACKEND_URL + "/auth/logout",
+                  {},
+                  {
+                    headers: {
+                      Authorization: `Bearer ${ReadCookie("access_token")}`,
+                    },
+                    withCredentials: true,
+                  }
+                )
+                .then(() => {
+                  session.logout?.();
+                  navigate("/");
+                });
+            }}
           >
-            edit profil
+            Logout
           </button>
-        )}
-        <button
-          className="btn btn-light"
-          onClick={() => {
-            axios
-              .post(
-                BACKEND_URL + "/auth/logout",
-                {},
-                {
-                  headers: {
-                    Authorization: `Bearer ${ReadCookie("access_token")}`,
-                  },
-                  withCredentials: true,
-                }
-              )
-              .then(() => {
-                session.logout?.();
-                navigate("/");
-              });
-          }}
-        >
-          Logout
-        </button>
-        <button className="btn btn-light" onClick={() => navigate("/")}>
-          home
-        </button>
+          <button className="btn btn-light" onClick={() => navigate("/")}>
+            home
+          </button>
+        </div>
       </div>
       <Menu />
       <div className="profil">

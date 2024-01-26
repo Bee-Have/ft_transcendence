@@ -45,13 +45,6 @@ export const SessionProvider = ({
   const [isLogged, setIsLogged] = useState<boolean>(false);
 
   React.useEffect(() => {
-    if (socket !== null) {
-      socket.emit("update-user-status", UserStatus[UserStatus.online])
-    }
-  }, [socket]);
-
-  React.useEffect(() => {
-    console.log("SessionProvider useEffect: ", aToken, rToken, socket);
     if (socket === null) {
       setSocket(
         aToken

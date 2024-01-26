@@ -47,8 +47,6 @@ export class AuthController {
 	@UseGuards(ThrottlerGuard)
 	@Get("tfa")
 	async tfa(@Query() query: TfaDto, @GetCurrentUser('sub') userId: number, @Res() res: Response) {
-		console.log('wouegf')
-	
 		const tokens = await this.authService.verifyTfa(query.code, userId) 
 		res.cookie('access_token', tokens.access_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})
 		res.cookie('refresh_token', tokens.refresh_token, { httpOnly: false, sameSite: 'strict', maxAge: 7*24*60*60*100})

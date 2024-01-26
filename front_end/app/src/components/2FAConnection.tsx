@@ -39,7 +39,6 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp }) => {
         }
       })
       .catch((e) => {
-        console.log(e.request);
         errorContext.newError?.(errorHandler(e));
         if (e.response?.status === 429) {
           setIsButtonDisabled(true);

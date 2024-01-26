@@ -26,7 +26,7 @@ import { GameService } from "../game.service";
 
 @WebSocketGateway({ transports: ["websocket"], namespace: "game" })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService) {}
 
   @WebSocketServer()
   private server!: Server;
@@ -34,7 +34,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private runningGames = new Map<string, GameInfo>();
   private connectedUsers = new Map<string, UserGameId>();
 
-  handleConnection(@ConnectedSocket() client: Socket) { }
+  handleConnection(@ConnectedSocket() client: Socket) {}
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
     const userGameId = this.connectedUsers.get(client.id);
@@ -48,20 +48,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: (string | number)[],
     @ConnectedSocket() client: Socket
   ) {
-    console.log("game:unmount: ", data)
     const [gameId, userId] = data;
 
     const currentGame = this.runningGames.get(gameId as string);
 
     this.connectedUsers.delete(client.id);
-
-    if (currentGame === undefined) {
-      client.emit("game:badRequest");
-      client.disconnect();
-      return;
-    }
-
     client.disconnect();
+
+    if (currentGame === undefined) return;
 
     if (userId !== currentGame.player1 && userId !== currentGame.player2)
       return;
@@ -97,8 +91,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket
   ) {
     let [player1Id, player2Id, userId] = [data[0], data[1], data[2]];
-
-    console.log("gamejoin: ", data)
 
     if (data[0] === null || data[1] === null || data[2] === null) {
       client.emit("game:badRequest");

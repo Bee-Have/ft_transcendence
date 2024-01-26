@@ -13,7 +13,7 @@ interface GamePopupContextProps {
 
 const defaultGamePopupContext: GamePopupContextProps = {
   isVisible: false,
-  setIsVisible: () => { },
+  setIsVisible: () => {},
 };
 
 const GamePopupContext = createContext<GamePopupContextProps>(
@@ -28,13 +28,9 @@ export const GamePopupProvider = ({
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const session = useSessionContext();
 
-
   React.useEffect(() => {
-    console.log("mounting context, socket == ", session.socket);
-
     const togglePopup = (data: UserStatusEventDto) => {
-    console.log("toggle popup ", data);
-      if (userId !== data.userId) return ;
+      if (userId !== data.userId) return;
       if (
         data.userstatus === UserStatus.offline ||
         data.userstatus === UserStatus.ingame ||

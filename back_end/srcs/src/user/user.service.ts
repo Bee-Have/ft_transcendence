@@ -145,26 +145,24 @@ export class UserService {
           username,
         },
       });
-    }
-    catch(e) {
-      throw new BadRequestException('Bad request')
+    } catch (e) {
+      throw new BadRequestException("Bad request");
     }
   }
 
   async updateDescription(userId: number, description: string) {
-  try {  
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        description,
-      },
-    });
-  }
-  catch(e) {
-    throw new BadRequestException('Bad request')
-  }
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          description,
+        },
+      });
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async enableTFA(userId: number): Promise<string> {
@@ -221,7 +219,6 @@ export class UserService {
       const t: string = await qrcode.toDataURL(otp);
       return t;
     } catch (err) {
-      console.log(err);
       throw new InternalServerErrorException(
         "Error while generating TFA QRCode"
       );
@@ -240,18 +237,12 @@ export class UserService {
 
       return user;
     } catch (e: any) {
-      // if (types(e) )
-		console.log("should throw here");
       if (e instanceof HttpException) {
-        console.log("http");
         throw new BadRequestException("test1");
       }
       if (e instanceof AxiosError) {
-        console.log("axios");
         throw new BadRequestException("test2");
       }
-      // if (typeof e === AxiosError)
-      // if(typeof e === HttpException)
     }
   }
 

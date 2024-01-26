@@ -1,4 +1,3 @@
-
 import {
   ForbiddenException,
   HttpException,
@@ -292,7 +291,6 @@ export class GameService {
       },
     });
 
-    console.log("socket of invited and invitee", invitedUser.socket.id, invitee.socket.id);
     invitedUser.socket.emit("new-invite");
     invitee.socket.emit("new-invite");
   }

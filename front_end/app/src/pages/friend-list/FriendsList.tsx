@@ -13,6 +13,8 @@ import { useSessionContext } from "src/context/SessionContext";
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
+import { useEffectOnce } from 'src/components/useEffectOnce';
+
 interface CardProps {
   user: Friend;
 }
@@ -37,7 +39,7 @@ const FriendList: React.FC = () => {
 
   const session = useSessionContext();
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
       .get(BACKEND_URL + '/user/friends', {
         withCredentials: true,
@@ -53,7 +55,7 @@ const FriendList: React.FC = () => {
         )
       )
       .catch((err) => console.log(err));
-  }, [session.socket]);
+  });
 
   useEffect(() => {
     const listenNewStatus = (eventProps: UserStatusEventDto) => {

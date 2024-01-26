@@ -30,6 +30,8 @@ import { BACKEND_URL } from "src/pages/global/env";
 
 import { useSessionContext } from "src/context/SessionContext";
 
+import { useEffectOnce } from "src/components/useEffectOnce";
+
 function TimerCard({ duration }: { duration: number }) {
   const [remainingTime, setRemainingTime] = React.useState(duration);
   const [isStarted, setIsStarted] = React.useState(false);
@@ -81,7 +83,7 @@ function GameRoomPvp() {
 
   const session = useSessionContext();
 
-  React.useEffect(() => {
+  useEffectOnce(() => {
     if (gameSocket.current === undefined) {
       gameSocket.current = io(BACKEND_URL + "/game", {
         transports: ["websocket"],
@@ -168,7 +170,7 @@ function GameRoomPvp() {
         gameSocket.current.removeAllListeners();
       }
     };
-  }, [session.socket]);
+  });
 
   if (gameOver === true) {
     return (

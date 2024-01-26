@@ -39,7 +39,6 @@ function GamePopupList() {
         });
     };
 
-    console.log("listening on: ", session.socket?.id)
     session.socket?.on("new-invite", fetchInvites);
 
     if (userId !== 0) fetchInvites();
@@ -54,13 +53,10 @@ function GamePopupList() {
     <div className={styles.PopupList}>
       {Object.keys(popupList).map((key) => {
         if (popupList[key].receiver === undefined) {
-          console.log("matchmaking");
           return <MatchmakingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id === userId) {
-          console.log("inviting");
           return <InvitingPopup key={key} gamePopupProps={popupList[key]} />;
         } else if (popupList[key].sender.id !== userId) {
-          console.log("invited");
           return <InvitedPopup key={key} gamePopupProps={popupList[key]} />;
         } else {
           return null;

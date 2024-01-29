@@ -154,7 +154,7 @@ const Profil: React.FC = () => {
               <>
                 <hr />
                 About me : <br />
-                <div style={{ paddingLeft: "5%" }}>
+                <div style={{ paddingLeft: "5%", wordBreak: "break-all" }}>
                   {profilInfo.description}
                 </div>
               </>

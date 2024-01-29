@@ -13,8 +13,6 @@ const Chat: React.FC = () => {
 
 	const chatId = id ? Number(id) : undefined
 
-	console.log(chatId)
-
 	return (
 		<div className="channel-content-wrapper">
 			<Conversations chatId={chatId} />

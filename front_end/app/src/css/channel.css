@@ -3,6 +3,13 @@
 	flex-wrap: wrap;
 }
 
+.channel-reload-button-wrapper {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+}
+
 .channel-box {
 	min-width: 400px;
 	min-height: 150px;
@@ -260,18 +267,33 @@ select {
 	color: white;
 }
 
+.green {
+	color: green;
+}
+
+.white {
+	color: white;
+}
+
+.bc-green {
+	background-color:#4caf50
+}
+
+.red {
+	color: red
+}
+
 .password-submit-message {
 	animation-name: myAnimation;
 	animation-duration: 4000ms;
 	animation-fill-mode: forwards;
 	position: absolute;
-	color: red
 }
 
 @keyframes myAnimation {
 	0% {
 		position: absolute;
-		color: red;
+		/* color: red; */
 		opacity: 1;
 	}
 

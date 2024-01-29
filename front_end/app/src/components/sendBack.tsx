@@ -1,7 +1,7 @@
 import axios from 'axios';
+import {ReadCookie} from "./ReadCookie";
 
 const sendBack = async (url: string) => {
-  console.log("Send Get Back Called");
   try {
     const response = await axios.get(url);
     return response;
@@ -12,9 +12,8 @@ const sendBack = async (url: string) => {
 };
 
 const sendBackPost = async (url: string) => {
-  console.log("Send Back POST called");
   try {
-    const response = await axios.post(url, {}, {withCredentials: true});
+    const response = await axios.post(url, {}, {headers: {Authorization: `Bearer ${ReadCookie("access_token")}`}, withCredentials: true});
     return response;
   } catch (error) {
     console.error('Erreur lors de la récupération des données du backend', error);

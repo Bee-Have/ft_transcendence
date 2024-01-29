@@ -1,41 +1,46 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { AxiosError } from "axios";
 
 import Input from "@mui/material/Input";
 import { BACKEND_URL } from "src/pages/global/env";
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
+import { ReadCookie } from "./ReadCookie";
+import { useNavigate } from "react-router";
+
+import { useSessionContext } from "src/context/SessionContext";
 
 interface FAEnableProps {
   popUp: (value: boolean) => void;
-  btn: (value: boolean) => void;
 }
 
-const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn }: FAEnableProps) => {
-  const [qrCode, setQrCode] = useState("");
+const TFAConnection: React.FC<FAEnableProps> = ({ popUp }) => {
   const [code, setCode] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(-1);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const errorContext = useErrorContext();
+  const session = useSessionContext();
+  const navigate = useNavigate();
 
   const click = () => {
     const test = document.getElementById("test");
     if (test) test.blur();
     axios
-      .get(BACKEND_URL + "/user/tfa/enable/callback?code=" + code, {
+      .get(BACKEND_URL + "/auth/tfa?code=" + code, {
+        headers: { Authorization: `Bearer ${ReadCookie("TfaToken")}` },
         withCredentials: true,
       })
-      .then((res: { status: number; }) => {
+      .then((res) => {
         if (res.status === 200) {
           popUp(false);
-          btn(true);
+          session.login();
+          navigate("/"); //? might get rid of this, react will re render the page with the state change anyway.
         }
       })
-      .catch((error: Error | AxiosError<unknown, any>) => {
-        errorContext.newError?.(errorHandler(error));
-        if (axios.isAxiosError(error) && error.response?.status === 429) {
+      .catch((e) => {
+        errorContext.newError?.(errorHandler(e));
+        if (e.response?.status === 429) {
           setIsButtonDisabled(true);
           setTimer(30000);
         }
@@ -56,11 +61,11 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn }: FAEnableProps) => {
   }, [timer]);
 
   useEffect(() => {
-    let id: NodeJS.Timer;
+    let id: any;
     if (timer > -1) {
       setSecondsLeft(timer / 1000);
       id = setInterval(() => {
-        setSecondsLeft((r: number) => r - 1);
+        setSecondsLeft((r) => r - 1);
       }, 1000);
     }
 
@@ -69,26 +74,12 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn }: FAEnableProps) => {
     };
   }, [timer]);
 
-  const updateCode = (e: {target: {value: string}}) => {
+  const updateCode = (e: any) => {
     setCode(e.target.value);
-  };
-
-  const getQrCode = () => {
-    axios
-      .get(BACKEND_URL + "/user/tfa/enable", { withCredentials: true })
-      .then((res: any) => {
-        if (res.data) {
-          setQrCode(res.data);
-        } else {
-          setQrCode("Qrcode not Available");
-        }
-      })
-      .catch((error: Error | AxiosError) => errorContext.newError?.(errorHandler(error)));
   };
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === "Escape") popUp(false);
       if (event.key === "Enter") {
         event.preventDefault();
       }
@@ -103,31 +94,23 @@ const FAEnable: React.FC<FAEnableProps> = ({ popUp, btn }: FAEnableProps) => {
     };
   }, [handleKeyPress]);
 
-  useEffect(() => {
-    getQrCode();
-    // eslint-disable-next-line
-  }, [popUp]);
-
   return (
     <div className="overlay">
-      <div className="content">
-        <div className="QRCode">
-          <h1>Two factor authentification :</h1>
-          <img alt="qrcode" src={qrCode}></img>
-          <Input
-            autoFocus
-            onChange={(e: { target: { value: string; }; }) => updateCode(e)}
-            placeholder="ENTER CODE HERE"
-          />
-          <br />
-          <button id="test" disabled={isButtonDisabled} onClick={() => click()}>
-            Validate
-          </button>
-          {!!secondsLeft && secondsLeft}
-        </div>
+      <div className="QRCode">
+        <h1>Two factor authentification :</h1>
+        <Input
+          autoFocus
+          onChange={(e) => updateCode(e)}
+          placeholder="ENTER CODE HERE"
+        />
+        <br />
+        <button id="test" disabled={isButtonDisabled} onClick={() => click()}>
+          Validate
+        </button>
+        {!!secondsLeft && secondsLeft}
       </div>
     </div>
   );
 };
 
-export default FAEnable;
+export default TFAConnection;

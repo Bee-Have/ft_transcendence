@@ -21,7 +21,7 @@ function InteractiveAvatar({
       <Avatar
         src={user.photo}
         alt={user.username}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
+        onClick={(event) => {setAnchorEl(event.currentTarget);}}
         className={styles.InteractiveAvatar}
       />
       <PopUp

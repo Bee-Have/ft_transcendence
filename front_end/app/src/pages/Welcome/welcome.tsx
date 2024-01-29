@@ -1,120 +1,125 @@
 import React, { useEffect } from "react";
 import PlayGameModeDialogButton from "../../components/game/GameModeDialog/PlayGameModeDialogButton";
 
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { ReadCookie } from '../../components/ReadCookie';
-import isTokenExpired from '../global/isTokenExpired';
-import { BACKEND_URL } from '../global/env';
-        
-import "src/css/welcome.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { ReadCookie } from "../../components/ReadCookie";
+import { BACKEND_URL } from "../global/env";
+import isTokenExpired from "../global/isTokenExpired";
+
+import { useSessionContext } from "src/context/SessionContext";
+
 import "src/css/header.css";
+import "src/css/welcome.css";
 
-// interface WelcomeProps
-// {
-//   isLogged: boolean;
-//   openLoginWindow: () => void;
-//   acceptConnection: () => void;
-//   updateBooleanStates: (statesToUpdate: Record<string, boolean>) => void;
-// }
+import TFAConnection from "src/components/2FAConnection";
+import { userId } from "../global/userId";
 
-// const Welcome: React.FC<WelcomeProps> = ({ isLogged, openLoginWindow, acceptConnection, updateBooleanStates}) => {
-const Welcome: React.FC = () => {
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
+function Welcome() {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = React.useState(false);
-  const [guest, setGuest] = React.useState(false);
-  const aToken = ReadCookie("access_token");
-  const rToken = ReadCookie("refresh_token");
+  const errorContext = useErrorContext();
 
-  // const login = () => {
-  // }
+  const [print2FA, set2FA] = React.useState(false);
+  const session = useSessionContext();
+  const TFA = ReadCookie("TfaEnable");
 
   const authenticateUser = () => {
-    // this is temporary
-    // here call the 42 portal to authenticate the user
-
-    axios.get(BACKEND_URL + '/auth', )
-    .then((res: any) => {
-      window.location.replace(res.data)
-    })
-    .catch(e => console.log(e))
-	// login()
-    // setAuthenticated(true);
+    axios
+      .get(BACKEND_URL + "/auth")
+      .then((res: any) => {
+        window.location.replace(res.data);
+      })
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
+      });
+    if (session.aToken && TFA) {
+      alert("2FA require here");
+    }
   };
 
   useEffect(() => {
-    if (!aToken) {
-      console.log("login");
-      // login()
-      setAuthenticated(false);
-    } else if (isTokenExpired(aToken)) {
-      console.log("Atoken Expired");
-      if (!rToken || isTokenExpired(rToken)) {
-        console.log("No Rt or expired");
-        setAuthenticated(false);
-        // login()
+    if (
+      (session.aToken === null || session.rToken === null) &&
+      TFA !== "true"
+    ) {
+      session.updateTokens();
+      return;
+    }
+    if (!session.aToken) {
+      if (TFA === "true") {
+        set2FA(true);
       } else {
-        console.log("posting");
+      }
+    } else if (isTokenExpired(session.aToken)) {
+      if (!session.rToken || isTokenExpired(session.rToken)) {
+      } else {
         axios
-          .post(
-            BACKEND_URL + "/auth/refresh",
-            {},
-            { withCredentials: true }
-          )
+          .post(BACKEND_URL + "/auth/refresh", {}, { withCredentials: true })
           .then(() => {
             window.location.reload();
           })
-          .catch((e) => console.log(e));
+          .catch((error: Error | AxiosError<unknown, any>) => {
+            errorContext.newError?.(errorHandler(error));
+          });
       }
     } else {
-      setAuthenticated(true);
+      session.login();
     }
-  }, []);
+  }, [session.aToken, session.rToken]);
 
-  const guestUser = () => {
-    setGuest(true);
-  };
-
-  return (
-    <div className="log_window">
-      {/* add querry here to check if authentification token was filled */}
-      {authenticated && (
-        <div className="header">
-          <button className="btn btn-light" onClick={() => navigate("/profil")}>
-            profile
-          </button>
-        </div>
-      )}
-      <h1 className="display-1 welcome">welcome</h1>
-      <div className="login-choice">
-        <div className="col-md-4">
-          {!authenticated && (
+  if (session.isLogged === false) {
+    return (
+      <div className="log_window">
+        {print2FA && <TFAConnection popUp={set2FA} />}
+        <h1 className="display-1 welcome">welcome</h1>
+        <div className="login-choice">
+          <div>
             <button className="btn btn-light" onClick={authenticateUser}>
               login
             </button>
-          )}
-          {authenticated && (
-            <button className="btn btn-light" onClick={() => navigate("/chat")}>
-              chat
-            </button>
-          )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="log_window">
+      <div className="header">
+        <button
+          className="btn btn-light"
+          onClick={() => navigate(`/profil/` + userId)}
+        >
+          profile
+        </button>
+      </div>
+      <h1 className="display-1 welcome">welcome</h1>
+      <div className="logged-bar">
+        <div className="col-md-4">
+          <button className="btn btn-light" onClick={() => navigate("/chat")}>
+            chat
+          </button>
         </div>
         <div className="col-md-4">
-          {!authenticated && !guest && (
-            <button className="btn btn-light" onClick={guestUser}>
-              guest
-            </button>
-          )}
-          {/* {(authenticated || guest) && <button className="btn btn-light">play</button>} */}
-          {(authenticated || guest) && <PlayGameModeDialogButton />}
+          <PlayGameModeDialogButton />
         </div>
         <div className="col-md-4">
-          <button className="btn btn-light">leaderboard</button>
-          {/* <button className="btn btn-light" onClick={() => navigate("/leaderboard")}>leaderboard</button> */}
+          <button
+            className="btn btn-light"
+            onClick={() => {
+              navigate("/user/leaderboard");
+            }}
+          >
+            leaderboard
+          </button>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Welcome;

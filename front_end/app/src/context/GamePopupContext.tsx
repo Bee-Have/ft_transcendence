@@ -1,10 +1,10 @@
 import { createContext, useContext, useState } from "react";
 import React from "react";
 
-import { socket } from "src/pages/global/websocket";
 import { UserStatus, UserStatusEventDto } from "src/pages/global/friend.dto";
 
-import { useEffectOnce } from "src/components/useEffectOnce";
+import { useSessionContext } from "./SessionContext";
+import { userId } from "src/pages/global/userId";
 
 interface GamePopupContextProps {
   isVisible: boolean;
@@ -26,9 +26,11 @@ export const GamePopupProvider = ({
   children: React.ReactNode;
 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const session = useSessionContext();
 
-  useEffectOnce(() => {
+  React.useEffect(() => {
     const togglePopup = (data: UserStatusEventDto) => {
+      if (userId !== data.userId) return;
       if (
         data.userstatus === UserStatus.offline ||
         data.userstatus === UserStatus.ingame ||
@@ -38,14 +40,19 @@ export const GamePopupProvider = ({
       } else {
         setIsVisible(true);
       }
+
+      if (data.userstatus === UserStatus.offline) {
+        session.disconnectSocket();
+      }
     };
 
-    socket?.on("user-status", togglePopup);
+    session.socket?.on("user-status", togglePopup);
 
     return () => {
-      socket?.off("user-status", togglePopup);
+      session.socket?.off("user-status", togglePopup);
     };
-  });
+    // eslint-disable-next-line
+  }, [session.socket]);
 
   return (
     <GamePopupContext.Provider value={{ isVisible, setIsVisible }}>

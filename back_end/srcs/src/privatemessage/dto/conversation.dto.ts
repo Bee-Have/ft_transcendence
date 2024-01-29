@@ -17,4 +17,6 @@ export class Conversation {
 	friendUsername: string
 	friendId: number
 	username: string
+	isMemberBlockedByuser: boolean
+	isMemberFriendWithUser: boolean
 }

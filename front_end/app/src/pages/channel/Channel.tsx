@@ -1,43 +1,51 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { BACKEND_URL } from '../global/env';
-import ChannelMembersBar from './components/ChannelMembersBar';
-import ChannelTopBar from './components/ChannelTopBar';
-import { MemberProps } from './types/MemberProps.types';
+import axios, { AxiosError } from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { BACKEND_URL } from "../global/env";
+import ChannelMembersBar from "./components/ChannelMembersBar";
+import ChannelTopBar from "./components/ChannelTopBar";
+import { MemberProps } from "./types/MemberProps.types";
 
-import '../../css/channel.css';
-import '../../css/chat.css';
-import ChannelTextArea from './components/ChannelTextArea';
+import "../../css/channel.css";
+import "../../css/chat.css";
+import ChannelTextArea from "./components/ChannelTextArea";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
 
 const Channel: React.FC = () => {
+  const errorContext = useErrorContext();
 
-	const { id } = useParams()
-	const [channelMembers, setChannelMembers] = useState<MemberProps[]>([])
-	const navigate = useNavigate()
-	const channelId = Number(id)
+  const { id } = useParams();
+  const [channelMembers, setChannelMembers] = useState<MemberProps[]>([]);
+  const navigate = useNavigate();
+  const channelId = Number(id);
 
-	useEffect(() => {
-		axios.get(BACKEND_URL + '/channel/members/' + channelId, { withCredentials: true })
-			.then((res): any => {
-				setChannelMembers(res.data)
-			})
-			.catch((e: any) => {
-				console.log(e)
-				navigate("/" + e.response.status)
-			})
-	}, [channelId, navigate])
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL + "/channel/members/" + channelId, {
+        withCredentials: true,
+      })
+      .then((res: any) => {
+        setChannelMembers(res.data);
+      })
+      .catch((e: Error | AxiosError) => {
+        errorContext.newError?.(errorHandler(e));
+        if (axios.isAxiosError(e)) {
+          navigate("/" + e.response?.status);
+        }
+      });
+  }, [channelId, navigate, errorContext]);
 
-	return (
-		<div className="channel-content-wrapper">
-			<ChannelTopBar
-				channelId={channelId} />
-			<ChannelMembersBar
-				channelMembers={channelMembers}
-				channelId={channelId} />
-			<ChannelTextArea currentChannelId={channelId} />
-		</div>
-	);
+  return (
+    <div className="channel-content-wrapper">
+      <ChannelTopBar channelId={channelId} />
+      <ChannelMembersBar
+        channelMembers={channelMembers}
+        channelId={channelId}
+      />
+      <ChannelTextArea currentChannelId={channelId} />
+    </div>
+  );
 };
 
 export default Channel;

@@ -7,30 +7,41 @@ import { ChannelProps } from './types/ChannelProps.types';
 
 import '../../css/channel.css';
 import '../../css/chat.css';
+import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from 'src/context/ErrorContext';
+import { AxiosError } from "axios";
 
 const ChannelJoiningList = ({ onUpdate }: any) => {
 	const [channelList, setChannelList] = useState<ChannelProps[]>([])
+	const errorContext = useErrorContext();
+	const [updateList, setUpdateList] = useState<boolean>(false)
+	const [updateMessage, setUpdateMessage] = useState<string | null>(null)
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel/list', { withCredentials: true })
-			.then((res): any => {
+			.then((res: any) => {
 				setChannelList(res.data)
+				setUpdateMessage('Up to date')
 			})
-			.catch(error => console.log(error))
-	}, [])
+			.catch((e: Error | AxiosError<unknown, any>) => errorContext.newError?.(errorHandler(e)))
+	}, [updateList, errorContext])
 
-	// const popChannel = (channelId: number) => {
-	// 	setChannelList((prev => channelList.filter(
-	// 		(channel) => { return channel.id !== channelId })))
-	// }
+	const updateChannelList = () => {
+		setUpdateMessage(null)
+		setUpdateList((r: boolean) => !r)
+	}
 
 	return (
 		<div className="channel-content-wrapper">
 			<ChannelCreationForm onUpdate={onUpdate} />
 			<div className='channel-box-wrapper'>
+				<div className='channel-reload-button-wrapper'>
+					<button className='channel-form-button' onClick={updateChannelList}>Reload</button>
+					{updateMessage && <div className='password-submit-message white bc-green'>{updateMessage}</div>}
+				</div>
 				{
 					Object.keys(channelList).map((i) => (
-						<ChannelJoinBox key={i} channel={channelList[i]} onUpdate={onUpdate} />
+						<ChannelJoinBox key={i} channel={channelList[parseInt(i)]} onUpdate={onUpdate} />
 					))
 				}
 			</div>

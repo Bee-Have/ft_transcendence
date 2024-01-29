@@ -14,7 +14,6 @@ function InteractiveUsername({
   usage?: "stranger" | "friend" | "invite";
 }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
   return (
     <>
       <h1

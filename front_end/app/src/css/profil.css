@@ -24,23 +24,10 @@
 }
 
 .content {
-  margin-top: 3%;
+  /* margin-top: 3%; */
   margin-left: 20%;
-  min-height: 93vh;
+  min-height: 100vh;
 }
-
-.person-image {
-  max-width: 50px;
-  max-height: 50px;
-  object-fit: cover;
-  margin-right: 10px;
-  border-radius: 50%;
-  margin-left: 6%;
-}
-
-
-
-
 
 /* pending */
 .pending .PP{
@@ -75,14 +62,23 @@
   color: blue;
 }
 
-.card .avatar{
-    
-}
-
-
-
 
 /* profil */
+
+.header-bar {
+	background-color: #939393;
+  position: fixed;
+  display: flex;
+  top: 0;
+  width: 80%;
+  height: 75px;
+  z-index: 500;
+}
+
+.profil {
+  position: relative;
+  top: 80px;
+}
 
 .profil .PP{
   width: 200px;
@@ -141,82 +137,66 @@
 
 /* match */
 
-.matchHistory .content{
-  align-content: center;
-  text-align: center;
+.matchHistory{
+  z-index: -1;
+  position: absolute;
+  height: 90%;
+  min-height: 90%;
+  top: 5%;
+  bottom: 5%;
+  width: 90%;
+  left: 5%;
+  right: 5%;
 
   display: flex;
   flex-direction: column;
+  align-items: center;
+
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.matchHistory .content{
+  overflow-y: auto;
+  padding-right: 1px;
+  padding-left: 1px;
 }
 
 .match{
   font-size: 40px;
 
-  display: flex;
-  flex-direction: row;
+  position: relative;
+  display: grid;
+  
+  grid-template-columns: repeat(5, 1fr);
   
   justify-content: space-between;
   align-items: center;
 
- 
   border-radius: 8px;
   margin-bottom: 20px;
 
   padding: 10px;
   
   background-color: #A0A0A0;
+  width: 90%;
+  overflow-x: auto;
+
+  gap: 20px;
 }
 
-.matchHistory .match{
-  width: 80%;
-}
-
-.matchHistory .victory{
-  width: 15%;
+.match .victory{
   color: cyan;
 }
-.matchHistory .defeat{
-  width: 15%;
+.match .defeat{
   color: pink;
 }
-.matchHistory .tie{
-  width: 15%;
+.match .tie{
   color: white;
 }
 
-.matchHistory .VS{
-  width: 5%;
-}
-
-.matchHistory .PP{
-  width: 10%;
-}
-
-.matchHistory .opposantName{
-  width: 20%;
-}
-
-.matchHistory .score{
-	
-	width: 10%;
-	white-space: nowrap;
-}
-
-.matchHistory .mode{
-  width: 20%;
-}
-
-.matchHistory .separator {
-  height: 3px;
-  width: 75%;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background-color: white;
-}
-
-.matchHistory .avatar{
-  width: 5%;
-  padding-top: 10px;
+.match .score {
+  font-weight: bold;
 }
 
 /* Pop up */
@@ -247,12 +227,13 @@
 }
 
 .QRCode{
-    height: 40vh;
+    height: fit-content;
     min-height: 350px;
     width: 50%;
     margin-top: 2%;
     margin-left: 25%;
     text-align: center;
+    padding-bottom: 20px;
     background-color: white;
 }
 

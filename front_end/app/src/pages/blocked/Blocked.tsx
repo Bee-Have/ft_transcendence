@@ -54,7 +54,7 @@ const Card = ({ user }: CardProps) => {
 };
 
 
-const Bloqued: React.FC = () => {
+const Blocked: React.FC = () => {
   const [blockedUser, setBlockedUser] = useState<Friend[]>([]);
 
   useEffect(() => {
@@ -89,4 +89,4 @@ const Bloqued: React.FC = () => {
   );
 };
 
-export default Bloqued;
+export default Blocked;

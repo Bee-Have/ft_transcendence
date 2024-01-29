@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import "./App.css";
 import "./bootstrap/css/bootstrap.css";
 
-import Pending from "./pages/pending/pendingMabriel";
+import Pending from "./pages/pending/Pending";
 import Welcome from "./pages/Welcome/welcome";
 import Profil from "./pages/profil/profil";
 import FriendList from "./pages/friend-list/FriendsList";

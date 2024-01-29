@@ -83,7 +83,7 @@ const Blocked: React.FC = () => {
       .catch((error: Error | AxiosError<unknown, any>) =>
         errorContext.newError?.(errorHandler(error))
       );
-  }, []);
+  }, [errorContext]);
 
   return (
     <div className="blocked">
@@ -91,7 +91,7 @@ const Blocked: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(blockedUser).map((i) => (
-            <Card key={i} user={blockedUser[i]} />
+            <Card key={i} user={blockedUser[parseInt(i)]} />
           ))}
         </div>
       </div>

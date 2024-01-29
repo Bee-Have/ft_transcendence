@@ -13,7 +13,7 @@ import styles from "./game/GameModeDialog/InviteGameModeDialogButton.module.css"
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 import { BACKEND_URL } from "src/pages/global/env";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 interface PopUpProps {
   user: Friend;
@@ -30,27 +30,35 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
     setAnchorEl(null);
   };
 
-	const errorContext = useErrorContext();
+  const errorContext = useErrorContext();
 
-	const sendFriendRequest = () => {
-		axios.get(BACKEND_URL + '/user/friend/create/' + user.id,
-			{ withCredentials: true })
-			.then((res) => { })
-			.catch((e) => { errorContext.newError?.(errorHandler(e)); })
-		handleClose()
-	}
+  const sendFriendRequest = () => {
+    axios
+      .get(BACKEND_URL + "/user/friend/create/" + user.id, {
+        withCredentials: true,
+      })
+      .then(() => {})
+      .catch((e: Error | AxiosError) => {
+        errorContext.newError?.(errorHandler(e));
+      });
+    handleClose();
+  };
 
-	const chatWithUser = () => {
-		axios.post(BACKEND_URL + '/privatemessage/conversations/' + user.id, {}, { withCredentials: true })
-			.then((res) => {
-				navigate("/chat/" + res.data.conversation.id)
-			})
-			.catch((e) => {
-				errorContext.newError?.(errorHandler(e))
-			})
-		handleClose()
-	}
-
+  const chatWithUser = () => {
+    axios
+      .post(
+        BACKEND_URL + "/privatemessage/conversations/" + user.id,
+        {},
+        { withCredentials: true }
+      )
+      .then((res: any) => {
+        navigate("/chat/" + res.data.conversation.id);
+      })
+      .catch((e: Error | AxiosError) => {
+        errorContext.newError?.(errorHandler(e));
+      });
+    handleClose();
+  };
 
   return (
     <Menu
@@ -80,16 +88,15 @@ function PopUp({ user, usage, anchorEl, setAnchorEl }: PopUpProps) {
       {usage === "friend" && <InviteSpectateButton user={user} />}
       {usage === "stranger" && <InviteGameModeDialogButton user={user} />}
 
-      <Button
-        className={styles.ButtonDialogOpen}
-        onClick={chatWithUser}
-      >
+      <Button className={styles.ButtonDialogOpen} onClick={chatWithUser}>
         Chat
       </Button>
 
-      {usage !== "friend" && 
-      <Button className={styles.ButtonDialogOpen} onClick={sendFriendRequest}>
-        Add friend </Button>}
+      {usage !== "friend" && (
+        <Button className={styles.ButtonDialogOpen} onClick={sendFriendRequest}>
+          Add friend{" "}
+        </Button>
+      )}
     </Menu>
   );
 }

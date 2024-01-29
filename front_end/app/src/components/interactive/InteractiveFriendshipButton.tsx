@@ -1,5 +1,7 @@
 import React from "react";
 
+import { AxiosError } from "axios";
+
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 
@@ -21,8 +23,8 @@ function InteractiveFriendshipButton({
   const sendFriendRequest = () => {
     userService
       .sendFriendRequest(receiverId)
-      .then((res) => {})
-      .catch((e) => {
+      .then(() => {})
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
   };
@@ -33,7 +35,7 @@ function InteractiveFriendshipButton({
       .then(() => {
         removeFriend();
       })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
   };

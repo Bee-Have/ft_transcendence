@@ -1,7 +1,7 @@
 import { Input } from '@mui/material';
 import React, { useState } from 'react';
 
-const TextInputWithEnterCallback = ({ onEnterPress, hideInput }: any) => {
+const TextInputWithEnterCallback = ({ id, onEnterPress, hideInput }: any) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyPress = (event: any) => {
@@ -13,12 +13,13 @@ const TextInputWithEnterCallback = ({ onEnterPress, hideInput }: any) => {
 
   return (
     <Input
+    id={id}
 	  className='custom-input'
       type="text"
       value={inputValue}
-      onChange={(e) => setInputValue(e.target.value)}
+      onChange={(e: any) => setInputValue(e.target.value)}
       onKeyDown={handleKeyPress}
-	  onClick={(e) => e.stopPropagation()}
+	  onClick={(e: any) => e.stopPropagation()}
       placeholder="Username"
 	  onBlur={hideInput}
     />

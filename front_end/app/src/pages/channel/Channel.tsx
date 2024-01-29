@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BACKEND_URL } from "../global/env";
@@ -25,12 +25,14 @@ const Channel: React.FC = () => {
       .get(BACKEND_URL + "/channel/members/" + channelId, {
         withCredentials: true,
       })
-      .then((res): any => {
+      .then((res: any) => {
         setChannelMembers(res.data);
       })
-      .catch((e: any) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
-        navigate("/" + e.response.status);
+        if (axios.isAxiosError(e)) {
+          navigate("/" + e.response?.status);
+        }
       });
   }, [channelId, navigate, errorContext]);
 

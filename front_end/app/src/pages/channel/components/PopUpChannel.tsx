@@ -1,5 +1,5 @@
 import { Button, Menu } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React from "react";
 import { useNavigate } from "react-router";
 import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
@@ -119,10 +119,10 @@ const AddFriendButton = ({
       .get(BACKEND_URL + "/user/friend/create/" + member.userId, {
         withCredentials: true,
       })
-      .then((res) => {
+      .then(() => {
         setMemberIsFriend(true);
       })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
         setMemberIsFriend(true);
       });
@@ -148,10 +148,10 @@ const ChatButton = ({ member, handleClose, navigate }: any) => {
         {},
         { withCredentials: true }
       )
-      .then((res) => {
+      .then((res: any) => {
         navigate("/chat/" + res.data.conversation.id);
       })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
     handleClose();
@@ -189,8 +189,8 @@ const manageRole = (manageRoleObject: ManageRole, errorContext: any) => {
     .post(BACKEND_URL + "/channel/manage/role", manageRoleObject, {
       withCredentials: true,
     })
-    .then((res) => {})
-    .catch((e) => errorContext.newError?.(errorHandler(e)));
+    .then(() => {})
+    .catch((e: Error | AxiosError) => errorContext.newError?.(errorHandler(e)));
 };
 
 const SetAsAdminButton = ({
@@ -267,8 +267,10 @@ const RestrictUserButton = ({
       .post(BACKEND_URL + "/channel/restrict", restrictedUser, {
         withCredentials: true,
       })
-      .then((res) => {})
-      .catch((e) => errorContext.newError?.(errorHandler(e)));
+      .then(() => {})
+      .catch((e: Error | AxiosError) =>
+        errorContext.newError?.(errorHandler(e))
+      );
     handleClose();
   };
 
@@ -317,10 +319,10 @@ const BlockUserButton = ({
 
     axios
       .post(Url, {}, { withCredentials: true })
-      .then((res) => {
+      .then(() => {
         setMemberIsBlocked(!memberIsBlocked);
       })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
     handleClose();

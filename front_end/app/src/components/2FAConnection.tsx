@@ -80,7 +80,6 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp }) => {
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key === "Escape") popUp(false);
       if (event.key === "Enter") {
         event.preventDefault();
       }

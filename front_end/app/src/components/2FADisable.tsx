@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { AxiosError } from "axios";
 import React from 'react';
 import { useErrorContext } from 'src/context/ErrorContext';
 import { errorHandler } from 'src/context/errorHandler';
@@ -9,18 +10,18 @@ interface FAEnableProps {
 	btn: (value : boolean) => void;
 }
 
-const FADisable: React.FC<FAEnableProps> = ({popUp, btn}) => {
+const FADisable: React.FC<FAEnableProps> = ({popUp, btn} : FAEnableProps) => {
 
 	const errorContext = useErrorContext();
 
 	const desactivate = () => {
 		axios.get(BACKEND_URL + '/user/tfa/disable', { withCredentials: true })
-		.then(((res) => {
+		.then((() => {
 			popUp(false); 
 			btn(false);
 		}))
-		.catch((e) => {
-			errorContext.newError?.(errorHandler(e))
+		.catch((error: Error | AxiosError<unknown, any>) => {
+			errorContext.newError?.(errorHandler(error))
 		})
 	}
 

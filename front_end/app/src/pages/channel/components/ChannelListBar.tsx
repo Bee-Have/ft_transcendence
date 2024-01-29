@@ -7,6 +7,7 @@ import { errorHandler } from "src/context/errorHandler";
 import { BACKEND_URL } from "src/pages/global/env";
 import { userId } from "src/pages/global/userId";
 import { useSessionContext } from "src/context/SessionContext";
+import { AxiosError } from "axios";
 
 const ChannelIcon = ({
   channel,
@@ -22,7 +23,7 @@ const ChannelIcon = ({
 
   useEffect(() => {
     const listenNewBadge = (info: { channelId: number }) => {
-      if (channel.id === info.channelId) setImageKey((prev) => prev + 1);
+      if (channel.id === info.channelId) setImageKey((prev : any) => prev + 1);
     };
 
     const listenNewInfo = (info: {
@@ -106,7 +107,10 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
       .then((res: any) => {
         setChannels(res.data);
       })
-      .catch((e) => errorContext.newError?.(errorHandler(e)));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
+    // eslint-disable-next-line
   }, [update]);
 
   useEffect(() => {
@@ -120,8 +124,8 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
   useEffect(() => {
     const listenLeaveMember = (info: any) => {
       if (info.userId === userId || info.role === "OWNER")
-        setChannels((prev) =>
-          prev.filter((channel) => {
+        setChannels((prev : any) =>
+          prev.filter((channel : any) => {
             return channel.id !== info.channelId;
           })
         );
@@ -132,6 +136,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
     return () => {
       session.socket?.off("leave-channel-member", listenLeaveMember);
     };
+    // eslint-disable-next-line
   }, [session.socket]);
 
   return (
@@ -142,7 +147,7 @@ const ChannelListBar = ({ update }: { update: boolean }) => {
         {Object.keys(channels).map((index) => (
           <ChannelIcon
             key={index}
-            channel={channels[index]}
+            channel={channels[parseInt(index)]}
             selectedId={selectedChannelId}
           />
         ))}

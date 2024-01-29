@@ -327,10 +327,7 @@ export class PrivateMessageService {
       isMemberBlockedByuser:
         await this.userService.isMemberOneBlockedByMemberTwo(friendId, userId),
       isMemberFriendWithUser:
-        (await this.userService.getUserFriendsId(userId)).includes(friendId) ||
-        !!(await this.userService.getUserSentInvite(userId)).filter((m) => {
-          return m.id === friendId;
-        }).length,
+        (await this.userService.getUserFriendsId(userId)).includes(friendId)
     };
 
     const obj: ConversationProps = {

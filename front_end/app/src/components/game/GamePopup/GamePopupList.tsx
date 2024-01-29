@@ -9,17 +9,13 @@ import styles from "./GamePopup.module.css";
 
 import { useGamePopup } from "src/context/GamePopupContext";
 
-// import { UserStatus } from "src/pages/global/friend.dto";
 import gameService from "src/services/game";
 import { userId } from "src/pages/global/userId";
-// import { socket } from "src/pages/global/websocket";
 import { useSessionContext } from "src/context/SessionContext";
 
 import { useErrorContext } from "src/context/ErrorContext";
 import { errorHandler } from "src/context/errorHandler";
 import { AxiosError } from "axios";
-
-// import { useEffectOnce } from "src/components/useEffectOnce";
 
 function GamePopupList() {
   const gamePopup = useGamePopup();
@@ -45,19 +41,34 @@ function GamePopupList() {
     return () => {
       session.socket?.off("new-invite", fetchInvites);
     };
-  }, [session.socket]);
+  }, [session.socket, errorContext]);
 
   if (gamePopup.isVisible === false || popupList.length === 0) return null;
 
   return (
     <div className={styles.PopupList}>
       {Object.keys(popupList).map((key) => {
-        if (popupList[key].receiver === undefined) {
-          return <MatchmakingPopup key={key} gamePopupProps={popupList[key]} />;
-        } else if (popupList[key].sender.id === userId) {
-          return <InvitingPopup key={key} gamePopupProps={popupList[key]} />;
-        } else if (popupList[key].sender.id !== userId) {
-          return <InvitedPopup key={key} gamePopupProps={popupList[key]} />;
+        if (popupList[parseInt(key)].receiver === undefined) {
+          return (
+            <MatchmakingPopup
+              key={parseInt(key)}
+              gamePopupProps={popupList[parseInt(key)]}
+            />
+          );
+        } else if (popupList[parseInt(key)].sender.id === userId) {
+          return (
+            <InvitingPopup
+              key={parseInt(key)}
+              gamePopupProps={popupList[parseInt(key)]}
+            />
+          );
+        } else if (popupList[parseInt(key)].sender.id !== userId) {
+          return (
+            <InvitedPopup
+              key={parseInt(key)}
+              gamePopupProps={popupList[parseInt(key)]}
+            />
+          );
         } else {
           return null;
         }

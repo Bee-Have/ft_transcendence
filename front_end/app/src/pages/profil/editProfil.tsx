@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import Avatar from "@mui/material/Avatar";
 import Input from "@mui/material/Input";
@@ -63,7 +63,7 @@ const EditProfil: React.FC = () => {
         { withCredentials: true }
       )
       .then((res: any) => {})
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
 
@@ -74,7 +74,7 @@ const EditProfil: React.FC = () => {
         { withCredentials: true }
       )
       .then((res: any) => {})
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
 
@@ -91,7 +91,9 @@ const EditProfil: React.FC = () => {
           { withCredentials: true }
         )
         .then((res: any) => {})
-        .catch((e) => errorContext.newError?.(errorHandler(e)));
+        .catch((e: Error | AxiosError) =>
+          errorContext.newError?.(errorHandler(e))
+        );
     }
 
     navigate("/profil/edit-Profil");
@@ -100,7 +102,7 @@ const EditProfil: React.FC = () => {
   useEffect(() => {
     axios
       .get(BACKEND_URL + "/user/profile/edit", { withCredentials: true })
-      .then(function (response) {
+      .then((response: any) => {
         setRealName(response.data.realname);
         setUserName(response.data.username);
 
@@ -108,11 +110,12 @@ const EditProfil: React.FC = () => {
         if (response.data.description === null) setDescription("");
         else setDescription(response.data.description);
 
-        setProfilePic(BACKEND_URL + `/user/image/${userId}`);
       })
-      .catch((err) => {
+      .catch((err: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(err));
       });
+      setProfilePic(BACKEND_URL + `/user/image/${userId}` + '?key=' + Math.random());
+
     // eslint-disable-next-line
   }, []);
 
@@ -157,7 +160,7 @@ const EditProfil: React.FC = () => {
             <Input
               id="component-simple"
               value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e: any) => setUserName(e.target.value)}
             />
             <br />
             <br />

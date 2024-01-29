@@ -9,25 +9,26 @@ import '../../css/channel.css';
 import '../../css/chat.css';
 import { errorHandler } from 'src/context/errorHandler';
 import { useErrorContext } from 'src/context/ErrorContext';
+import { AxiosError } from "axios";
 
 const ChannelJoiningList = ({ onUpdate }: any) => {
 	const [channelList, setChannelList] = useState<ChannelProps[]>([])
 	const errorContext = useErrorContext();
-	const [updateList, setUpdateList] = useState(false)
+	const [updateList, setUpdateList] = useState<boolean>(false)
 	const [updateMessage, setUpdateMessage] = useState<string | null>(null)
 
 	useEffect(() => {
 		axios.get(BACKEND_URL + '/channel/list', { withCredentials: true })
-			.then((res): any => {
+			.then((res: any) => {
 				setChannelList(res.data)
 				setUpdateMessage('Up to date')
 			})
-			.catch(e => errorContext.newError?.(errorHandler(e)))
-	}, [updateList])
+			.catch((e: Error | AxiosError<unknown, any>) => errorContext.newError?.(errorHandler(e)))
+	}, [updateList, errorContext])
 
 	const updateChannelList = () => {
 		setUpdateMessage(null)
-		setUpdateList(r => !r)
+		setUpdateList((r: boolean) => !r)
 	}
 
 	return (
@@ -40,7 +41,7 @@ const ChannelJoiningList = ({ onUpdate }: any) => {
 				</div>
 				{
 					Object.keys(channelList).map((i) => (
-						<ChannelJoinBox key={i} channel={channelList[i]} onUpdate={onUpdate} />
+						<ChannelJoinBox key={i} channel={channelList[parseInt(i)]} onUpdate={onUpdate} />
 					))
 				}
 			</div>

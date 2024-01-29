@@ -1,20 +1,20 @@
-import Avatar from '@mui/material/Avatar';
-import List from '@mui/material/List';
+import Avatar from "@mui/material/Avatar";
+import List from "@mui/material/List";
 // import ListItem from '@mui/material/ListItem';
-import { Badge, ListItem } from '@mui/material';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { ConversationProps } from 'src/pages/chat/types/ConversationProps.types';
-import { BACKEND_URL } from 'src/pages/global/env';
-import TextInputWithEnterCallback from '../pages/global/TextInput';
-import { userId } from '../pages/global/userId';
+import { Badge, ListItem } from "@mui/material";
+import axios, { AxiosError } from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { ConversationProps } from "src/pages/chat/types/ConversationProps.types";
+import { BACKEND_URL } from "src/pages/global/env";
+import TextInputWithEnterCallback from "../pages/global/TextInput";
+import { userId } from "../pages/global/userId";
 import { useSessionContext } from "src/context/SessionContext";
-import PrivateTextArea from './private-message.text-area';
+import PrivateTextArea from "./private-message.text-area";
 
 import SelectedConversationInterations from "src/pages/chat/components/SelectedConversationInteractions";
-import { useErrorContext } from 'src/context/ErrorContext';
-import { errorHandler } from 'src/context/errorHandler';
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
 
 const getColorFromStatus = (status: string): string => {
   if (status === "Online") return "green";
@@ -91,15 +91,15 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
   const [currentChat, setCurrentChat] = useState<ConversationProps>();
   const [createConvBool, setCreateConvBool] = useState(false);
   const navigate = useNavigate();
-	const errorContext = useErrorContext()
-	const session = useSessionContext();
+  const errorContext = useErrorContext();
+  const session = useSessionContext();
 
   useEffect(() => {
     axios
       .get(BACKEND_URL + "/privatemessage/conversations", {
         withCredentials: true,
       })
-      .then((res): any => {
+      .then((res: any): any => {
         if (chatId) {
           const up = res.data.map((m: any) =>
             m.conversation.id === chatId ? { ...m, convIsUnRead: false } : m
@@ -113,14 +113,15 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
           setshowTextArea(true);
         } else setConvs(res.data);
       })
-      .catch((err) => {
-        errorContext.newError?.(errorHandler(err));
+      .catch((error: Error | AxiosError) => {
+        errorContext.newError?.(errorHandler(error));
       });
+    // eslint-disable-next-line
   }, [chatId, navigate]);
 
   useEffect(() => {
     const listenNewConv = (conv: ConversationProps) => {
-      setConvs((prev) => [...prev, conv]);
+      setConvs((prev: ConversationProps[]) => [...prev, conv]);
     };
 
     session.socket?.on("new-conv", listenNewConv);
@@ -148,29 +149,35 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
       .get(BACKEND_URL + "/user/idbyname/" + inputValue, {
         withCredentials: true,
       })
-      .then((response) => {
+      .then((response: any) => {
         axios
           .post(
             BACKEND_URL + "/privatemessage/conversations/" + response.data,
             null,
             { withCredentials: true }
           )
-          .then((res) => {
+          .then((res: any) => {
             const exist = convs.some(
-              (conv) => conv.conversation.id === res.data.conversation.id
+              (conv: ConversationProps) =>
+                conv.conversation.id === res.data.conversation.id
             );
-            if (!exist) setConvs((prev) => [...prev, res.data]);
+            if (!exist)
+              setConvs((prev: ConversationProps[]) => [...prev, res.data]);
           })
-          .catch((e) => errorContext.newError?.(errorHandler(e)));
+          .catch((error: Error | AxiosError) =>
+            errorContext.newError?.(errorHandler(error))
+          );
       })
-      .catch((e) => errorContext.newError?.(errorHandler(e)));
+      .catch((error: Error | AxiosError) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   };
 
   const convUpdateUnReadStatus = (
     conversationId: number,
     readStatus: boolean
   ) => {
-    const updated = convs.map((conv) =>
+    const updated = convs.map((conv: ConversationProps) =>
       conv.conversation.id === conversationId
         ? { ...conv, convIsUnRead: readStatus }
         : conv
@@ -185,7 +192,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
         !currentChat ||
         currentChat.conversation.id !== message.conversationId
       ) {
-        const updated = convs.map((conv) =>
+        const updated = convs.map((conv: ConversationProps) =>
           conv.conversation.id === message.conversationId
             ? { ...conv, convIsUnRead: true }
             : conv
@@ -196,7 +203,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
     };
 
     const listenNewStatus = (status: any) => {
-      const updatedConvs = convs.map((conv) =>
+      const updatedConvs = convs.map((conv: ConversationProps) =>
         conv.conversation.memberOneId === status.userId ||
         conv.conversation.memberTwoId === status.userId
           ? { ...conv, userstatus: status.userstatus }
@@ -242,6 +249,7 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
           Private message +
           {createConvBool && (
             <TextInputWithEnterCallback
+              id="owebno"
               onEnterPress={createConvCallBack}
               hideInput={hideInput}
             />
@@ -252,9 +260,9 @@ const Conversations = ({ chatId }: { chatId: number | undefined }) => {
             <div>
               {Object.keys(convs).map((i) => (
                 <Conversation
-                  key={convs[i].conversation.id}
-                  onClick={() => handleclick(convs[i])}
-                  conv={convs[i]}
+                  key={convs[parseInt(i)].conversation.id}
+                  onClick={() => handleclick(convs[parseInt(i)])}
+                  conv={convs[parseInt(i)]}
                   chatId={chatId}
                   setConvs={setCurrentChat}
                 />

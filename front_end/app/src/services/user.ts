@@ -8,7 +8,7 @@ const getLeaderboard = async () => {
     .get(`${API_URL}/leaderboard`, {
       withCredentials: true,
     })
-    .then((res) => res.data);
+    .then((res: any) => res.data);
 };
 
 const sendFriendRequest = async (receiverId: number) => {
@@ -16,7 +16,7 @@ const sendFriendRequest = async (receiverId: number) => {
     .get(`${API_URL}/friend/create/${receiverId}`, {
       withCredentials: true,
     })
-    .then((res) => res.data);
+    .then((res: any) => res.data);
 };
 
 const removeFriend = async (receiverId: number) => {
@@ -28,7 +28,7 @@ const removeFriend = async (receiverId: number) => {
         withCredentials: true,
       }
     )
-    .then((res) => res.data);
+    .then((res: any) => res.data);
 };
 
 const userService = {

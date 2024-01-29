@@ -49,7 +49,7 @@ const FriendList: React.FC = () => {
       .get(BACKEND_URL + "/user/friends", {
         withCredentials: true,
       })
-      .then((res) =>
+      .then((res: any) =>
         setFriends(
           res.data.map((friend: Friend) => {
             if (friend.id === userId) return null;
@@ -66,7 +66,7 @@ const FriendList: React.FC = () => {
 
   useEffect(() => {
     const listenNewStatus = (eventProps: UserStatusEventDto) => {
-      const updatedFriends = friends.map((friend) =>
+      const updatedFriends = friends.map((friend: Friend) =>
         friend.id === eventProps.userId
           ? { ...friend, userstatus: eventProps.userstatus }
           : friend
@@ -92,7 +92,7 @@ const FriendList: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(friends).map((i) => (
-            <Card key={i} user={friends[i]} />
+            <Card key={i} user={friends[parseInt(i)]} />
           ))}
         </div>
       </div>

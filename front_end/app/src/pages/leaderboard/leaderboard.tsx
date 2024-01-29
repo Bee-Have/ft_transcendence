@@ -30,7 +30,7 @@ interface Lead {
   score: number;
 }
 
-const UserCard: React.FC<Lead> = ({ place, user, score }) => {
+const UserCard: React.FC<Lead> = ({ place, user, score }: Lead) => {
   let rank = parseInt(place) + 1;
   user.photo = BACKEND_URL + "/user/image/" + user.id;
 
@@ -68,7 +68,7 @@ const Leaderboard: React.FC = () => {
   useEffectOnce(() => {
     userService
       .getLeaderboard()
-      .then((res) => {
+      .then((res: any) => {
         setUsers(res);
       })
       .catch((error: Error | AxiosError<unknown, any>) => {
@@ -84,7 +84,12 @@ const Leaderboard: React.FC = () => {
       </div>
       <div className="user-box-wrapper">
         {Object.keys(users).map((i) => (
-          <UserCard key={i} place={i} user={users[i]} score={users[i].score} />
+          <UserCard
+            key={i}
+            place={i}
+            user={{ ...users[parseInt(i)], userstatus: null, photo: "" }}
+            score={users[parseInt(i)].score}
+          />
         ))}
       </div>
     </div>

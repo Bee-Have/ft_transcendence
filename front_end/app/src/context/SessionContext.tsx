@@ -53,6 +53,7 @@ export const SessionProvider = ({
       );
     }
     resetUserId();
+    // eslint-disable-next-line
   }, [aToken]);
 
   const updateTokens = () => {

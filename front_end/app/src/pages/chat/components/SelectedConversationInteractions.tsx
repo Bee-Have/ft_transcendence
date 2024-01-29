@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import InviteSpectateButton from "src/components/DynamicInviteSpectateButton";
 import styles from "src/components/game/GameModeDialog/InviteGameModeDialogButton.module.css";
 import { BACKEND_URL, PHOTO_FETCH_URL } from "../../global/env";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { ConversationProps } from "../types/ConversationProps.types";
 import { useErrorContext } from "src/context/ErrorContext";
@@ -13,10 +13,10 @@ import { errorHandler } from "src/context/errorHandler";
 
 function SelectedConversationInterations({
   data,
-  setConvs
+  setConvs,
 }: {
   data: ConversationProps;
-  setConvs: any
+  setConvs: any;
 }) {
   const navigate = useNavigate();
 
@@ -38,28 +38,37 @@ function SelectedConversationInterations({
         }}
       />
 
-      <AddFriendButton member={data} handleClose={() => {}} setConvs={setConvs} />
-      <BlockUserButton member={data} handleClose={() => {}} setConvs={setConvs} />
+      <AddFriendButton
+        member={data}
+        handleClose={() => {}}
+        setConvs={setConvs}
+      />
+      <BlockUserButton
+        member={data}
+        handleClose={() => {}}
+        setConvs={setConvs}
+      />
     </List>
   );
 }
 
-
 const AddFriendButton = ({ member, handleClose, setConvs }: any) => {
-
-	const errorContext = useErrorContext()
+  const errorContext = useErrorContext();
 
   const sendFriendRequest = () => {
     axios
-      .get(BACKEND_URL + "/user/friend/create/" + member.conversation.friendId, {
-        withCredentials: true,
+      .get(
+        BACKEND_URL + "/user/friend/create/" + member.conversation.friendId,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(() => {
+        const up = { ...member };
+        up.conversation.isMemberFriendWithUser = true;
+        setConvs(up);
       })
-      .then((res) => {
-        const up = {...member}
-        up.conversation.isMemberFriendWithUser = true
-        setConvs(up)
-      })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
     handleClose();
@@ -67,36 +76,47 @@ const AddFriendButton = ({ member, handleClose, setConvs }: any) => {
 
   return (
     <>
-      {!member.conversation.isMemberFriendWithUser && <PopUpButton name={"Add Friend"} callback={sendFriendRequest} />}
+      {!member.conversation.isMemberFriendWithUser && (
+        <PopUpButton name={"Add Friend"} callback={sendFriendRequest} />
+      )}
     </>
   );
 };
 
 const BlockUserButton = ({ member, handleClose, setConvs }: any) => {
+  const errorContext = useErrorContext();
 
-	const errorContext = useErrorContext();
+  const blockUser = () => {
+    const Url =
+      BACKEND_URL +
+      "/user/friend/" +
+      (member.conversation.isMemberBlockedByuser ? "unblock/" : "block/") +
+      member.conversation.friendId;
 
-	const blockUser = () => {
+    axios
+      .post(Url, {}, { withCredentials: true })
+      .then(() => {
+        const up = { ...member };
+        up.conversation.isMemberBlockedByuser =
+          !member.conversation.isMemberBlockedByuser;
+        setConvs(up);
+      })
+      .catch((e: Error | AxiosError) => {
+        errorContext.newError?.(errorHandler(e));
+      });
+    handleClose();
+  };
 
-		const Url = BACKEND_URL + '/user/friend/' + (member.conversation.isMemberBlockedByuser ? "unblock/" : "block/") + member.conversation.friendId
-
-		axios.post(Url, {}, { withCredentials: true })
-			.then((res) => {
-				const up = {...member}
-        up.conversation.isMemberBlockedByuser = !member.conversation.isMemberBlockedByuser
-        setConvs(up)
-			})
-			.catch((e) => {
-				errorContext.newError?.(errorHandler(e))
-			})
-		handleClose()
-	}
-
-	return (
-		<>
-			{ <PopUpButton name={member.conversation.isMemberBlockedByuser ? "Unblock" : "Block"} callback={blockUser} />}
-		</>
-	)
+  return (
+    <>
+      {
+        <PopUpButton
+          name={member.conversation.isMemberBlockedByuser ? "Unblock" : "Block"}
+          callback={blockUser}
+        />
+      }
+    </>
+  );
 };
 
 const PopUpButton = ({

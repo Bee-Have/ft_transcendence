@@ -116,7 +116,7 @@ const MatchHistory: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(matches).map((i) => (
-            <Match key={i} match={matches[i]} />
+            <Match key={i} match={matches[parseInt(i)]} />
           ))}
         </div>
       </div>

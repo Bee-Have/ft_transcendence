@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -20,17 +20,17 @@ const ChannelTopBar = ({ channelId }: { channelId: number }) => {
       .get(BACKEND_URL + "/channel/info/" + channelId, {
         withCredentials: true,
       })
-      .then((res) => {
+      .then((res: any) => {
         setName(res.data.channelName);
       })
-      .catch((e) => {
+      .catch((e: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(e));
       });
   }, [channelId, errorContext]);
 
   useEffect(() => {
     const listenNewBadge = (info: { channelId: number }) => {
-      if (channelId === info.channelId) setImageKey((prev) => prev + 1);
+      if (channelId === info.channelId) setImageKey((prev: number) => prev + 1);
     };
 
     const listenNewInfo = (info: {

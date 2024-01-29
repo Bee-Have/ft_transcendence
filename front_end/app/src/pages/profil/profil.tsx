@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ReadCookie } from "src/components/ReadCookie";
 import Menu from "src/components/menu";
 import "src/css/profil.css";
@@ -44,22 +44,22 @@ const Profil: React.FC = () => {
     ...defaultUser,
   });
   const navigate = useNavigate();
-
+  
   const errorContext = useErrorContext();
   const session = useSessionContext();
-
+  
   const { id } = useParams();
 
   useEffect(() => {
     axios
       .get(`${BACKEND_URL}/user/profile/${id}`, { withCredentials: true })
-      .then((response) => {
+      .then((response: any) => {
         setProfilInfo({
           ...response.data,
           photo: BACKEND_URL + `/user/image/${id}`,
         });
       })
-      .catch((err) => {
+      .catch((err: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(err));
         navigate("/profil/" + userId);
       });
@@ -114,6 +114,9 @@ const Profil: React.FC = () => {
                 .then(() => {
                   session.logout?.();
                   navigate("/");
+                })
+                .catch((err: Error | AxiosError) => {
+                  errorContext.newError?.(errorHandler(err));
                 });
             }}
           >
@@ -128,9 +131,8 @@ const Profil: React.FC = () => {
       <div className="profil">
         <center>
           <Avatar
-            className="avatar"
-            src={profilInfo.photo}
-            style={{ width: "100px", height: "100px" }}
+            src={profilInfo.photo + `?key=` + Math.random()}
+            style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover" }}
           />
           <br />
         </center>

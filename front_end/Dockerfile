@@ -10,7 +10,6 @@ WORKDIR /usr/src/app/frontend
 
 # install missing npm dependencies
 #RUN npm install
-
 # copy dependencies
 COPY ./app/package*.json ./
 
@@ -19,8 +18,10 @@ COPY ./app .
 
 # install missing npm dependencies
 RUN npm install
+RUN npm install -g serve
+RUN npm run build
 
 # run container
-CMD [ "npm", "start" ]
+CMD [ "serve", "-s", "build" ]
 
 STOPSIGNAL SIGKILL

@@ -1,12 +1,12 @@
 
 NAME=Transcendence
 
-$(NAME): build up_detach prisma_db_push logs
+$(NAME): build up_detach logs
 
 all: ${NAME}
 
 up_detach:
-	docker-compose up -d
+	(docker-compose up -d || true) && docker exec back_end bash -c "npx prisma db push --accept-data-loss"
 
 build:
 	mkdir -p back_end/srcs/uploads/avatar back_end/srcs/uploads/badge 

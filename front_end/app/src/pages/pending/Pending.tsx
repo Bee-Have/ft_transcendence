@@ -83,29 +83,30 @@ const Card = ({ user }: CardProps) => {
         <p color="red">{message}</p>
       ) : (
         <>
-          <button className="round-button" onClick={handleAcceptFrRq}>
+          {/* <button className="round-button" onClick={handleAcceptFrRq}> */}
             <CheckCircleOutlineIcon
               className="acceptBtn"
               style={{ fontSize: "2em" }}
+              onClick={handleAcceptFrRq}
             />
-          </button>
-          <button className="round-button">
+          {/* </button> */}
+          {/* <button className="round-button"> */}
             <BlockIcon
               className="refuseBtn"
               style={{ fontSize: "2em" }}
               onClick={handleReject}
             />
-          </button>
+          {/* </button> */}
           {hideBlock ? (
             ""
           ) : (
-            <button className="round-button">
+            // <button className="round-button">
               <LockIcon
                 className="blockBtn"
                 style={{ fontSize: "2em" }}
                 onClick={handleBlock}
               />
-            </button>
+            // </button>
           )}
         </>
       )}

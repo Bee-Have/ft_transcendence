@@ -51,6 +51,7 @@ export const GamePopupProvider = ({
     return () => {
       session.socket?.off("user-status", togglePopup);
     };
+    // eslint-disable-next-line
   }, [session.socket]);
 
   return (

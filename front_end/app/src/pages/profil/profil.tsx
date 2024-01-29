@@ -63,6 +63,7 @@ const Profil: React.FC = () => {
         errorContext.newError?.(errorHandler(err));
         navigate("/profil/" + userId);
       });
+    // eslint-disable-next-line
   }, [id, session.socket]);
 
   return (

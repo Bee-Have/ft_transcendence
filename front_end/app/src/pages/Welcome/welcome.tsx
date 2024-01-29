@@ -15,8 +15,13 @@ import "src/css/welcome.css";
 import TFAConnection from "src/components/2FAConnection";
 import { userId } from "../global/userId";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
 function Welcome() {
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
   const [print2FA, set2FA] = React.useState(false);
   const session = useSessionContext();
@@ -28,7 +33,9 @@ function Welcome() {
       .then((res: any) => {
         window.location.replace(res.data);
       })
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
+      });
     if (session.aToken && TFA) {
       alert("2FA require here");
     }
@@ -55,7 +62,9 @@ function Welcome() {
           .then(() => {
             window.location.reload();
           })
-          .catch((e) => console.log(e));
+          .catch((error: Error | AxiosError<unknown, any>) => {
+            errorContext.newError?.(errorHandler(error));
+          });
       }
     } else {
       session.login();

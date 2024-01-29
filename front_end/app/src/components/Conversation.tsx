@@ -16,8 +16,6 @@ import SelectedConversationInterations from "src/pages/chat/components/SelectedC
 import { useErrorContext } from 'src/context/ErrorContext';
 import { errorHandler } from 'src/context/errorHandler';
 
-console.log(userId);
-
 const getColorFromStatus = (status: string): string => {
   if (status === "Online") return "green";
   else if (status === "Offline") return "grey";

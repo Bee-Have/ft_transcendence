@@ -8,24 +8,32 @@ import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 import Menu from "../../components/menu";
-import { BACKEND_URL, PHOTO_FETCH_URL } from '../global/env';
+import { BACKEND_URL, PHOTO_FETCH_URL } from "../global/env";
 
 import { Friend } from "src/pages/global/friend.dto";
 
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
 interface CardProps {
   user: Friend;
 }
 
 const Card = ({ user }: CardProps) => {
   const [message, setMessage] = useState<string | null>(null);
+  const errorContext = useErrorContext();
 
   const handleUnblock = () => {
     axios
-      .post(BACKEND_URL + '/user/friend/unblock/' + user.id,
+      .post(
+        BACKEND_URL + "/user/friend/unblock/" + user.id,
         {},
-        { withCredentials: true })
+        { withCredentials: true }
+      )
       .then(() => setMessage("Unblocked"))
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   };
 
   return (
@@ -53,13 +61,13 @@ const Card = ({ user }: CardProps) => {
   );
 };
 
-
 const Blocked: React.FC = () => {
   const [blockedUser, setBlockedUser] = useState<Friend[]>([]);
+  const errorContext = useErrorContext();
 
   useEffect(() => {
     axios
-      .get(BACKEND_URL + '/user/blocked', {
+      .get(BACKEND_URL + "/user/blocked", {
         withCredentials: true,
       })
       .then((res) =>
@@ -72,7 +80,9 @@ const Blocked: React.FC = () => {
           })
         )
       )
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   }, []);
 
   return (

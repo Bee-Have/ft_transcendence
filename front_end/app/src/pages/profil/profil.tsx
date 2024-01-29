@@ -54,7 +54,6 @@ const Profil: React.FC = () => {
     axios
       .get(`${BACKEND_URL}/user/profile/${id}`, { withCredentials: true })
       .then((response) => {
-        // console.log(response.data);
         setProfilInfo({
           ...response.data,
           photo: BACKEND_URL + `/user/image/${id}`,

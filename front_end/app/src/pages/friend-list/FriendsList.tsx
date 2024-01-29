@@ -1,4 +1,4 @@
-import { BACKEND_URL, PHOTO_FETCH_URL } from '../global/env';
+import { BACKEND_URL, PHOTO_FETCH_URL } from "../global/env";
 
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -13,7 +13,11 @@ import { useSessionContext } from "src/context/SessionContext";
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
-import { useEffectOnce } from 'src/components/useEffectOnce';
+import { useEffectOnce } from "src/components/useEffectOnce";
+
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
 
 interface CardProps {
   user: Friend;
@@ -36,12 +40,13 @@ function Card({ user }: CardProps) {
 const FriendList: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
   const session = useSessionContext();
 
   useEffectOnce(() => {
     axios
-      .get(BACKEND_URL + '/user/friends', {
+      .get(BACKEND_URL + "/user/friends", {
         withCredentials: true,
       })
       .then((res) =>
@@ -54,7 +59,9 @@ const FriendList: React.FC = () => {
           })
         )
       )
-      .catch((err) => console.log(err));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   });
 
   useEffect(() => {

@@ -1,7 +1,7 @@
-
+include .env
 NAME=Transcendence
 
-$(NAME): build up_detach prisma_db_push logs
+$(NAME): build up_detach logs
 
 all: ${NAME}
 
@@ -9,13 +9,9 @@ up_detach:
 	docker-compose up -d
 
 build:
-	mkdir -p back_end/srcs/uploads/avatar back_end/srcs/uploads/badge 
+	mkdir -p back_end/srcs/uploads/avatar back_end/srcs/uploads/badge
+	echo REACT_APP_BACKEND_URL=${BACKEND_URL} > front_end/app/.env.production
 	docker-compose build
-#	TODO : remove next line once finished working on project
-#	Also, just required to run once to have it on local machine due to docker's volume synchronization
-	docker-compose run -it -v ./front_end/app/:/usr/src/app/frontend front_end npm install
-	docker-compose run front_end npm install
-	cd back_end/srcs && npm install
 
 stop:
 	docker-compose stop
@@ -26,7 +22,7 @@ fclean: stop
 re: fclean $(NAME)
 
 prune:
-	docker system prune -af --all
+	docker system prune -af 
 
 enter_postgres:
 	docker exec -it postgres bash

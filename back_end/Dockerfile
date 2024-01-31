@@ -4,17 +4,18 @@ WORKDIR /usr/src/app/backend
 
 COPY ./srcs/package.json .
 COPY ./srcs/package-lock.json .
+COPY ./script.sh .
+RUN chmod +x script.sh
 
-RUN npm install
 
 COPY ./srcs .
 
+RUN npm install
 RUN npx prisma generate
-
 RUN npm run build
 
 EXPOSE 3001 5555
 
-ENTRYPOINT [ "npm", "run", "start:dev" ]
+ENTRYPOINT [ "bash", "script.sh" ]
 
 STOPSIGNAL SIGKILL

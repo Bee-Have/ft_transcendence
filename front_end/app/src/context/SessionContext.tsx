@@ -52,7 +52,8 @@ export const SessionProvider = ({
           : null
       );
     }
-    resetUserId();
+	if (aToken === null || rToken === null)
+		resetUserId();
     // eslint-disable-next-line
   }, [aToken]);
 

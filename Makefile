@@ -21,7 +21,7 @@ fclean: stop
 
 re: fclean $(NAME)
 
-prune:
+prune: fclean
 	docker system prune -af
 	docker volume prune -af
 

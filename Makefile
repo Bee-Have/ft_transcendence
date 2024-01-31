@@ -22,7 +22,8 @@ fclean: stop
 re: fclean $(NAME)
 
 prune:
-	docker system prune -af 
+	docker system prune -af
+	docker volume prune -af
 
 enter_postgres:
 	docker exec -it postgres bash

@@ -14,6 +14,8 @@ model User {
     id       Int    @id
     email    String @unique
     username String @unique
+    realname String @unique
+	description String?
 
     hashedRt String?
 
@@ -23,14 +25,6 @@ model User {
     score Int @default(2000)
     win   Int @default(0)
     loose Int @default(0)
-
-    // achiv Achievments[]
-
-    // channel Channel[]
-
-    // channel Channel[]
-    User_Channel_channelOwner    Channel[] @relation("Channel_OwnerUser")
-    User_Channel_channelOperator Channel[] @relation("Channel_OPUser")
 
     friends         User[] @relation("friends")
     friendsRelation User[] @relation("friends")
@@ -51,6 +45,7 @@ model User {
 
     matchHistoryP1 MatchHistoryItem[] @relation("MatchHistoryP1")
     matchHistoryP2 MatchHistoryItem[] @relation("MatchHistoryP2")
+	channelMember ChannelMember[]
 
     @@map("users")
 }
@@ -100,19 +95,46 @@ model MatchHistoryItem {
 model Channel {
     id Int @id @default(autoincrement())
 
+	channelName String
     password String?
 
-    mode ChatMode @default(PUBLIC)
+    mode ChannelMode @default(PRIVATE)
 
-    owner   User @relation("Channel_OwnerUser", fields: [ownerId], references: [id])
-    ownerId Int
-
-    //list admin
-    admin   User @relation("Channel_OPUser", fields: [adminId], references: [id])
-    adminId Int
+	members ChannelMember[]
+	messages ChannelMessage[]
 }
 
-enum ChatMode {
+model ChannelMember {
+    id Int @id @default(autoincrement())
+
+	user User @relation(fields: [userId], references: [id])
+    userId Int
+
+	role ChannelRole @default(NONADMIN)
+	state ChannelMemberState @default(REGULAR)
+
+	muteDate DateTime?
+
+	channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+	channelId Int
+
+	channelMessages ChannelMessage[]
+}
+
+enum ChannelMemberState {
+	REGULAR
+	BANNED
+	MUTED
+	KICKED
+}
+
+enum ChannelRole {
+	OWNER
+	ADMIN
+	NONADMIN
+}
+
+enum ChannelMode {
     PUBLIC
     PRIVATE
     PROTECTED
@@ -179,4 +201,17 @@ model DirectMessage {
 
     conversationId Int
     conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model ChannelMessage {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+
+    content   String
+
+	senderId Int
+    sender   ChannelMember @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+	channelId Int
+	channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }

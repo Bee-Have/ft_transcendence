@@ -244,6 +244,9 @@ export class GameService {
   }
 
   async sendInvite(userId: number, invitedUserDto: SendInviteDto) {
+    if (userId === invitedUserDto.invitedUserId)
+      throw new HttpException("You can't invite yourself", 409);
+
     const invitedUser = this.userService.connected_user_map.get(
       invitedUserDto.invitedUserId
     );
@@ -290,8 +293,6 @@ export class GameService {
 
     invitedUser.socket.emit("new-invite");
     invitee.socket.emit("new-invite");
-
-    return { msg: "Invite sent" };
   }
 
   async declineInvite(userId: number, declinedUserId: number) {
@@ -327,6 +328,7 @@ export class GameService {
       this.userService.connected_user_map.get(acceptedUserId);
 
     if (
+      acceptedUser === undefined || // added by mabriel
       acceptedUser.userstatus === undefined ||
       acceptedUser.userstatus === UserStatus.offline ||
       acceptedUser.userstatus === UserStatus.ingame ||
@@ -547,7 +549,11 @@ export class GameService {
       },
     });
 
-    if (runningGame === undefined) return null;
+    if (runningGame === undefined)
+      throw new HttpException(
+        "Unable to find a running game for this user",
+        404
+      );
 
     return runningGame;
   }

@@ -1,3 +1,5 @@
+import { BACKEND_URL, PHOTO_FETCH_URL } from "../global/env";
+
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -5,12 +7,17 @@ import { useNavigate } from "react-router-dom";
 import Menu from "../../components/menu";
 import { Friend, UserStatusEventDto } from "../global/friend.dto";
 import { userId } from "../global/userId";
-import { socket } from "../global/websocket";
+
+import { useSessionContext } from "src/context/SessionContext";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
+import { useEffectOnce } from "src/components/useEffectOnce";
+
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
 
 interface CardProps {
   user: Friend;
@@ -33,13 +40,16 @@ function Card({ user }: CardProps) {
 const FriendList: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const navigate = useNavigate();
+  const errorContext = useErrorContext();
 
-  useEffect(() => {
+  const session = useSessionContext();
+
+  useEffectOnce(() => {
     axios
-      .get("http://localhost:3001/user/test/friend/" + userId, {
+      .get(BACKEND_URL + "/user/friends", {
         withCredentials: true,
       })
-      .then((res) =>
+      .then((res: any) =>
         setFriends(
           res.data.map((friend: Friend) => {
             if (friend.id === userId) return null;
@@ -49,12 +59,14 @@ const FriendList: React.FC = () => {
           })
         )
       )
-      .catch((err) => console.log(err));
-  }, []);
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
+  });
 
   useEffect(() => {
     const listenNewStatus = (eventProps: UserStatusEventDto) => {
-      const updatedFriends = friends.map((friend) =>
+      const updatedFriends = friends.map((friend: Friend) =>
         friend.id === eventProps.userId
           ? { ...friend, userstatus: eventProps.userstatus }
           : friend
@@ -62,12 +74,12 @@ const FriendList: React.FC = () => {
       setFriends(updatedFriends);
     };
 
-    socket?.on("user-status", listenNewStatus);
+    session.socket?.on("user-status", listenNewStatus);
 
     return () => {
-      socket?.off("user-status", listenNewStatus);
+      session.socket?.off("user-status", listenNewStatus);
     };
-  }, [friends]);
+  }, [session.socket, friends]);
 
   return (
     <div className="friendList">
@@ -80,7 +92,7 @@ const FriendList: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(friends).map((i) => (
-            <Card key={i} user={friends[i]} />
+            <Card key={i} user={friends[parseInt(i)]} />
           ))}
         </div>
       </div>

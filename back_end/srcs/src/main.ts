@@ -13,7 +13,12 @@ async function bootstrap() {
 		transformOptions: { enableImplicitConversion: true}
 	}));
 
-	app.enableCors({ credentials:true, methods: ['GET', 'POST'], origin: process.env.FRONT_END_URL });
+	app.enableCors({ 
+		credentials:true, 
+		methods: ['GET', 'POST'], 
+		origin: process.env.FRONT_END_URL,
+		allowedHeaders: ['Content-Type', 'Authorization'],
+		});
 	
 	app.use(cookieParser());
 

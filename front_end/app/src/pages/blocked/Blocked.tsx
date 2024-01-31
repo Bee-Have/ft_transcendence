@@ -8,27 +8,32 @@ import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 import Menu from "../../components/menu";
+import { BACKEND_URL, PHOTO_FETCH_URL } from "../global/env";
 
 import { Friend } from "src/pages/global/friend.dto";
 
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
-
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
 interface CardProps {
   user: Friend;
 }
 
 const Card = ({ user }: CardProps) => {
   const [message, setMessage] = useState<string | null>(null);
+  const errorContext = useErrorContext();
 
   const handleUnblock = () => {
     axios
       .post(
-        "http://localhost:3001/user/friend/unblock/" + userId,
-        { blockedUserId: user.id },
+        BACKEND_URL + "/user/friend/unblock/" + user.id,
+        {},
         { withCredentials: true }
       )
       .then(() => setMessage("Unblocked"))
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   };
 
   return (
@@ -56,12 +61,13 @@ const Card = ({ user }: CardProps) => {
   );
 };
 
-const Bloqued: React.FC = () => {
+const Blocked: React.FC = () => {
   const [blockedUser, setBlockedUser] = useState<Friend[]>([]);
+  const errorContext = useErrorContext();
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/user/blocked/" + userId, {
+      .get(BACKEND_URL + "/user/blocked", {
         withCredentials: true,
       })
       .then((res) =>
@@ -74,8 +80,10 @@ const Bloqued: React.FC = () => {
           })
         )
       )
-      .catch((e) => console.log(e));
-  }, []);
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
+  }, [errorContext]);
 
   return (
     <div className="blocked">
@@ -83,7 +91,7 @@ const Bloqued: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(blockedUser).map((i) => (
-            <Card key={i} user={blockedUser[i]} />
+            <Card key={i} user={blockedUser[parseInt(i)]} />
           ))}
         </div>
       </div>
@@ -91,4 +99,4 @@ const Bloqued: React.FC = () => {
   );
 };
 
-export default Bloqued;
+export default Blocked;

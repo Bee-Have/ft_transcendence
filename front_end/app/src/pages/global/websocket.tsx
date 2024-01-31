@@ -1,7 +1,14 @@
-import { io } from "socket.io-client"
-import { ReadCookie } from "../../components/ReadCookie"
+// import { io } from "socket.io-client"
+// import { ReadCookie } from "../../components/ReadCookie"
+// import { BACKEND_URL } from "./env"
 
-const userID: string | null  = ReadCookie('userId')
+// const atToken: string | null  = ReadCookie('access_token')
 
-export const socket = userID ? io('http://localhost:3001/user', { extraHeaders: { id: userID } }) : null
-//TODO: Give the access_token as header
+// export let socket = atToken ? io(BACKEND_URL + '/user', { extraHeaders: { id: atToken } }) : null
+
+// export function resetSocket () {
+// 	const ATToken: string | null  = ReadCookie('access_token')
+
+// 	if (socket === null)
+// 		socket = ATToken ? io(BACKEND_URL + '/user', { extraHeaders: { id: ATToken } }) : null
+// } 	

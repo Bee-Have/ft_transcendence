@@ -29,6 +29,23 @@
 	position: absolute;
 	flex-direction: row;
 	display: grid;
+	grid-template-columns: 1fr;
+	gap: 5px;
+	align-items: center;
+	justify-content: center;
+	width: fit-content;
+	padding: 10px;
+	bottom: 30%;
+	left: 50%;
+	transform: translateX(-50%);
+    background-color: #D9D9D9;
+	border-radius: 13px;
+}
+
+.logged-bar {
+	position: absolute;
+	flex-direction: row;
+	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 5px;
 	align-items: center;

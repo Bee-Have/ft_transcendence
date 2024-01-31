@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 
 import styles from "./menu.module.css";
+import { ReadCookie } from "./ReadCookie";
 
 const Menu: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Menu: React.FC = () => {
       className={styles.Menu}
     >
       <ListItemButton
-        onClick={() => navigate("/profil")}
+        onClick={() => navigate(`/profil/${ReadCookie("userId")}`)}
         defaultChecked
         className={
           currentPage === "profil"
@@ -39,7 +40,11 @@ const Menu: React.FC = () => {
         <ListItemText primary="Profile" />
       </ListItemButton>
 
-      <Divider />
+      <Divider
+        sx={{
+          backgroundColor: "#D9D9D9",
+        }}
+      />
 
       <ListItem className={styles.MenuItem}>
         <ListItemText primary="Friend list" />
@@ -80,7 +85,11 @@ const Menu: React.FC = () => {
         </List>
       </Box>
 
-      <Divider />
+      <Divider
+        sx={{
+          backgroundColor: "#D9D9D9",
+        }}
+      />
 
       <ListItemButton
         onClick={() => navigate("/profil/match-history")}

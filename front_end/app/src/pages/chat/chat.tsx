@@ -1,25 +1,23 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 // import	ChannelPeople from './ChannelPeople';
 // import	TextArea from './textArea';
 import Conversations from "../../components/Conversation";
-import ChannelList from "src/components/channelList";
+import { useParams } from "react-router";
+// import ChannelList from "src/components/channelList";
 
 const Chat: React.FC = () => {
-  const navigate = useNavigate();
+	//   const navigate = useNavigate();
 
-  return (
-    <div className="chat">
-      <div className="header">
-        <button className="btn btn-light" onClick={() => navigate("/")}>
-          home
-        </button>
-      </div>
-      <ChannelList />
-      <Conversations />
-      {/* <TextArea/> */}
-    </div>
-  );
+	const { id } = useParams()
+
+	const chatId = id ? Number(id) : undefined
+
+	return (
+		<div className="channel-content-wrapper">
+			<Conversations chatId={chatId} />
+		</div>
+	);
 };
 
 export default Chat;

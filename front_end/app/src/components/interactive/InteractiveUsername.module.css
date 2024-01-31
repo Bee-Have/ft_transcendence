@@ -1,4 +1,6 @@
 .InteractiveUsername {
+	/* ADDED FOR VERTICAL CENTER USERNAME*/
+	margin-bottom: 0px;
 }
 
 .InteractiveUsername:hover {

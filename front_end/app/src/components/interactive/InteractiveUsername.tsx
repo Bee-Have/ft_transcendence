@@ -6,9 +6,14 @@ import { Friend } from "src/pages/global/friend.dto";
 
 import styles from "./InteractiveUsername.module.css";
 
-function InteractiveUsername({ user }: { user: Friend }) {
+function InteractiveUsername({
+  user,
+  usage = "friend",
+}: {
+  user: Friend;
+  usage?: "stranger" | "friend" | "invite";
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
   return (
     <>
       <h1
@@ -17,7 +22,12 @@ function InteractiveUsername({ user }: { user: Friend }) {
       >
         {user.username}
       </h1>
-      <PopUp user={user} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <PopUp
+        user={user}
+        usage={usage}
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+      />
     </>
   );
 }

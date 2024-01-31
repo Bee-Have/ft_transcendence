@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import axios from "axios";
+import { BACKEND_URL, PHOTO_FETCH_URL } from "../global/env";
 
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -8,14 +9,17 @@ import LockIcon from "@mui/icons-material/Lock";
 
 // import { UserStatus, Friend } from "../global/friend.dto";
 import { Friend } from "../global/friend.dto";
-import { userId } from "../global/userId";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
 import InteractiveUsername from "src/components/interactive/InteractiveUsername";
 
 import Menu from "../../components/menu";
 
-const PHOTO_FETCH_URL = "http://localhost:3001/user/image/";
+import { useErrorContext } from "src/context/ErrorContext";
+import { errorHandler } from "src/context/errorHandler";
+import { AxiosError } from "axios";
+
+import { useEffectOnce } from "src/components/useEffectOnce";
 
 interface CardProps {
   user: Friend;
@@ -24,33 +28,44 @@ interface CardProps {
 const Card = ({ user }: CardProps) => {
   const [message, setMessage] = useState<string | null>(null);
   const [hideBlock, setHideBlock] = useState(false);
+  const errorContext = useErrorContext();
 
   const handleAcceptFrRq = () => {
     axios
       .post(
-        "http://localhost:3001/user/friend/accept/" + userId + "/" + user.id
+        BACKEND_URL + "/user/friend/accept/" + user.id,
+        {},
+        { withCredentials: true }
       )
       .then(() => setMessage("accepted"))
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   };
 
   const handleReject = () => {
     axios
       .post(
-        "http://localhost:3001/user/friend/reject/" + userId + "/" + user.id
+        BACKEND_URL + "/user/friend/reject/" + user.id,
+        {},
+        { withCredentials: true }
       )
       .then(() => setMessage("rejected"))
-      .catch((e) => console.log(e));
+      .catch((error: Error | AxiosError<unknown, any>) =>
+        errorContext.newError?.(errorHandler(error))
+      );
   };
 
   const handleBlock = () => {
     axios
-      .post("http://localhost:3001/user/friend/block/" + userId, {
-        blockedUserId: user.id,
-      })
+      .post(
+        BACKEND_URL + "/user/friend/block/" + user.id,
+        {},
+        { withCredentials: true }
+      )
       .then(() => setHideBlock(true))
-      .catch((e) => {
-        console.log(e);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
         setHideBlock(true);
       });
   };
@@ -68,29 +83,30 @@ const Card = ({ user }: CardProps) => {
         <p color="red">{message}</p>
       ) : (
         <>
-          <a className="round-button" onClick={handleAcceptFrRq}>
+          {/* <button className="round-button" onClick={handleAcceptFrRq}> */}
             <CheckCircleOutlineIcon
               className="acceptBtn"
               style={{ fontSize: "2em" }}
+              onClick={handleAcceptFrRq}
             />
-          </a>
-          <a className="round-button">
+          {/* </button> */}
+          {/* <button className="round-button"> */}
             <BlockIcon
               className="refuseBtn"
               style={{ fontSize: "2em" }}
               onClick={handleReject}
             />
-          </a>
+          {/* </button> */}
           {hideBlock ? (
             ""
           ) : (
-            <a className="round-button">
+            // <button className="round-button">
               <LockIcon
                 className="blockBtn"
                 style={{ fontSize: "2em" }}
                 onClick={handleBlock}
               />
-            </a>
+            // </button>
           )}
         </>
       )}
@@ -100,13 +116,14 @@ const Card = ({ user }: CardProps) => {
 
 const Pending: React.FC = () => {
   const [friendsReq, setFriendsReq] = useState<Friend[]>([]);
+  const errorContext = useErrorContext();
 
-  useEffect(() => {
+  useEffectOnce(() => {
     axios
-      .get("http://localhost:3001/user/pending/" + userId, {
+      .get(BACKEND_URL + "/user/pending/", {
         withCredentials: true,
       })
-      .then((res) =>
+      .then((res: any) =>
         setFriendsReq(
           res.data.map((friend: Friend) => {
             friend.photo = PHOTO_FETCH_URL + friend.id;
@@ -114,8 +131,10 @@ const Pending: React.FC = () => {
           })
         )
       )
-      .catch((e) => console.log(e));
-  }, []);
+      .catch((error: Error | AxiosError<unknown, any>) => {
+        errorContext.newError?.(errorHandler(error));
+      });
+  });
 
   return (
     <div className="pending">
@@ -123,7 +142,7 @@ const Pending: React.FC = () => {
       <div className="content">
         <div className="printCard">
           {Object.keys(friendsReq).map((i) => (
-            <Card key={i} user={friendsReq[i]} />
+            <Card key={i} user={friendsReq[parseInt(i)]} />
           ))}
         </div>
       </div>

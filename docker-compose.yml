@@ -15,17 +15,23 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     restart: always
 
 
   front_end:
     depends_on:
       - back_end
+        # condition: service_healthy
     container_name: front_end
     volumes:
-      - ./front_end/app:/usr/src/app/frontend
+      # - ./front_end/app:/usr/src/app/frontend
 #     TODO : Remove previous line and keep next one when project is finished
-#     - html_vol:/usr/src/app/frontend
+    - html_vol:/usr/src/app/frontend
     networks:
       - transc_netw
     build: ./front_end
@@ -40,11 +46,12 @@ services:
   back_end:
     depends_on:
       - postgres
+        # condition: service_healthy
     container_name: back_end
     volumes:
-      - ./back_end/srcs:/usr/src/app/backend
+      # - ./back_end/srcs:/usr/src/app/backend
 #     TODO : Remove previous line and keep next one when project is finished
-      # - html_vol:/usr/src/app/backend
+      - htm:/usr/src/app/backend
     networks:
       - transc_netw
     ports:
@@ -53,11 +60,17 @@ services:
     build: ./back_end
     env_file:
       - .env
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl --fail http://localhost:${PORT_BACK} || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
     restart: always
 
 volumes:
   database_vol:
   html_vol:
+  htm:
 
 networks:
   transc_netw:

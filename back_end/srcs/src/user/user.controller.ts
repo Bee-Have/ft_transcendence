@@ -1,195 +1,294 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, Res, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { Response } from "express";
 import { TfaDto } from "src/auth/dto/tfa.dto";
-import { Public } from "src/common/decorators";
 import { FriendshipService } from "src/friendship/friendship.service";
-import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
+import { GetCurrentUser } from "../common/decorators/get-current-user.decorator";
 import { Friend } from "./dto/friend.dto";
-import { updateUsernameDto } from "./dto/updateUsername.dto";
-import { BlockedUserDto } from "./gateway/dto/blocked-user.dto";
-import { ImageInterceptor } from "./interceptor/image.interceptor";
-import { UserService } from './user.service';
-import { ThrottlerGuard } from "@nestjs/throttler";
+import {
+  updateUserDescriptionDto,
+  updateUsernameDto,
+} from "./dto/updateUser.dto";
+import { UserService } from "./user.service";
+import { UserStatusEventDto } from "./gateway/dto/userStatus.dto";
+import { Public } from "src/common/decorators";
+import { UserStatus } from "./gateway/dto/userStatus.dto";
 
 @ApiBearerAuth()
-@Controller('user')
-export class UserController { 
-	
-	constructor(private userService: UserService,
-				private friendService: FriendshipService) {}
+@Controller("user")
+export class UserController {
+  constructor(
+    private userService: UserService,
+    private friendService: FriendshipService
+  ) {}
 
-	// @Get('profile/:username')
-	// getProfile(@Param('username') username: string) : Promise<any> {
-	// 	return this.userService.getUserProfil(username)
-	// }
+  @Get("idbyname/:username")
+  async getuserIdbyName(@Param("username") username: string) {
+    return await this.userService.getUserIdByName(username);
+  }
 
-	@Get('idbyname/:username')
-	async getuserIdbyName(@Param('username') username: string) {
-		return await this.userService.getUserIdByName(username)
-	}
+  @Get("status")
+  getUserStatus(@GetCurrentUser("sub") userId: number) {
+    const user = this.userService.connected_user_map.get(userId);
 
-	// @Public()
-	// @Get('image/:username')
-	// async getImage(@Res() res: Response, @Param('username') username: string) {
-	// 	return await this.userService.getUserImage(res, username)
-	// }
-	
-	@Get('profile/:id')
-	getProfile(@Param('id', ParseIntPipe) userId: number) : Promise<any> {
-		return this.userService.getUserProfil(userId)
-	}
+    if (user === undefined) return;
 
+    const userStatus: UserStatus = user.userstatus;
+    user.socket.emit(process.env.CLIENT_USER_STATUS, userStatus);
+  }
 
+  @Get("profile/edit")
+  async getEditProfile(@GetCurrentUser("sub") userId: number): Promise<any> {
+    return this.userService.getUserEditProfil(userId);
+  }
 
+  @Get("profile/:id")
+  getProfile(
+    @GetCurrentUser("sub") userId: number,
+    @Param("id", ParseIntPipe) requestedUserId: number
+  ): Promise<any> {
+    return this.userService.getUserProfil(userId, requestedUserId);
+  }
 
+  @Get("friends")
+  async getFriends(@GetCurrentUser("sub") userId: number): Promise<Friend[]> {
+    return await this.userService.getUserFriends(userId);
+  }
 
+  @Get("pending")
+  async wjebfiewf(@GetCurrentUser("sub") userId: number) {
+    return await this.userService.getUserPendingInvite(userId);
+  }
 
-	@Get('friends')
-	async getFriends (@GetCurrentUser('sub') userId: number): Promise<Friend[]>{
-		return await this.userService.getUserFriends(userId)
-	}
+  @Get("friend/create/:receiverId")
+  async CreateFriendRequest(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    return await this.friendService.createFriendRequest(userId, receiverId);
+  }
 
+  @Get("friend/cancel/:receiverId")
+  async CancelFriendRequest(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    return await this.friendService.cancelFriendRequest(userId, receiverId);
+  }
 
-	@Public()
-	@Get('test/friend/:id')
-	async wehbnfowie(@Param('id', ParseIntPipe) userId: number) {
-		return await this.userService.getUserFriends(userId)
-	}
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/accept/:receiverId")
+  async AcceptFriendRequest(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    await this.friendService.acceptFriendRequest(userId, receiverId);
 
-	@Public()
-	@Get('pending/:id')
-	async wjebfiewf(@Param('id', ParseIntPipe) userId: number) {
-		return await this.userService.getUserPendingInvite(userId)
-	}
+    const newFriend = this.userService.connected_user_map.get(receiverId);
 
-//////////////// TODO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
+    if (newFriend) {
+      const user = this.userService.connected_user_map.get(userId);
+      newFriend.socket.join(receiverId.toString());
+      user?.socket.join(receiverId.toString());
 
+      if (user)
+        newFriend.socket.emit("user-status", new UserStatusEventDto(user));
+      user?.socket.emit("user-status", new UserStatusEventDto(newFriend));
+    }
+  }
 
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	@Post('friend/accept/:id/:rec')
-	async wroeufghow(@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
-		return await this.friendService.acceptFriendRequest(userId, receiverId)
-	}
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/reject/:receiverId")
+  async RejectFriendRequest(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    return await this.friendService.rejectFriendRequest(userId, receiverId);
+  }
 
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/remove/:receiverId")
+  async RemoveFriend(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+	return await this.friendService.removeFriend(userId, receiverId);
+  }
 
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	@Post('friend/reject/:id/:rec')
-	async woefoef (@Param('id', ParseIntPipe) userId: number, @Param('rec', ParseIntPipe) receiverId: number) {
-		return await this.friendService.rejectFriendRequest(userId, receiverId)
-	}
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/block/:receiverId")
+  async BlockUser(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    return await this.friendService.blockUser(userId, receiverId);
+  }
 
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	@Post('friend/block/:id')
-	async wfgwei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
-		return await this.friendService.blockUser(userId, body.blockedUserId)
-	}
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/unblock/:receiverId")
+  async UnblockUser(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    return await this.friendService.unblockUser(userId, receiverId);
+  }
 
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	@Post('friend/unblock/:id')
-	async wfgwewei(@Param('id', ParseIntPipe) userId: number, @Body() body: BlockedUserDto) {
-		return await this.friendService.unblockUser(userId, body.blockedUserId)
-	}
+  @HttpCode(HttpStatus.OK)
+  @Post("friend/delete/:receiverId")
+  async DeleteFriend(
+    @GetCurrentUser("sub") userId: number,
+    @Param("receiverId", ParseIntPipe) receiverId: number
+  ) {
+    await this.friendService.deleteFriend(userId, receiverId);
+  }
 
-	@Public()
-	@HttpCode(HttpStatus.OK)
-	@Get('blocked/:id')
-	async wiefgiwef(@Param('id', ParseIntPipe) userId: number) {
-		return await this.userService.getBlockedUser(userId)
-	}
-//////////////// TODO TEST TO CHANGE WITH REAL PARAM @GETCURRENTUSER() ////////////////
+  @Get("blocked")
+  async GetBlockedUser(@GetCurrentUser("sub") userId: number) {
+    return await this.userService.getBlockedUser(userId);
+  }
 
+  @Get("username")
+  async GetUsername(@GetCurrentUser("sub") userId: number): Promise<string> {
+    return await this.userService.getUsername(userId);
+  }
 
-	@Public()
-	@Get('username/:id')
-	async getUsername(@Param('id', ParseIntPipe) userId: number): Promise<string> {
-		return await this.userService.getUsername(userId)
-	}
+  @Public()
+  @Get("image/:userId")
+  getImage(
+    @Res() res: Response,
+    @Param("userId", ParseIntPipe) userId: number
+  ) {
+    return this.userService.getUserImage(res, userId);
+  }
 
-	@Public()
-	@Get('image/:id')
-	getImage(@Res() res: Response, @Param('id', ParseIntPipe) userId: number) {
-		return this.userService.getUserImage(res, userId)
-	}
+  @ApiOperation({ description: "The route name is clear enough" })
+  @ApiConsumes("application/json")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        username: {
+          type: "string",
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: "The username has been updated" })
+  @ApiBadRequestResponse({ description: "The body is malformed" })
+  @Post("update/username")
+  async UpdateUsername(
+    @GetCurrentUser("sub") userId: number,
+    @Body() body: updateUsernameDto
+  ) {
+    return await this.userService.updateUsername(userId, body.username);
+  }
 
-	// @Get('chat/:username')
-	// getProfileFromChat(@Param('username') username: string) : Promise<any>
-	// {
-	// 	return this.userService.getChatProfil(username)
-	// }
+  @Post("update/description")
+  async UpdateDescription(
+    @GetCurrentUser("sub") userId: number,
+    @Body() description: updateUserDescriptionDto
+  ) {
+    await this.userService.updateDescription(userId, description.description);
+  }
 
-	@ApiOperation({ description: 'The route name is clear enough' })
-	@ApiConsumes('application/json')
-	@ApiBody({schema: {
-		type: 'object',
-		properties: {
-			username: {
-				type: 'string',
-			}
-		}
-	}})
-	@ApiCreatedResponse({ description: 'The username has been updated'})
-	@ApiBadRequestResponse({ description: 'The body is malformed'})
-	@Post('update/username')
-	updateUsername(@GetCurrentUser('sub') userId: number, @Body() body: updateUsernameDto) {
-		return this.userService.updateUsername(userId, body.username)
-	}
+  @Public()
+  @Get("leaderboard")
+  async getLeaderboard() {
+    return await this.userService.fctLeaderboard();
+  }
 
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        avatar: {
+          type: "file",
+          format: "image/jpeg",
+        },
+      },
+    },
+  })
+  @ApiOperation({ description: "Upload a .jpeg avatar less than 100Kb" })
+  @ApiBadRequestResponse({ description: "The request is malformed" })
+  @ApiCreatedResponse({
+    description: "The avatar have been uploaded successfully",
+  })
+  @Post("upload/avatar")
+  @UseInterceptors(FileInterceptor("avatar"))
+  uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @GetCurrentUser("sub") userId: number
+  ) {
+    this.userService.uploadAvatar(userId, file);
+  }
 
-	@ApiConsumes('multipart/form-data')
-	@ApiBody({schema: {
-		type: 'object',
-		properties: {
-			avatar: {
-				type: 'file',
-				format: 'image/jpeg'
-			}
-		}
-	}})
-	@ApiOperation({ description: 'Upload a .jpeg avatar less than 100Kb' })
-	@ApiBadRequestResponse({ description: 'The request is malformed' })
-	@ApiCreatedResponse({ description: 'The avatar have been uploaded successfully'})
-	@Post('upload/avatar')
-	@UseInterceptors(ImageInterceptor)
-	uploadAvatar() {}
+  @ApiOperation({
+    description:
+      "A secret is generated on the server, this secret is then returned as a QRCode, the client need to scan it on Google Authenticator and send back the code to the /tfa/enable/callback",
+  })
+  @ApiOkResponse({
+    description:
+      "A string that represent the QRCode is returned and need to be displayed on the client",
+  })
+  @ApiInternalServerErrorResponse({
+    description: "An error occured while generating the QRCode, try again",
+  })
+  @Get("tfa/enable")
+  async enableTFA(@GetCurrentUser("sub") userId: number): Promise<string> {
+    return await this.userService.enableTFA(userId);
+  }
 
-
-	@ApiOperation({ description: 'A secret is generated on the server, this secret is then returned as a QRCode, the client need to scan it on Google Authenticator and send back the code to the /tfa/enable/callback' })
-	@ApiOkResponse({ description: 'A string that represent the QRCode is returned and need to be displayed on the client' })
-	@ApiInternalServerErrorResponse({ description: 'An error occured while generating the QRCode, try again' })
-	@Get('tfa/enable')
-	async enableTFA(@GetCurrentUser('sub') userId: number): Promise<string> {
-		return await this.userService.enableTFA(userId)
-	}
-
-	@ApiOperation({ description: 'Once the client get is QRCode from the /tfa/enable route, the client need to send the code from Google Authenticator<br>\
+  @ApiOperation({
+    description:
+      "Once the client get is QRCode from the /tfa/enable route, the client need to send the code from Google Authenticator<br>\
 	If the client does not send a valid code he can try again as many times as he wants<br>\
-	If the client cancels the operation (without providing a valid code), the TFA will NOT be enabled'})
-	@ApiOkResponse({ description: 'A valid code has been given and the TFA is now enabled'})
-	@ApiUnauthorizedResponse({ description: 'A wrong code has been given, you can try again'})
-	@Get('tfa/enable/callback')
-	@UseGuards(ThrottlerGuard)
-	enableCallbackTFA(	@GetCurrentUser('sub') userId:number,
-						@Query() query: TfaDto) {
-		return this.userService.enableTFACallback(userId, query.code)
-	}
+	If the client cancels the operation (without providing a valid code), the TFA will NOT be enabled",
+  })
+  @ApiOkResponse({
+    description: "A valid code has been given and the TFA is now enabled",
+  })
+  @ApiUnauthorizedResponse({
+    description: "A wrong code has been given, you can try again",
+  })
+  @Get("tfa/enable/callback")
+  @UseGuards(ThrottlerGuard)
+  enableCallbackTFA(
+    @GetCurrentUser("sub") userId: number,
+    @Query() query: TfaDto
+  ) {
+    return this.userService.enableTFACallback(userId, query.code);
+  }
 
-	@ApiOperation({ description: 'Disable the TFA'})
-	@Get('tfa/disable')
-	disableTFA(@GetCurrentUser('sub') userId: number) {
-		return this.userService.disableTFA(userId)
-	}
-
-
-	@Public()
-	@Get('test')
-	async weif(){
-		console.log(await this.userService.doMemberOneBlockedMemberTwo(1,2))
-		console.log(await this.userService.isMemberOneBlockedByMemberTwo(1,2))
-	}
-
+  @ApiOperation({ description: "Disable the TFA" })
+  @Get("tfa/disable")
+  async disableTFA(@GetCurrentUser("sub") userId: number) {
+    return await this.userService.disableTFA(userId);
+  }
 }

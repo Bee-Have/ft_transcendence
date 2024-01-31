@@ -1,7 +1,7 @@
 import { IsDefined, Length } from "class-validator";
 
 export class updateUsernameDto {
-	@Length(3, 20)
+	@Length(3, 9)
 	@IsDefined()
 	username: string
 }

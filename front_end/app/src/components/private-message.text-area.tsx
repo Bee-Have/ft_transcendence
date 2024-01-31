@@ -34,7 +34,9 @@ const Message = ({ message, currentChat, userId, isSame }: any) => {
             src={BACKEND_URL + "/user/image/" + message.senderId}
           />
           <div className="private-message-name">
-            {currentChat.conversation.username}
+            {message.senderId === userId
+              ? currentChat.conversation.username
+              : currentChat.conversation.friendUsername}
           </div>
         </div>
       )}

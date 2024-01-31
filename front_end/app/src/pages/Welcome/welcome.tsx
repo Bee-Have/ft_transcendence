@@ -69,6 +69,7 @@ function Welcome() {
     } else {
       session.login();
     }
+	// eslint-disable-next-line
   }, [session.aToken, session.rToken]);
 
   if (session.isLogged === false) {

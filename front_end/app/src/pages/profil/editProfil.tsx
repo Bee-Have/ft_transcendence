@@ -114,7 +114,7 @@ const EditProfil: React.FC = () => {
       .catch((err: Error | AxiosError) => {
         errorContext.newError?.(errorHandler(err));
       });
-      setProfilePic(BACKEND_URL + `/user/image/${userId}` + '?key=' + Math.random());
+      setProfilePic(BACKEND_URL + `/user/image/${userId}?key=` + Math.random());
 
     // eslint-disable-next-line
   }, []);

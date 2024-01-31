@@ -7,14 +7,10 @@ all: ${NAME}
 
 up_detach:
 	docker-compose up -d
-
+	
 build:
 	docker-compose build
-#	TODO : remove next line once finished working on project
-#	Also, just required to run once to have it on local machine due to docker's volume synchronization
-	docker-compose run -it -v ./front_end/app/:/usr/src/app/frontend front_end npm install
-	docker-compose run front_end npm install
-	cd back_end/srcs && npm install
+	if docker ps | grep front_end; then docker exec -i front_end /bin/bash -c "echo REACT_APP_BACKEND_URL=${BACKEND_URL} > .env.production"; fi
 
 stop:
 	docker-compose stop

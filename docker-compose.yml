@@ -5,7 +5,7 @@ services:
   postgres:
     container_name: postgres
     volumes:
-      - database_vol:/var/lib/postgresql
+      - database_vol:/var/lib/postgresql/data
     networks:
       - transc_netw
     ports:

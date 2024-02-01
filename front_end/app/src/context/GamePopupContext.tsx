@@ -29,6 +29,10 @@ export const GamePopupProvider = ({
   const session = useSessionContext();
 
   React.useEffect(() => {
+    if (session.socket === null) {
+      setIsVisible(false);
+	  return ;
+    }
     const togglePopup = (data: UserStatusEventDto) => {
       if (userId !== data.userId) return;
       if (

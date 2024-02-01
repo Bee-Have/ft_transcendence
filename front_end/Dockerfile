@@ -6,8 +6,6 @@ EXPOSE 3000
 # change directory in container
 WORKDIR /usr/src/app/frontend
 
-# install missing npm dependencies
-#RUN npm install
 # copy dependencies
 COPY ./app/package*.json ./
 
@@ -22,5 +20,4 @@ RUN npm run build
 
 # run container
 CMD [ "serve", "-s", "build" ]
-# ENTRYPOINT [ "npm", "run", "build" ]
 STOPSIGNAL SIGKILL

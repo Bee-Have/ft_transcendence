@@ -1,6 +1,5 @@
 version: '3.8'
 
-#    user: "${UID}:${GID}"
 services:
   postgres:
     container_name: postgres
@@ -15,42 +14,48 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 60s
+      retries: 20
     restart: always
 
 
   front_end:
     depends_on:
-      - back_end
-        # condition: service_healthy
+      back_end:
+        condition: service_healthy
     container_name: front_end
     volumes:
-      # - ./front_end/app:/usr/src/app/frontend
-#     TODO : Remove previous line and keep next one when project is finished
     - html_vol:/usr/src/app/frontend
     networks:
       - transc_netw
-    build: ./front_end
+    build: 
+      context: ./front_end
+      args:
+        backurl: ${BACKEND_URL}
     environment:
       - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+      - BACKEND_URL=${BACKEND_URL}
     ports:
       - ${PORT_FRONT}:${PORT_FRONT}
+    healthcheck:
+      test: curl --fail http://front_end:3000 || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
     restart: always
 
 
   back_end:
     depends_on:
-      - postgres
-        # condition: service_healthy
+      postgres:
+        condition: service_healthy
     container_name: back_end
     volumes:
-      # - ./back_end/srcs:/usr/src/app/backend
-#     TODO : Remove previous line and keep next one when project is finished
       - htm:/usr/src/app/backend
     networks:
       - transc_netw
@@ -60,11 +65,11 @@ services:
     build: ./back_end
     env_file:
       - .env
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl --fail http://localhost:${PORT_BACK} || exit 1"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
+    healthcheck:
+      test: "curl --fail http://localhost:${PORT_BACK}/auth || exit 1"
+      interval: 2s
+      timeout: 60s
+      retries: 20
     restart: always
 
 volumes:

@@ -149,7 +149,6 @@ const PrivateTextArea = ({
       </div>
       <div className="prompt">
         <TextField
-          // id='qoubd'
           name="qfoi"
           className="channel-text-field"
           placeholder={

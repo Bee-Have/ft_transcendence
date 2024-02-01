@@ -9,6 +9,7 @@ RUN chmod +x script.sh
 
 
 COPY ./srcs .
+RUN mkdir -p uploads/avatar uploads/badge
 
 RUN npm install
 RUN npx prisma generate

@@ -36,7 +36,6 @@ export class AuthService {
     return uri;
   }
 
-  // async authenticateUser(query: AuthDto, response: Response): Promise<Tokens> {
   async authenticateUser(query: AuthDto, response: Response): Promise<void> {
     const userFtToken: string = await this.getFtApiToken(
       query.code,

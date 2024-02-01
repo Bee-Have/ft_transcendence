@@ -7,11 +7,12 @@ all: ${NAME}
 
 up_detach:
 	docker-compose up -d
-
+	
 build:
 	mkdir -p back_end/srcs/uploads/avatar back_end/srcs/uploads/badge
 	echo REACT_APP_BACKEND_URL=${BACKEND_URL} > front_end/app/.env.production
 	docker-compose build
+	if docker ps | grep front_end; then docker exec -i front_end /bin/bash -c "echo REACT_APP_BACKEND_URL=${BACKEND_URL} > .env.production"; fi
 
 stop:
 	docker-compose stop

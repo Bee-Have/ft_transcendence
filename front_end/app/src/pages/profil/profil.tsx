@@ -14,6 +14,8 @@ import { errorHandler } from "src/context/errorHandler";
 import { useSessionContext } from "src/context/SessionContext";
 import { userId } from "../global/userId";
 
+import { useGamePopup } from "src/context/GamePopupContext";
+
 import InviteGameModeDialogButton from "src/components/game/GameModeDialog/InviteGameModeDialogButton";
 import InteractiveFriendshipButton from "src/components/interactive/InteractiveFriendshipButton";
 
@@ -44,10 +46,11 @@ const Profil: React.FC = () => {
     ...defaultUser,
   });
   const navigate = useNavigate();
-  
+
   const errorContext = useErrorContext();
   const session = useSessionContext();
-  
+  const gameContext = useGamePopup();
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -113,6 +116,7 @@ const Profil: React.FC = () => {
                 )
                 .then(() => {
                   session.logout?.();
+                  gameContext.setIsVisible(false);
                   navigate("/");
                 })
                 .catch((err: Error | AxiosError) => {
@@ -132,7 +136,12 @@ const Profil: React.FC = () => {
         <center>
           <Avatar
             src={profilInfo.photo + `?key=` + Math.random()}
-            style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover" }}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
           />
           <br />
         </center>

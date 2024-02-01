@@ -32,41 +32,6 @@ export class UserService {
 
   public connected_user_map = new Map<number, UserInfo>();
 
-  /*async getUserInfo(userId: number) {
-		const user = await this.prisma.user.findUnique({
-			where: {
-				id: userId
-			}
-		})
-		return user
-	}*/
-
-  // async getUserImage(res: Response, username: string)
-  // {
-  // 	const user = await this.getUserInfo(username)
-
-  // 	if (!user)
-  // 		throw new NotFoundException("User not found")
-
-  // 	const userId = String(user.id)
-
-  // 	const imagePath = process.env.AVATAR_DIRECTORY + '/' + userId + '.jpeg'
-
-  // 	if (!fs.existsSync(imagePath))
-  // 		throw new NotFoundException("Image not found")
-
-  // 	fs.createReadStream(imagePath).pipe(res)
-  // }
-
-  // async getUserInfo(Name: string) {
-  // 	const user = await this.prisma.user.findUnique({
-  // 		where: {
-  // 			username: Name
-  // 		}
-  // 	})
-  // 	return user
-  // }
-
   async getUserProfil(userId: number, requestedUserId: number) {
     const user = await this.getUser(requestedUserId);
     //besoin de : achievement
@@ -151,15 +116,6 @@ export class UserService {
 
     fs.createReadStream(imagePath).pipe(res);
   }
-
-  // async getChatProfil(username: string){
-  // 	const user = await this.getUserInfo(username)
-  // 	//besoin de : achievement
-  // 	if (!user)
-  // 		throw new NotFoundException("User profile not found")
-  // 	const trimuser = plainToInstance(chatProfilDto, user,{excludeExtraneousValues:true})
-  // 	return trimuser
-  // }
 
   async updateUsername(userId: number, username: string) {
     try {

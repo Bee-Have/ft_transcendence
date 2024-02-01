@@ -75,7 +75,6 @@ function BallRoutine({
       // Ball touch right side of window
       updateScore("player");
       resetBall();
-      //   Direction.current.x = Math.abs(Direction.current.x);
     } else if (ballRect?.bottom >= window.innerHeight) {
       // Ball touch bottom side of window
       Direction.current.y *= -1;

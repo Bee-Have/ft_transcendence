@@ -359,7 +359,6 @@ export class GameService {
       acceptedUser.userstatus === UserStatus.ingamesolo
     ) {
       // display error with snackbar
-      //   return (null);
       throw new HttpException("User is not available", 408);
     }
 

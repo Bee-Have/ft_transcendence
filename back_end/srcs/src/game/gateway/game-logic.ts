@@ -24,7 +24,6 @@ function clamp(num: number, min: number, max: number) {
 }
 
 function initBall() {
-  //   const ball: BallInfo = { ...defaultBallInfo };
   let ball: BallInfo;
   ball = {
     bounceCount: 0,

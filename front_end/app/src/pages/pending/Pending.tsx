@@ -7,7 +7,6 @@ import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LockIcon from "@mui/icons-material/Lock";
 
-// import { UserStatus, Friend } from "../global/friend.dto";
 import { Friend } from "../global/friend.dto";
 
 import InteractiveAvatar from "src/components/interactive/InteractiveAvatar";
@@ -83,30 +82,24 @@ const Card = ({ user }: CardProps) => {
         <p color="red">{message}</p>
       ) : (
         <>
-          {/* <button className="round-button" onClick={handleAcceptFrRq}> */}
             <CheckCircleOutlineIcon
               className="acceptBtn"
               style={{ fontSize: "2em" }}
               onClick={handleAcceptFrRq}
             />
-          {/* </button> */}
-          {/* <button className="round-button"> */}
             <BlockIcon
               className="refuseBtn"
               style={{ fontSize: "2em" }}
               onClick={handleReject}
             />
-          {/* </button> */}
           {hideBlock ? (
             ""
           ) : (
-            // <button className="round-button">
               <LockIcon
                 className="blockBtn"
                 style={{ fontSize: "2em" }}
                 onClick={handleBlock}
               />
-            // </button>
           )}
         </>
       )}

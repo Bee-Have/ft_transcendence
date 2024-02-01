@@ -9,7 +9,6 @@ import { JoinPrivateChannelDto, JoinProtectedChannelDto, JoinPublicChannelDto } 
 import { ManageChannelRole } from './dto/ManageChannelRole.dto';
 import { RestrictChannelMember } from './dto/RestrictChannelMember.dto';
 
-// @Public()
 @Controller('channel')
 export class ChannelController {
 

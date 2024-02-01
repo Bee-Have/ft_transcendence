@@ -1,6 +1,5 @@
 import Avatar from "@mui/material/Avatar";
 import List from "@mui/material/List";
-// import ListItem from '@mui/material/ListItem';
 import { Badge, ListItem } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import React, { useEffect, useState } from "react";

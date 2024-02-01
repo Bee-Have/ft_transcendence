@@ -1,9 +1,3 @@
-// export class Friend {
-// 	id: number
-// 	username: string
-// 	status: string
-// }
-
 export enum UserStatus {
 	online = "Online" as any,
 	offline = "Offline" as any,

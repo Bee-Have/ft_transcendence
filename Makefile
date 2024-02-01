@@ -5,9 +5,6 @@ $(NAME): up_build
 all: ${NAME}
 
 up_build:
-	docker-compose up --build
-
-up_detach:
 	docker-compose up --build -d
 
 build:

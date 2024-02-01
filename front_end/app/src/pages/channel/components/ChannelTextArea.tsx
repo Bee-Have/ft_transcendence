@@ -198,8 +198,8 @@ const ChannelTextArea = ({
             errorContext.newError?.(errorHandler(err));
             setInputValue("");
           } else {
-            if (axios.isAxiosError(err)) navigate("/" + err.response?.status);
-            else navigate("/500");
+            errorContext.newError?.(errorHandler(err));
+            setInputValue("");
           }
         });
     }

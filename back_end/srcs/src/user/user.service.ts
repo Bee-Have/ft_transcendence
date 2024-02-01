@@ -118,6 +118,9 @@ export class UserService {
   }
 
   async updateUsername(userId: number, username: string) {
+    if (username.split(' ').includes(''))
+      throw new BadRequestException('Invalid username, Useless space are forbidden')
+
     try {
       await this.prisma.user.update({
         where: {

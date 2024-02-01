@@ -84,6 +84,7 @@ const TFAConnection: React.FC<FAEnableProps> = ({ popUp }) => {
         event.preventDefault();
       }
     },
+	// eslint-disable-next-line
     [popUp]
   );
 

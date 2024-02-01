@@ -38,30 +38,54 @@ export class GameService {
       },
     });
 
+    const unavailableIds: number[] = [];
+
     if (gameInvites.length > 0) {
       gameInvites.forEach((gameInvite) => {
         if (gameInvite.senderId === userId) {
           throw new HttpException("Already in matchmaking", 409);
         }
+        if (
+          this.userService.connected_user_map.has(gameInvite.senderId) === false
+        ) {
+          unavailableIds.push(gameInvite.senderId);
+          gameInvites.splice(gameInvites.indexOf(gameInvite), 1);
+        }
       });
 
-      await this.prisma.gameInvite.update({
-        where: {
-          id: gameInvites[0].id,
-        },
-        data: {
-          receiverId: userId,
-          acceptedInvite: true,
-        },
-      });
+      if (unavailableIds.length > 0) {
+        await this.prisma.gameInvite.deleteMany({
+          where: {
+            OR: [
+              { senderId: { in: unavailableIds } },
+              { receiverId: { in: unavailableIds } },
+            ],
+          },
+        });
+      }
 
-      const opponent: UserInfo = this.userService.connected_user_map.get(
-        gameInvites[0].senderId
-      );
-      opponent.socket.emit("new-invite");
-      const player: UserInfo = this.userService.connected_user_map.get(userId);
-      player.socket.emit("new-invite");
-      return gameInvites[0].senderId;
+      if (gameInvites.length > 0) {
+        await this.prisma.gameInvite.update({
+          where: {
+            id: gameInvites[0].id,
+          },
+          data: {
+            receiverId: userId,
+            acceptedInvite: true,
+          },
+        });
+
+        const opponent: UserInfo = this.userService.connected_user_map.get(
+          gameInvites[0].senderId
+        );
+        if (opponent === undefined) {
+        }
+        opponent.socket.emit("new-invite");
+        const player: UserInfo =
+          this.userService.connected_user_map.get(userId);
+        player.socket.emit("new-invite");
+        return gameInvites[0].senderId;
+      }
     }
 
     const newGameInvite = await this.prisma.gameInvite.create({

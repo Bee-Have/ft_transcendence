@@ -64,6 +64,7 @@ function Welcome() {
           })
           .catch((error: Error | AxiosError<unknown, any>) => {
             errorContext.newError?.(errorHandler(error));
+            session.logout()
           });
       }
     } else {
